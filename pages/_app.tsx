@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as React from 'react';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
@@ -8,6 +9,10 @@ import ligthTheme from '../styles/theme/lightTheme';
 import createEmotionCache from '../util/createEmotionCache';
 import Layout from '../components/layout';
 import { useRouter } from 'next/router';
+import { ApolloProvider } from "@apollo/client";
+import client from "../graphql/apollo-client";
+import ClientOnly from "../components/ClientOnly";
+import {AuthProvider} from '../context/auth';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -17,7 +22,8 @@ export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
-export default function MyApp(props: MyAppProps) {
+
+export default function MyApp(props) {
   const router = useRouter();
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
@@ -26,27 +32,67 @@ export default function MyApp(props: MyAppProps) {
 
   // Check if the current page is in the excludedPages array
   const excludeLayout = excludedPages.includes(router.pathname);
-
+  
   return (
-    
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
-      <ThemeProvider theme={ligthTheme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        {excludeLayout ? (
-          // Render content without Layout
-          <Component {...pageProps} />
-        ) : (
-          // Render content with Layout
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        )}
-      </ThemeProvider>
-    </CacheProvider>
-    
+    <ApolloProvider client={client}>
+      <AuthProvider>
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <meta name="viewport" content="initial-scale=1, width=device-width" />
+          </Head>
+          <ThemeProvider theme={ligthTheme}>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
+            {excludeLayout ? (
+              // Render content without Layout
+              <ClientOnly>
+                <Component {...pageProps} />
+              </ClientOnly>
+            ) : (
+              // Render content with Layout
+              <ClientOnly>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </ClientOnly>
+            )}
+          </ThemeProvider>
+        </CacheProvider>
+      </AuthProvider>
+    </ApolloProvider>
   );
 }
+
+// export default function MyApp(props: MyAppProps) {
+//   const router = useRouter();
+//   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
+//   // Define an array of page paths where you want to exclude the Layout
+//   const excludedPages = ['/login'];
+
+//   // Check if the current page is in the excludedPages array
+//   const excludeLayout = excludedPages.includes(router.pathname);
+
+//   return (
+    
+//     <CacheProvider value={emotionCache}>
+//       <Head>
+//         <meta name="viewport" content="initial-scale=1, width=device-width" />
+//       </Head>
+//       <ThemeProvider theme={ligthTheme}>
+//         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+//         <CssBaseline />
+//         {excludeLayout ? (
+//           // Render content without Layout
+//           <Component {...pageProps} />
+//         ) : (
+//           // Render content with Layout
+//           <Layout>
+//             <Component {...pageProps} />
+//           </Layout>
+//         )}
+//       </ThemeProvider>
+//     </CacheProvider>
+    
+//   );
+// }
