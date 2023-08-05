@@ -14,14 +14,11 @@ import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import MuiAlert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import { Radio, FormControl, FormLabel, RadioGroup, useForkRef } from '@mui/material';
 
 
 import {useState, useContext, forwardRef , useRef } from 'react';
-import { REGISTER_USER } from '../graphql/mutations/authMutations';//imported the mutation
+import { REGISTER_USER } from '../graphql/mutations/sampleMutations';//imported the mutation
 import { useMutation } from '@apollo/client';
 import toast, { Toaster } from 'react-hot-toast';
 import CircularLoading from '../components/circularLoading';
@@ -80,9 +77,6 @@ const boxstyle = {
   transform: "translate(-50%, -50%)",
   width: "75%",
   height: "82%",
-  // my:"auto",
-  // mx:"auto",
-  // width:"75%",
   bgcolor: "background.paper",
   boxShadow: 24,
   borderRadius: "20px",
@@ -95,7 +89,6 @@ const center = {
 };
 
 
-const libraries = ["places"];
 
 export default function Register() {
   const [open, setOpen] = useState(false);
@@ -104,61 +97,56 @@ export default function Register() {
   const vertical = "top";
   const horizontal = "right";
   const inputRef = useRef();
-  const [region, setRegion] = useState('');
-  const [province, setProvince] = useState('');
-  const [provinceMunicipality, setProvinceMunicipality] = useState('');
-  const [barangay, setBarangay] = useState('');
-  const [street, setStreet] = useState('');
 
+//Google Map AutoComplete Code
+const handlePlaceChanged = () => {
+  const [place] = inputRef.current.getPlaces();
+  if (place) {
+    const selectedAddress = place.formatted_address;
 
-  //Google Map Autocomplete Code
-  const handlePlaceChanged = () => {
-    const [place] = inputRef.current.getPlaces();
-    if (place) {
-      const selectedAddress = place.formatted_address;
-      // Extracting address components
-      let barangayName = '';
-      let municipality = '';
-      let city = '';
-      let province = '';
-      let region = '';
-      let street = '';
- 
-      place.address_components.forEach((component) => {
-        const componentType = component.types[0];
+    // Extracting address components
+    let barangayName = '';
+    let municipality = '';
+    let city = '';
+    let province = '';
+    let region = '';
+    let postalCode = '';
+    let country = '';
+    const latitude = place.geometry.location.lat();
+    const longitude = place.geometry.location.lng();
 
-        if (componentType === 'sublocality_level_1') {
-          barangayName = component.long_name;
-        }
-        if (componentType === 'locality') {
-          municipality = component.long_name;
-        }
+    place.address_components.forEach((component) => {
+      const componentType = component.types[0];
 
-        if (componentType === 'administrative_area_level_3') {
-          municipality = component.long_name;
-        }
+      if (componentType === 'sublocality_level_1') {
+        barangayName = component.long_name;
+      }
 
-        if (componentType === 'administrative_area_level_2') {
-          province = component.long_name;
-        }
+      if (componentType === 'administrative_area_level_3') {
+        municipality = component.long_name;
+      }
 
-        if (componentType === 'administrative_area_level_1') {
-          region = component.long_name;
-        }
+      if (componentType === 'administrative_area_level_2') {
+        city = component.long_name;
+      }
 
-        if (componentType === 'route') {
-          street = component.long_name;
+      if (componentType === 'administrative_area_level_1') {
+        province = component.long_name;
+      }
 
-        }
+      if (componentType === 'administrative_area_level_1' && component.short_name === 'PH') {
+        region = component.long_name;
+      }
 
-      });
+      if (componentType === 'postal_code') {
+        postalCode = component.long_name;
+      }
 
-      // Update the state variables with the extracted address components
-    setRegion(region);
-    setProvince(province);
-    setProvinceMunicipality(municipality);
-    setBarangay(barangayName);
-    setStreet(street);
+      if (componentType === 'country') {
+        country = component.long_name;
+      }
+    });
+
 
     console.log('Selected Address:', selectedAddress);
     console.log('Barangay:', barangayName);
@@ -166,14 +154,12 @@ export default function Register() {
     console.log('City:', city);
     console.log('Province:', province);
     console.log('Region:', region);
-    // console.log('Postal Code:', postalCode);
-    // console.log('Country:', country);
-    // console.log('Longitude', longitude );
-    // console.log('Latitude', latitude);
-    console.log('Street:', street)
-    }
-  };
-
+    console.log('Postal Code:', postalCode);
+    console.log('Country:', country);
+    console.log('Longitude', longitude );
+    console.log('Latitude', latitude);
+  }
+};
 
 
 //REgister
@@ -206,14 +192,11 @@ export default function Register() {
         onError(err){
             //console.log(err.graphQLErrors[0].extensions.errors);
             setErrors(err.graphQLErrors[0].extensions.errors);
-            setOpen(true)
-
         },
         // display toast upon completion
         onCompleted:(data)=>{
             toast.success("User successfully Registered");
-            // router.push('/login');
-            router.push('/')
+            router.push('/login');
         },
         //variables to pass on mutation, copy paste from apollo playground then only change the value
         variables:{
@@ -245,12 +228,12 @@ export default function Register() {
 
 
 
-  // const handleClose = (event, reason) => {
-  //   if (reason === "clickaway") {
-  //     return;
-  //   }
-  //   setOpen(false);
-  // };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
 
 
@@ -267,42 +250,26 @@ export default function Register() {
   return (
     <>
       <Toaster />
-      
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        TransitionComponent={TransitionLeft}
+        anchorOrigin={{ vertical, horizontal }}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          Failed! Enter correct username and password.
+        </Alert>
+      </Snackbar>
       <div
         style={{
           backgroundImage: `url(${bgimg})`,
           backgroundSize: "cover",
           height: "100vh",
           color: "#f5f5f5",
-          overflow:"auto"
         }}
       >
-
         <Box sx={boxstyle}>
-        <Collapse in={open}>
-          <Alert
-            severity = "error"
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setOpen(false);
-                }}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-            sx={{ mb: 2 }}
-          >
-          {Object.keys(errors).length > 0 && (
-              Object.values(errors).map ((value)=>(
-                <p key={value}>{value}</p>
-            ))
-          )}
-          </Alert>
-        </Collapse>
           <Grid container>
             <Grid item xs={12} sm={12} lg={6}>
               <Box
@@ -479,6 +446,18 @@ export default function Register() {
                                 Next
                             </Button>
                             </Grid>
+                            
+                            {/* <displayError err = {errors}/> */}
+                            {/* Display if error */}
+                            {Object.keys(errors).length > 0 && (
+                                <div>
+                                    <ul>
+                                        {Object.values(errors).map ((value)=>(
+                                            <li key={value}>{value}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
 
 
                             
@@ -542,12 +521,11 @@ export default function Register() {
                                     </RadioGroup>
                                 </FormControl>
                             </Grid>
-
                            {/* Google Autocomplete Search BAr
                             <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                                 <LoadScript
                                 googleMapsApiKey="AIzaSyAdcZcD7Nq7CitMFBFAGBrLlOGtetZCcVg"
-                                libraries={libraries}
+                                libraries={["places"]}
                                 >
                                     <StandaloneSearchBox
                                     onLoad = {ref => (inputRef.current = ref) }
@@ -567,192 +545,7 @@ export default function Register() {
                                 </LoadScript>
                             </Grid> */}
 
-                            {/* Buttons Page 2*/}
-                            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                                <Grid container spacing={1} >
-                                    <Grid item xs={6}>
-                                        <Button
-                                            type="button"
-                                            variant="contained"
-                                            // fullWidth= {true}
-                                            onClick={()=>{setCurrentPage(currentPage-1)}}
-                                            size="large"
-                                            sx={{
-                                            mt: "15px",
-                                            mr: "20px",
-                                            borderRadius: 28,
-                                            color: "#ffffff",
-                                            minWidth: "170px",
-                                            backgroundColor: "#02452d",
-                                            '&:hover': {
-                                                backgroundColor: '#FF9A01',
-                                            },
-                                            }}
-                                        >
-                                            Prev
-                                        </Button>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Button
-                                        type="button"
-                                        onClick={()=>{setCurrentPage(currentPage+1)}}
-                                        variant="contained"
-                                        // fullWidth= {true}
-                                        size="large"
-                                        sx={{
-                                        mt: "15px",
-                                        mr: "20px",
-                                        borderRadius: 28,
-                                        color: "#ffffff",
-                                        minWidth: "170px",
-                                        backgroundColor: "#02452d",
-                                        '&:hover': {
-                                            backgroundColor: '#FF9A01',
-                                        },
-                                        }}
-                                        >
-                                        Next
-                                        </Button>
-                                    </Grid>
-
-                                </Grid>
-                            </Grid>
-
-    
-                            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                              <Stack direction="row" spacing={2} justifyContent="center" textAlign="center" >
-                                  <Typography
-                                  variant="body1"
-                                  component="span"
-                                  style={{ marginTop: "10px", color: "#02452d"}}
-                                  >
-                                  Already have an Account?{" "}
-                                  <span
-                                      style={{ color: "#FF9A01", cursor: "pointer" }}
-                                      onClick={() => {
-                                          router.push('/login');
-                                      }}
-                                  >
-                                      Log In
-                                  </span>
-                                  </Typography>
-                              </Stack>
-                            </Grid>
-                      </Grid>
-
-                      {/* Page 3 */}
-                      <Grid container spacing={1} sx={{display:(currentPage==3)?"block":"none"}}>
-                            <Grid item xs={12} sx={{ ml: '3em', mr: '3em', mt: '3em', mt: '3em' }}>
-                                <LoadScript
-                                  googleMapsApiKey="AIzaSyAdcZcD7Nq7CitMFBFAGBrLlOGtetZCcVg"
-                                  libraries={libraries}
-                                >
-                                  <StandaloneSearchBox
-                                    onLoad={(ref) => (inputRef.current = ref)}
-                                    onPlacesChanged={handlePlaceChanged}
-                                    options={{ componentRestrictions: { country: ['PH'] } }}
-                                  >
-                                    <TextField
-                                      required
-                                      fullWidth
-                                      id="quick_search"
-                                      label="Quick Search"
-                                      name="quick_search"
-                                      variant="outlined"
-                                      InputProps={{ style: { color: '#02452d' } }}
-                                      InputLabelProps={{ style: { color: '#02452d' } }}
-                                    />
-                                  </StandaloneSearchBox>
-                                </LoadScript>
-                              </Grid>
-
-                            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                        required
-                                        fullWidth
-                                        id="street"
-                                        onChange={(e) => setStreet(e.target.value)} 
-                                        label="Street"
-                                        name="street"
-                                        variant="outlined"
-                                        InputProps={{ style: { color: '#02452d' } }}
-                                        InputLabelProps={{ style: { color: '#02452d' } }}
-                                        value={street} 
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                        required
-                                        fullWidth
-                                        id="barangay"
-                                        label="Barangay"
-                                        name="barangay"
-                                        variant="outlined"
-                                        value={barangay}
-                                        onChange={(e) => setBarangay(e.target.value)}
-                                        InputProps={{ style: { color: '#02452d' } }}
-                                        InputLabelProps={{ style: { color: '#02452d' } }}
-                                        />  
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-
-
-                            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                        required
-                                        fullWidth
-                                        id="city_municipality"
-                                        value={provinceMunicipality} 
-                                        onChange={(e) => setProvinceMunicipality(e.target.value)}
-                                        label="City/Municipality"
-                                        name="city_municipality"
-                                        variant="outlined"
-                                        InputProps={{ style: { color: '#02452d' } }}
-                                        InputLabelProps={{ style: { color: '#02452d' } }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                        required
-                                        fullWidth
-                                        id="province"
-                                        label="Province"
-                                        name="province"
-                                       
-                                        variant="outlined"
-                                        value={province} 
-                                        onChange={(e) => setProvince(e.target.value)}
-                                        InputProps={{ style: { color: '#02452d' } }}
-                                        InputLabelProps={{ style: { color: '#02452d' } }}
-                                        />  
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-
-                            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                              <TextField
-                                  required
-                                  fullWidth
-                                  id="region"
-                                  label="Region"
-                                  name="region"
-                                  variant="outlined"
-                                  value={region} 
-                                  onChange={(e) => setRegion(e.target.value)} 
-                                  InputProps={{ style: { color: '#02452d' } }}
-                                  InputLabelProps={{ style: { color: '#02452d' } }}
-                              />
-                            </Grid>
-
-
-                           
-
-                            {/* Buttons Page 3 */}
+                            {/* Next Button */}
                             <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                                 <Grid container spacing={1} >
                                     <Grid item xs={6}>
@@ -801,7 +594,22 @@ export default function Register() {
 
                                 </Grid>
                             </Grid>
+                            
+                            
+                            {/* <displayError err = {errors}/> */}
+                            {/* Display if error */}
+                            {Object.keys(errors).length > 0 && (
+                                <div>
+                                    <ul>
+                                        {Object.values(errors).map ((value)=>(
+                                            <li key={value}>{value}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
 
+
+                            
                             <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                             <Stack direction="row" spacing={2} justifyContent="center" textAlign="center" >
                                 <Typography
@@ -818,6 +626,9 @@ export default function Register() {
                                 >
                                     Log In
                                 </span>
+
+
+
                                 </Typography>
                             </Stack>
                             </Grid>

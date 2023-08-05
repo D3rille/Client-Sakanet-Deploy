@@ -9,14 +9,17 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Collapse from '@mui/material/Collapse';
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useState, useContext, forwardRef } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
 import MuiAlert from "@mui/material/Alert";
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import Slide from "@mui/material/Slide";
-import { LOGIN_USER } from "../graphql/mutations/sampleMutations";
+import { LOGIN_USER } from "../graphql/mutations/authMutations";
 import CircularLoading from '../components/circularLoading';
 import {useRouter} from 'next/router';
 import {useForm} from '../util/hooks';
@@ -24,7 +27,6 @@ import {AuthContext} from '../context/auth';
 import { useMutation } from '@apollo/client';
 import toast, { Toaster } from 'react-hot-toast';
 
-//TODO: FIX BACKGROUND TO FIT
 const theme = createTheme({
     palette: {
       mode: "dark",
@@ -74,6 +76,9 @@ const theme = createTheme({
   });
   
   
+  const Alert = forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 const boxstyle = {
   position: "absolute",
@@ -148,27 +153,41 @@ export default function Login() {
 
 return (
     <>
-    <Toaster/>
-        <Snackbar
-        open={open}
-        autoHideDuration={3000}
-        onClose={handleClose}
-        TransitionComponent={TransitionLeft}
-        anchorOrigin={{ vertical, horizontal }}
-        >
-        {/* <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-            Failed! Enter correct username and password.
-        </Alert> */}
-        </Snackbar>
+      <Toaster/>
         <div
         style={{
             backgroundImage: bgimg,
             backgroundSize: "cover",
             height: "100vh",
             color: "#f5f5f5",
+            overflow:"auto"
         }}
         >
         <Box sx={boxstyle}>
+          <Collapse in={open}>
+            <Alert
+              severity = "error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+            {Object.keys(errors).length > 0 && (
+                Object.values(errors).map ((value)=>(
+                  <p key={value}>{value}</p>
+              ))
+            )}
+            </Alert>
+          </Collapse>
             <Grid container>
             <Grid item xs={12} sm={12} lg={6}>
                 <Box
@@ -189,7 +208,7 @@ return (
                 style={{
                     backgroundSize: "cover",
                     height: "70vh",
-                    minHeight: "500px",
+                    // minHeight: "500px",
                     backgroundColor: "#ffffff",
                     borderTopRightRadius: "20px",
                     borderBottomRightRadius: "20px",
@@ -280,7 +299,7 @@ return (
                                 <span
                                 style={{ color: "#FF9A01", cursor: "pointer" }}
                                 onClick={() => {
-                                    navigate("/register");
+                                    router.push("/register");
                                 }}
                                 >
                                 Create an Account

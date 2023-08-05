@@ -13,6 +13,7 @@ import { ApolloProvider } from "@apollo/client";
 import client from "../graphql/apollo-client";
 import ClientOnly from "../components/ClientOnly";
 import {AuthProvider} from '../context/auth';
+import AuthRoute from '../util/AuthRoute';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -28,7 +29,7 @@ export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   // Define an array of page paths where you want to exclude the Layout
-  const excludedPages = ['/login'];
+  const excludedPages = ['/login', '/register'];
 
   // Check if the current page is in the excludedPages array
   const excludeLayout = excludedPages.includes(router.pathname);
@@ -46,13 +47,15 @@ export default function MyApp(props) {
             {excludeLayout ? (
               // Render content without Layout
               <ClientOnly>
-                <Component {...pageProps} />
+                {/* <AuthRoute component={Component} {...pageProps} /> */}
+                <Component {...pageProps}/>
               </ClientOnly>
             ) : (
               // Render content with Layout
               <ClientOnly>
                 <Layout>
-                  <Component {...pageProps} />
+                {/* <AuthRoute component={Component} {...pageProps} /> */}
+                <Component {...pageProps}/>
                 </Layout>
               </ClientOnly>
             )}
