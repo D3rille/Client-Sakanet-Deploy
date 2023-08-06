@@ -106,7 +106,7 @@ export default function Register() {
   const inputRef = useRef();
   const [region, setRegion] = useState('');
   const [province, setProvince] = useState('');
-  const [provinceMunicipality, setProvinceMunicipality] = useState('');
+  const [cityOrMunicipality, setCityOrMunicipality] = useState('');
   const [barangay, setBarangay] = useState('');
   const [street, setStreet] = useState('');
 
@@ -156,21 +156,21 @@ export default function Register() {
       // Update the state variables with the extracted address components
     setRegion(region);
     setProvince(province);
-    setProvinceMunicipality(municipality);
+    setCityOrMunicipality(municipality);
     setBarangay(barangayName);
     setStreet(street);
 
-    console.log('Selected Address:', selectedAddress);
-    console.log('Barangay:', barangayName);
-    console.log('Municipality:', municipality);
-    console.log('City:', city);
-    console.log('Province:', province);
-    console.log('Region:', region);
+    // console.log('Selected Address:', selectedAddress);
+    // console.log('Barangay:', barangayName);
+    // console.log('Municipality:', municipality);
+    // console.log('City:', city);
+    // console.log('Province:', province);
+    // console.log('Region:', region);
     // console.log('Postal Code:', postalCode);
     // console.log('Country:', country);
     // console.log('Longitude', longitude );
     // console.log('Latitude', latitude);
-    console.log('Street:', street)
+    // console.log('Street:', street)
     }
   };
 
@@ -194,7 +194,6 @@ export default function Register() {
     // const onChange = (event) =>{
     //     setValues({...values, [event.target.name]: event.target.value});
     // };
-
     // the Graphql Mutation
     const [addUser, {loading}] = useMutation(REGISTER_USER, {
         update(proxy, {data:{register:userData}}){
@@ -204,9 +203,14 @@ export default function Register() {
         },
         // Display error
         onError(err){
-            //console.log(err.graphQLErrors[0].extensions.errors);
+          try{
+            // console.log(err.graphQLErrors[0].extensions.errors);
             setErrors(err.graphQLErrors[0].extensions.errors);
             setOpen(true)
+          }catch(e){
+            console.log("Error: ", e)
+          }
+           
 
         },
         // display toast upon completion
@@ -223,7 +227,14 @@ export default function Register() {
               "confirmPassword": values.confirmPassword,
               "account_email": values.account_email,
               "account_mobile": values.account_mobile,
-              "role": values.role
+              "role": values.role,
+              "address":{
+                "street":street,
+                "barangay":barangay,
+                "cityOrMunicipality":cityOrMunicipality,
+                "province":province,
+                "region":region
+              }
             }
           }
     });
@@ -261,8 +272,19 @@ export default function Register() {
 
 
   if(loading){
-        // if still loading, show circular loading
-        return(<CircularLoading/>);
+    // if still loading, show circular loading
+    return(
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh', // Adjust this if you want to center the loading spinner within a specific height
+        }}
+      >
+        <CircularLoading/>
+      </Box>
+    );
   } else{
   return (
     <>
@@ -543,29 +565,6 @@ export default function Register() {
                                 </FormControl>
                             </Grid>
 
-                           {/* Google Autocomplete Search BAr
-                            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                                <LoadScript
-                                googleMapsApiKey="AIzaSyAdcZcD7Nq7CitMFBFAGBrLlOGtetZCcVg"
-                                libraries={libraries}
-                                >
-                                    <StandaloneSearchBox
-                                    onLoad = {ref => (inputRef.current = ref) }
-                                    onPlacesChanged = {handlePlaceChanged}
-                                    >
-                                    <TextField
-                                    required
-                                    fullWidth
-                                    id="address"
-                                    label="Quick Search"
-                                    name="address"
-                                    variant="outlined"
-                                    InputProps={{ style: { color: '#02452d' } }}
-                                    InputLabelProps={{ style: { color: '#02452d' } }}
-                                    />
-                                    </StandaloneSearchBox>
-                                </LoadScript>
-                            </Grid> */}
 
                             {/* Buttons Page 2*/}
                             <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
@@ -650,7 +649,7 @@ export default function Register() {
                                   <StandaloneSearchBox
                                     onLoad={(ref) => (inputRef.current = ref)}
                                     onPlacesChanged={handlePlaceChanged}
-                                    options={{ componentRestrictions: { country: ['PH'] } }}
+                                    
                                   >
                                     <TextField
                                       required
@@ -707,8 +706,8 @@ export default function Register() {
                                         required
                                         fullWidth
                                         id="city_municipality"
-                                        value={provinceMunicipality} 
-                                        onChange={(e) => setProvinceMunicipality(e.target.value)}
+                                        value={cityOrMunicipality} 
+                                        onChange={(e) => setCityOrMunicipality(e.target.value)}
                                         label="City/Municipality"
                                         name="city_municipality"
                                         variant="outlined"

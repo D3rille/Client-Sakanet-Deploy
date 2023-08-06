@@ -119,7 +119,7 @@ export default function Login() {
         },
         // Display error
         onError(err){
-            console.log(err.graphQLErrors[0].message);
+            // console.log(err.graphQLErrors[0].message);
             toast.error(err.graphQLErrors[0].message);
             // setErrors(err);
             
@@ -151,7 +151,8 @@ export default function Login() {
     logUser();
   }
 
-return (
+
+  return (
     <>
       <Toaster/>
         <div
@@ -317,7 +318,9 @@ return (
         </Box>
         </div>
     </>
-    );
+  );
+
+}
   
  
-}
+

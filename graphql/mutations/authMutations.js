@@ -9,10 +9,16 @@ export const REGISTER_USER = gql`
     token
     username
     date_joined
-    role
-    isLoggedIn
     account_mobile
     account_email
+    role
+    address {
+      street
+      barangay
+      cityOrMunicipality
+      province
+      region
+    }
   }
 }
  `;
