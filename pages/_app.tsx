@@ -30,7 +30,7 @@ export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   // Define an array of page paths where you want to exclude the Layout
-  const excludedPages = ['/login', '/register'];
+  const excludedPages = ['/login', '/register','/testUpload','/testDelete'];
 
   // Check if the current page is in the excludedPages array
   const excludeLayout = excludedPages.includes(router.pathname);

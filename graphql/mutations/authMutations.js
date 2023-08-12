@@ -36,3 +36,11 @@ export const REGISTER_USER = gql`
   }
 }
  `;
+
+
+
+export const UPLOAD_PROFILE_PIC = gql`
+  mutation UploadProfilePic($profile_pic: String!) {
+    updateProfilePic(profile_pic: $profile_pic)
+  }
+`;
