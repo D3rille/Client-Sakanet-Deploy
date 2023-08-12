@@ -142,7 +142,7 @@ const Navbar = () => {
         <List>
           {['Edit Profile', 'Change Password', 'Logout'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick = {(text=="Logout")?logout:null}>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
