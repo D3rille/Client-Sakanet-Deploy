@@ -1,36 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
-import {useQuery, useMutation} from '@apollo/client';
-import Logo from '../../public/images/LOGO-FINAL.png';
-import message from '../../public/icons/MessagesIcon.svg';
-import notif from '../../public/icons/NotificationsIcon.svg';
-import drop from '../../public/icons/DropdownIcon.svg';
+import {useMutation} from '@apollo/client';
 import groupicon from '../../public/images/Screenshot 2023-07-23 102237.png';
 import Avatar from '@mui/material/Avatar';
-import Chip from '@mui/material/Chip';
-import Profile from '../../public/images/9fece8c293b6f0a500453f23fddd8f9b.jpg'
 import Typography from '@mui/material/Typography';
-import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
-import { TextField,Card, Button,Link, CircularProgress } from '@mui/material';
-import SmsIcon from '@mui/icons-material/Sms';
-import MenuIcon from '@mui/icons-material/Menu';
-import { styled, useTheme } from '@mui/material/styles';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Box from '@mui/material';
+import { Card, Link, CircularProgress } from '@mui/material';
 import styles from '../../styles/Navbar.module.css';
 import { AuthContext } from '@/context/auth';
 import Image from "next/image";
 import toast, { Toaster } from 'react-hot-toast';
 
-
+import MyConnectionList from '../../components/myNetwork/MyConnectionList';
+import Requests from '../../components/myNetwork/Requests';
+import SuggestedUsers from '../../components/myNetwork/SuggestedUser';
 import { GET_CONNECTED_USERS, GET_CONNECTION_REQUESTS, GET_SUGGESTED_USERS } from '../../graphql/queries/myNetworkQueries';
 import { ACCEPT_CONNECTION, DECLINE_CONNECTION, REQUEST_CONNECTION } from '../../graphql/mutations/MyNetworkMutations';
 import default_profile from "../../public/images/default_profile.jpg";
@@ -68,86 +49,10 @@ const join = [
     {id:4,profile:'https://i.pinimg.com/originals/d3/ac/ca/d3accacfeee6aac91906765b1f4df13d.jpg',name:'Amplaya',background:'https://th.bing.com/th/id/OIP.kiTSqGB1nGLyb9kkpqKu6wHaE8?pid=ImgDet&rs=1'},
 ]
 
-function MyConnectionList(){
-  const {data, loading, error} = useQuery(GET_CONNECTED_USERS);
 
-  if (loading){return (
-  <>
-     <div sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' , width:"100%"}}>
-      <CircularProgress/> 
-    </div>
-  </>);}
-  else if(error){
-    toast.error(error);
-    return(<p>Error Loading Connected Users</p>)
-  }
-  if(data?.getConnectedUsers?.length==0){
-    return (
-      <>
-      <div sx={{textAlign:"center", width:"100%"}}>
-        <p >No Connected Users</p>
-      </div>
-      </>
-    
-    )
-  }
-  return(
-    <>
-    {
-      data && data?.getConnectedUsers?.map((user) =>(
-        <div key={user._id} className={styles.list}>
-          <div className={styles.profilename}>
-          <div>
-            <Avatar sx={{width:'30'}} alt="Travis Howard" src={user.profile_pic} />
-            {/* <Avatar sx={{ width: '30', height: 'auto'}} alt={user.username}>
-                <Image src={default_profile} alt={user.username} width={30} height={30}/>
-            </Avatar> */}
-          </div>
-          <div className={styles.details}>
-            <h2>{user.username}</h2>
-            <p className={styles.title}>{formatWideAddress(user.address)}</p>
-          </div>
-          </div>
-          <div className={styles.messageactions}>
-            <Button className={styles.messageactionsBtn}>
-              <SmsIcon sx={{fontSize:'15px'}}/><p>Message</p>
-            </Button>
-          </div>
-        </div>
-        
-      ))
-    }
-   
-    </>
-  );
-}
-
-function Requests(){
-  
-  const {data, loading, error} = useQuery(GET_CONNECTION_REQUESTS);
-
-  if (loading){return (
-    <>
-       <div sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' , width:"100%"}}>
-        <CircularProgress/> 
-      </div>
-    </>);}
-    else if(error){
-      toast.error(error);
-      return(<p>Error Loading Connection Requests</p>)
-    }
-    if(data?.getConnectionRequests?.length==0){
-      return (
-        <>
-        <div sx={{textAlign:"center", width:"100%"}}>
-          <p >No Connection Requests</p>
-        </div>
-        </>
-      
-      )
-    }
-
-    // Accept Mutation
+export default function MyNetwork(){
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+    // Accept Connection
     const [acceptConnection, {data:acceptMutationData}] = useMutation(ACCEPT_CONNECTION,{
       refetchQueries:[
         GET_CONNECTED_USERS, GET_CONNECTION_REQUESTS
@@ -159,7 +64,7 @@ function Requests(){
         toast.success(acceptMutationData.acceptConnection.message);
       }
     });
-
+    // Decline Request
     const [declineConnection, {data:declineMutationData}] = useMutation(DECLINE_CONNECTION,{
       refetchQueries:[
         GET_CONNECTED_USERS, GET_CONNECTION_REQUESTS
@@ -171,104 +76,17 @@ function Requests(){
         toast(declineMutationData.declineConnection.message);
       }
     });
-    return(
-      <>
-      {data && data?.getConnectionRequests?.map((request) =>(
-        <div key={request.requesterId} className={styles.cardprofile}>
-        <Card elevation={2} sx={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'10px',height:'155px',width:'150px',border:'none'}}>
-          <div style={{border:'2px solid green',padding:'5px',borderRadius:'50%'}}>
-            <Avatar alt={request.requesterName} src={request.profile_pic} size="lg" />
-            {/* <Avatar sx={{ width: '30', height: 'auto'}} alt={data.name} size="lg">
-                <Image src={data.profile} alt={data.name} width={30} height={30}/>
-            </Avatar> */}
-          </div>
-        <div style={{margin:'5px', textAlign:"center"}}>
-        <h2 style={{fontSize:'12px'}}>{request.requesterName}</h2>
-        <p style={{fontSize:'12px'}}>{formatWideAddress(request.address)}</p>
-        </div>
-        <div style={{display:'flex'}}>
-          <button className={styles.acceptbtn} onClick={()=>{acceptConnection({variables:{"requester":request.requesterId}})}}>
-            Accept
-          </button>
-          <button className={styles.xbtn} onClick={()=>{declineConnection({variables:{"requester":request.requesterId}})}}>
-            X
-          </button>
-        </div>
-        </Card>
-        </div>
-    ))}
-     
-      </>
-    );
-}
 
-function SuggestedUser(){
-  const {data, error, loading} = useQuery(GET_SUGGESTED_USERS);
-  const [requestConnection, {data:requestConnectionData}] = useMutation(REQUEST_CONNECTION,{
-    refetchQueries:[GET_SUGGESTED_USERS],
-    onError:(err)=>{
-      toast.error(err.graphQLErrors[0].message);
-    },
-    onCompleted:(requestConnectionData)=>{
-      toast.success(requestConnectionData.requestConnection.message);
-    }
-  });
-
-  if (loading){return (
-    <>
-       <div sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' , width:"100%"}}>
-        <CircularProgress/> 
-      </div>
-    </>);}
-    else if(error){
-      toast.error(error);
-      return(<p>Error Loading Connected Users</p>)
-    }
-    if(data?.getSuggestedUsers?.length==0){
-      return (
-        <>
-        <div sx={{textAlign:"center", width:"100%"}}>
-          <p >No Suggested Users</p>
-        </div>
-        </>
-      
-      )
-    }
-
-
-    return(
-      <>
-      {data && data?.getSuggestedUsers?.map((user) =>(
-        <div key={user._id} className={styles.cardprofile}>
-          <Card elevation={2} sx={{display:'flex',flexDirection:'column',alignItems:'center',height:'170px',width:'170px',border:'none'}}>
-          <div className={styles.backgroundimg} style={{backgroundImage:`url("https://greenamerica.org/sites/default/files/pieces/istockag2.jpg")`}}>
-            <div className={styles.circular} style={{padding:'5px',borderRadius:'50%',position:'relative'}}>
-            <Avatar alt={user.username} src={user.profile_pic} size="lg" />
-                  {/* <Avatar sx={{ width: '30', height: 'auto'}} alt={data.name} size="lg">
-                      <Image src={data.profile} alt={data.name} width={30} height={30}/>
-                  </Avatar> */}
-            </div>
-          </div>
-            <div style={{margin:'5px', textAlign:"center"}}>
-            <h2 style={{fontSize:'12px'}}>{user.username}</h2>
-            <p style={{fontSize:'12px'}}>{formatWideAddress(user.address)}</p>
-            </div>
-            <div style={{display:'flex'}}>
-              <button className={styles.acceptbtn} onClick={()=>{requestConnection({variables:{"connectTo":user._id}})}}>
-                Connect</button>
-            </div>
-          </Card>
-          </div>
-          
-        ))
+    // Request Connection
+    const [requestConnection, {data:requestConnectionData}] = useMutation(REQUEST_CONNECTION,{
+      refetchQueries:[GET_SUGGESTED_USERS],
+      onError:(err)=>{
+        toast.error(err.graphQLErrors[0].message);
+      },
+      onCompleted:(requestConnectionData)=>{
+        toast.success(requestConnectionData.requestConnection.message);
       }
-     
-      </>
-    );
-}
-
-export default function MyNetwork(){
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+    });
 
     useEffect(() => {
       const handleResize = () => {
@@ -294,30 +112,7 @@ export default function MyNetwork(){
       )
     })
 
-    // const suggest = Suggestions.map((data) =>{
-    //   return(
-    //     <div key={data.id} className={styles.cardprofile}>
-    //     <Card elevation={2} sx={{display:'flex',flexDirection:'column',alignItems:'center',height:'170px',width:'170px',border:'none'}}>
-    //     <div className={styles.backgroundimg} style={{backgroundImage:`url(${data.background})`}}>
-    //       <div className={styles.circular} style={{padding:'5px',borderRadius:'50%',position:'relative'}}>
-    //       <Avatar alt="Remy Sharp" src={data.profile} size="lg" />
-    //             {/* <Avatar sx={{ width: '30', height: 'auto'}} alt={data.name} size="lg">
-    //                 <Image src={data.profile} alt={data.name} width={30} height={30}/>
-    //             </Avatar> */}
-    //       </div>
-    //     </div>
-    //       <div style={{margin:'5px'}}>
-    //       <h2 style={{fontSize:'12px'}}>{data.name}</h2>
-    //       <p style={{fontSize:'12px'}}>{data.location}</p>
-    //       </div>
-    //       <div style={{display:'flex'}}>
-    //         <button className={styles.acceptbtn}>
-    //           Connect</button>
-    //       </div>
-    //     </Card>
-    //     </div>
-    //   )
-    // })
+
     const joinlist = join.map((data) =>{
       return(
         <div key={data.id} className={styles.cardprofile}>
@@ -399,7 +194,7 @@ export default function MyNetwork(){
                   <Link sx={{color:'black',fontSize:'12px'}}>View all</Link>
                 </div>
                 <div className={styles.requestlist}>
-                  <Requests/>
+                  <Requests acceptConnection={acceptConnection} declineConnection={declineConnection}/>
                 </div>
               </Card>
               <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa'}}>
@@ -408,7 +203,7 @@ export default function MyNetwork(){
                   <Link sx={{color:'black',fontSize:'12px'}}>View all</Link>
                 </div>
                 <div className={styles.requestlist}>
-                  <SuggestedUser/>
+                  <SuggestedUsers requestConnection={requestConnection}/>
                 </div>
               </Card>
               <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa'}}>
