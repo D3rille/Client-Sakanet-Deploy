@@ -102,6 +102,8 @@
 .containerlist{
     width: 100%;
     margin: 0;
+    overflow-y:scroll;/*Used to make element scroll vertically*/
+    max-height: 400px;/*Used to make element scroll vertically*/
 }
 .list{
     display: flex;
