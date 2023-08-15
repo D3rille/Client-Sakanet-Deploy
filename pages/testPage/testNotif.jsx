@@ -203,8 +203,6 @@ const NOTIF_SUB = gql`
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
                 const newNotif = subscriptionData.data.newNotification;
-                // console.log("Prev: " );
-                // console.log(prev);
                 
                 return Object.assign({}, prev, {
                   getNotifications: [newNotif, ...prev.getNotifications]
