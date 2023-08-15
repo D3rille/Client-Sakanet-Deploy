@@ -9,13 +9,13 @@ import Box from "@mui/material/Box";
 import AuthRoute from '@/util/AuthRoute'
 import { useQuery,useMutation, useSubscription } from '@apollo/client';
 import {gql} from '@apollo/client';
-import TestNotif from "../components/testNotifications.jsx";
+import TestNotif from "../../components/testNotifications.jsx";
 import { AuthContext } from '@/context/auth';
 import {useState, useContext, forwardRef , useRef } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+export default function testNotif() {
   const {user} = useContext(AuthContext);
 
 
@@ -73,9 +73,9 @@ const NOTIF_SUB = gql`
     }
   }
 `;
-  // const { subscribeToMore, data:notifData} = useQuery(
-  //   GET_NOTIFICATIONS,
-  // );
+  const { subscribeToMore, data:notifData} = useQuery(
+    GET_NOTIFICATIONS,
+  );
 
 
   const [post, setBody]= useState("Add post body here");
@@ -195,7 +195,7 @@ const NOTIF_SUB = gql`
         
       </Box> */}
       
-      {/* <TestNotif notifData ={notifData}
+      <TestNotif notifData ={notifData}
           subscribeToMoreNotif={() =>
             subscribeToMore({
               document: NOTIF_SUB,
@@ -213,7 +213,7 @@ const NOTIF_SUB = gql`
               }
             })
           }
-        /> */}
+        />
 
 
       </div>
