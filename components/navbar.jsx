@@ -25,6 +25,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import styles from '../styles/Navbar.module.css';
+import { useRouter } from 'next/router';
 import { AuthContext } from '@/context/auth';
 import Image from "next/image";
 
@@ -47,6 +48,12 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const router = useRouter();
+
+  const isActiveTab = (path) => {
+    return router.pathname === path;
+  };
 
   const handleClick = (event) => {
   setAnchorEl(event.currentTarget);
@@ -200,18 +207,18 @@ const Navbar = () => {
             />
           </div>
           <div className={styles.tabs}>
-            <ul>
-              <li className={activeTab === 0 ? styles.active : ''} onClick={() => handleTabClick(0)}>
-                Products
-              </li>
-              <li className={activeTab === 1 ? styles.active : ''} onClick={() => handleTabClick(1)}>
-                Home
-              </li>
-              <li className={activeTab === 2 ? styles.active : ''} onClick={() => handleTabClick(2)}>
-                My Network
-              </li>
-            </ul>
-          </div>
+          <ul>
+            <li style={isActiveTab('/Products') ? { cursor: 'pointer', backgroundColor: '#2F613A', color: 'white' } : { cursor: 'pointer' }} onClick={() => router.push('/Products')}>
+              Products
+            </li>
+            <li style={isActiveTab('/') ? { cursor: 'pointer', backgroundColor: '#2F613A', color: 'white' } : { cursor: 'pointer' }} onClick={() => router.push('/')}>
+              Home
+            </li>
+            <li style={isActiveTab('/myNetwork') ? { cursor: 'pointer', backgroundColor: '#2F613A', color: 'white' } : { cursor: 'pointer' }} onClick={() => router.push('/myNetwork')}>
+              My Network
+            </li>
+          </ul>
+        </div>
           <div className={styles.components}>
             <div className={styles.username}>
               {/* <Chip
@@ -224,16 +231,19 @@ const Navbar = () => {
                   Juan Dela Cr...
               </Chip> */}
               {/* <Chip label="Chip Outlined" variant="outlined" /> */}
-              <Chip
-                avatar={
+              <Link href="/myProfile">
+                <a>
+                  <Chip
+                  avatar={
                   <Avatar>
                     <Image src={Logo} alt="Logo" width={40} height={40} />
-                  </Avatar>
-                }
-                label={user?.username ?? "user"}
-                // label = "Username Here"
-                variant="outlined"
-              />
+                    </Avatar>
+                    }
+                    label={user?.username ?? "user"}
+                    variant="outlined"
+                  />
+                  </a>
+                </Link>
             </div>
             <div className={styles.icons}>
               <Avatar
