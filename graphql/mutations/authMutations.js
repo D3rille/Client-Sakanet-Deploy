@@ -44,3 +44,4 @@ export const UPLOAD_PROFILE_PIC = gql`
     updateProfilePic(profile_pic: $profile_pic)
   }
 `;
+
