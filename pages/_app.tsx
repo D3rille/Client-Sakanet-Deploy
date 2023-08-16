@@ -48,15 +48,15 @@ export default function MyApp(props) {
             {excludeLayout ? (
               // Render content without Layout
               <ClientOnly>
-                {/* <AuthRoute component={Component} {...pageProps} /> */}
-                <Component {...pageProps}/>
+                <AuthRoute component={Component} {...pageProps} />
+                {/* <Component {...pageProps}/> */}
               </ClientOnly>
             ) : (
               // Render content with Layout
               <ClientOnly>
                 <Layout>
-                {/* <AuthRoute component={Component} {...pageProps} /> */}
-                <Component {...pageProps}/>
+                <AuthRoute component={Component} {...pageProps} />
+                {/* <Component {...pageProps}/> */}
                 </Layout>
               </ClientOnly>
             )}
