@@ -14,6 +14,8 @@
     padding: 5px;
     display: flex;
     background-color: white;
+    position: fixed;
+    z-index: 99999;
 }
 .logosearchbar{
     width: 35%;
@@ -68,7 +70,7 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    padding-right: 20px;
+    margin-left: 40px;
 }
 
 .content{
@@ -102,8 +104,6 @@
 .containerlist{
     width: 100%;
     margin: 0;
-    overflow-y:scroll;/*Used to make element scroll vertically*/
-    max-height: 400px;/*Used to make element scroll vertically*/
 }
 .list{
     display: flex;
@@ -137,7 +137,7 @@
     align-items: center;
 }
 .messageactions .messageactionsBtn{
-    background-color: rgba(0, 128, 96, 0.575);
+    background-color: #07986f;
     color: white;
     cursor: pointer;
     height: 20px;
@@ -196,7 +196,7 @@
 }
 .acceptbtn{
     width: 80px;
-    background-color: #619787;
+    background-color: #07986f;
     border: none;
     border-radius: 2px;
     color: white;
@@ -346,7 +346,7 @@
 
     }
     .messageactions .messageactionsBtn{
-        background-color: #619787;
+        background-color: #07986f;
         color: white;
         cursor: pointer;
         width: max-content;
@@ -466,7 +466,7 @@
 
     }
     .messageactions .messageactionsBtn{
-        background-color: rgba(0, 128, 96, 0.575);
+        background-color: #07986f;
         color: white;
         cursor: pointer;
         width: max-content;
@@ -589,7 +589,7 @@
 
     }
     .messageactions .messageactionsBtn{
-        background-color: rgba(0, 128, 96, 0.575);
+        background-color: #07986f;
         color: white;
         cursor: pointer;
         width: max-content;
@@ -716,7 +716,7 @@
 
     }
     .messageactions .messageactionsBtn{
-        background-color: rgba(0, 128, 96, 0.575);
+        background-color: #07986f;
         color: white;
         cursor: pointer;
         width: max-content;
@@ -772,7 +772,7 @@
 
     }
     .messageactions .messageactionsBtn{
-        background-color: rgba(0, 128, 96, 0.575);
+        background-color: #07986f;
         color: white;
         cursor: pointer;
         width: max-content;

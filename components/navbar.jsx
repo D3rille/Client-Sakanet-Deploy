@@ -3,9 +3,10 @@ import Logo from '../public/images/LOGO-FINAL.png';
 import message from '../public/icons/MessagesIcon.svg';
 import notif from '../public/icons/NotificationsIcon.svg';
 import drop from '../public/icons/DropdownIcon.svg';
-import groupicon from '../public/images/Screenshot 2023-07-23 102237.png';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Profile from '../public/images/9fece8c293b6f0a500453f23fddd8f9b.jpg'
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -37,12 +38,23 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const Navbar = () => {
 
+  const Dropdown = ["Orders", "Settings", "Logout"];
   const {user,logout} = useContext(AuthContext);
   const drawerWidth = 240;
   const [activeTab, setActiveTab] = useState(0);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+  setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+  setAnchorEl(null);
+  };
 
   const handleTabClick = (index) => {
     setActiveTab(index);
@@ -142,7 +154,7 @@ const Navbar = () => {
         <List>
           {['Edit Profile', 'Change Password', 'Logout'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton onClick = {(text=="Logout")?logout:null}>
+              <ListItemButton>
                 <ListItemText primary={text} />
               </ListItemButton>
             </ListItem>
@@ -251,9 +263,48 @@ const Navbar = () => {
                   '& img': { width: 'auto', height: 'auto' }
                 }}
                 alt="Drop"
+                onClick={handleClick}
               >
                 <Image src={drop} alt="Travis Howard" width={40} height={40} />
               </Avatar>
+              <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              PaperProps={{
+                elevation: 0,
+                sx: {
+                  overflow: 'visible',
+                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',mt: 1.5,
+                  '& .MuiAvatar-root': {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                  '&:before': {
+                    content: '""',
+                    display: 'block',
+                    position: 'absolute',
+                    top: 0,
+                    right: 14,
+                    width: 10,
+                    height: 10,
+                    bgcolor: 'background.paper',
+                    transform: 'translateY(-50%) rotate(45deg)',
+                    zIndex: 0,
+                  },
+                },
+              }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                {Dropdown.map((item, index) => (
+                <MenuItem key={index} onClick={handleClose}>
+                  {item}
+                  </MenuItem>
+                  ))}
+                  </Menu>
             </div>
           </div>
         </Card>
