@@ -7,6 +7,8 @@ export const GET_MY_PROFILE = gql`
     profile_pic
     cover_photo
     username
+    account_email
+    account_mobile
     address {
       street
       barangay

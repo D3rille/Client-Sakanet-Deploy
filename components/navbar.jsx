@@ -127,7 +127,7 @@ const Navbar = () => {
 
   const { profile_pic} = data.getMyProfile;
 
-  const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
+  // const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
 
   return (
     <>
@@ -179,7 +179,7 @@ const Navbar = () => {
             </ListItemButton>
         </ListItem>
     ))}
-</List>
+  </List>
 
       </Drawer>
       <div key="element1" className={styles.header}>
@@ -245,19 +245,16 @@ const Navbar = () => {
                   Juan Dela Cr...
               </Chip> */}
               {/* <Chip label="Chip Outlined" variant="outlined" /> */}
-              <Link href="/myProfile">
-                <a>
-                  <Chip
-                  avatar={
-                  <Avatar>
-                    <img src={activeProfilePic} alt="Logo" width={40} height={40} />
-                    </Avatar>
-                    }
-                    label={user?.username ?? "user"}
-                    variant="outlined"
-                  />
-                  </a>
-                </Link>
+
+                <Chip
+                avatar={
+                <Avatar src={profile_pic} />
+                  }
+                  onClick={()=>{router.push('/myProfile')}}
+                  label={user?.username ?? "user"}
+                  variant="outlined"
+                />
+
             </div>
             <div className={styles.icons}>
               <Avatar

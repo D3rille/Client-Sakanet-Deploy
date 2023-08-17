@@ -18,7 +18,7 @@ import Head from 'next/head';
 import Image from "next/image";
 import { GET_MY_PROFILE } from '../../graphql/queries/userProfileQueries';
 import { useQuery } from '@apollo/client';
-
+import {formatWideAddress} from '../../util/addresssUtils.js';
 export default function MyProfile(){
     
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -31,13 +31,6 @@ export default function MyProfile(){
 
     const [isFocused, setIsFocused] = useState(false);
 
-    const ratingsData = {
-        5: 120,
-        4: 80,
-        3: 50,
-        2: 20,
-        1: 10,
-      };
 
     useEffect(() => {
         const handleResize = () => {
@@ -51,14 +44,23 @@ export default function MyProfile(){
         };
       }, []);
 
- const { loading, error, data } = useQuery(GET_MY_PROFILE);
+    const { loading, error, data } = useQuery(GET_MY_PROFILE);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error.message}</p>;
 
-  const { profile_pic, username, address, is_verified, role, rating, ratingStatistics } = data.getMyProfile;
+    const { profile_pic, username, address, is_verified, role, rating, ratingStatistics, account_mobile, account_email } = data.getMyProfile;
 
-  const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
+    const ratingsData = {
+        5: ratingStatistics.oneStar ?? 0,
+        4: ratingStatistics.twoStar ?? 0,
+        3: ratingStatistics.threeStar ?? 0,
+        2: ratingStatistics.fourStar ?? 0,
+        1: ratingStatistics.fiveStar ?? 0,
+    };
+
+
+    const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
 
     return (
         <>
@@ -69,7 +71,8 @@ export default function MyProfile(){
                         <Image className={styles.coverphoto} src={coverPhoto} alt="Cover Photo" />
                     </div>
                     <div className={styles.profileImg}>
-                        <img className={styles.profilephoto} src={activeProfilePic} alt="Profile Photo" />
+                        <Avatar src={profile_pic} className={styles.profilephoto}/>
+                        {/* <img className={styles.profilephoto} src={activeProfilePic} alt="Profile Photo" /> */}
                     </div>
                     <div className={styles.username}>
                         {username}
@@ -110,16 +113,20 @@ export default function MyProfile(){
                             </div>
                             <div className={styles.locationtitle}>
                                 <Image sx={{width:'10px',height:'15px',}} src ={locationIcon} alt = "Location" width={20} height={25}/>
-                                <p className={styles.infoContent}>{address.street} {address.barangay} {address.cityOrMunicipality} {address.province}, {address.region}</p>
+                                <p className={styles.infoContent}>{formatWideAddress(address)}</p>
                             </div>
-                            <div className={styles.contacttitle}>
-                                <Image sx={{width:'10px',height:'15px',}} src ={contactIcon} alt = "Contact Number" width={20} height={25}/>
-                                <p className={styles.infoContent}>09859403059</p>
-                            </div>
-                            <div className={styles.emailtitle}>
-                                <Image sx={{width:'10px',height:'15px',}} src ={emailIcon} alt = "Email Address" width={20} height={25}/>
-                                <p className={styles.infoContent}>juandcruz@email.com</p>
-                            </div>
+                            {account_mobile && <>
+                                <div className={styles.contacttitle}>
+                                    <Image sx={{width:'10px',height:'15px',}} src ={contactIcon} alt = "Contact Number" width={20} height={25}/>
+                                    <p className={styles.infoContent}>{account_mobile}</p>
+                                </div>
+                            </>}
+                            {account_email && <>
+                                <div className={styles.emailtitle}>
+                                    <Image sx={{width:'10px',height:'15px',}} src ={emailIcon} alt = "Email Address" width={20} height={25}/>
+                                    <p className={styles.infoContent}>{account_email}</p>
+                                </div>
+                            </>}
                         </Card>
                         <Card className={styles.ratingsChart} sx={{width:'100%',
                         height:'max-Content',
@@ -211,7 +218,7 @@ export default function MyProfile(){
                                             </IconButton>
                                         </div>
                                         <Link href="">
-                                            <a className={styles.comment}>Comments</a>
+                                           Comments
                                         </Link>
                                     </div>
                                 </div>
@@ -244,7 +251,7 @@ export default function MyProfile(){
                                             </IconButton>
                                         </div>
                                         <Link href="">
-                                            <a className={styles.comment}>Comments</a>
+                                           Comments
                                         </Link>
                                     </div>
                                 </div>
@@ -277,7 +284,7 @@ export default function MyProfile(){
                                             </IconButton>
                                         </div>
                                         <Link href="">
-                                            <a className={styles.comment}>Comments</a>
+                                           Comments
                                         </Link>
                                     </div>
                                 </div>
@@ -310,7 +317,7 @@ export default function MyProfile(){
                                             </IconButton>
                                         </div>
                                         <Link href="">
-                                            <a className={styles.comment}>Comments</a>
+                                           Comments
                                         </Link>
                                     </div>
                                 </div>

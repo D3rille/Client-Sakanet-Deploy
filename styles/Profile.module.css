@@ -51,9 +51,9 @@
     border-radius: 50%;
 }
 .username{
-    text-align: center;
+    text-align: start;
     width: 100%;
-    position: absolute;
+    /* position: absolute; */
     right: 13rem;
     bottom: -3.5rem;
     font-size: 1.8rem;

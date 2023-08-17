@@ -139,11 +139,11 @@ export default function MyNetwork(){
   
   return (
     <>
-      <Toaster/>
+      
       <div key='element1' className={styles.header}>
         <div key='element2' className={styles.content}>
             <div key='element3' className={styles.content1}>
-            <Card sx={{width:'100%',height:'max-Content',borderRadius:'20px',padding:'15px 0px 10px 20px'}}>
+            <Card sx={{width:'100%',height:"100%",maxheight:'500px', minWidth:"300px",borderRadius:'20px',padding:'15px 0px 10px 20px'}}>
                 <div className={styles.contentheader}>
                   <Typography sx={{fontSize:'15px'}}>Manage my network</Typography>
                 </div>
