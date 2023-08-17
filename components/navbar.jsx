@@ -28,6 +28,10 @@ import styles from '../styles/Navbar.module.css';
 import { useRouter } from 'next/router';
 import { AuthContext } from '@/context/auth';
 import Image from "next/image";
+import { GET_MY_PROFILE } from '../graphql/queries/userProfileQueries';
+import { useQuery } from '@apollo/client';
+
+ 
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -116,6 +120,15 @@ const Navbar = () => {
 
   const cardStyle = getResponsiveCardStyle();
 
+  const { loading, error, data } = useQuery(GET_MY_PROFILE);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const { profile_pic} = data.getMyProfile;
+
+  const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
+
   return (
     <>
       <Drawer
@@ -159,14 +172,15 @@ const Navbar = () => {
         </List>
         <Divider />
         <List>
-          {['Edit Profile', 'Change Password', 'Logout'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
+    {['Edit Profile', 'Change Password', 'Logout'].map((text, index) => (
+        <ListItem key={text} disablePadding>
+            <ListItemButton onClick={text === 'Logout' ? logout : null}>
                 <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+            </ListItemButton>
+        </ListItem>
+    ))}
+</List>
+
       </Drawer>
       <div key="element1" className={styles.header}>
         <Card className={styles.navsection} style={cardStyle} elevation={3}>
@@ -236,7 +250,7 @@ const Navbar = () => {
                   <Chip
                   avatar={
                   <Avatar>
-                    <Image src={Logo} alt="Logo" width={40} height={40} />
+                    <img src={activeProfilePic} alt="Logo" width={40} height={40} />
                     </Avatar>
                     }
                     label={user?.username ?? "user"}

@@ -16,6 +16,8 @@ import samplePost from '../../public/images/samplepost.jpg'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import Head from 'next/head';
 import Image from "next/image";
+import { GET_MY_PROFILE } from '../../graphql/queries/userProfileQueries';
+import { useQuery } from '@apollo/client';
 
 export default function MyProfile(){
     
@@ -49,6 +51,15 @@ export default function MyProfile(){
         };
       }, []);
 
+ const { loading, error, data } = useQuery(GET_MY_PROFILE);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const { profile_pic, username, address, is_verified, role, rating, ratingStatistics } = data.getMyProfile;
+
+  const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
+
     return (
         <>
         <div key='profile' className={styles.mainProfile}>
@@ -58,13 +69,13 @@ export default function MyProfile(){
                         <Image className={styles.coverphoto} src={coverPhoto} alt="Cover Photo" />
                     </div>
                     <div className={styles.profileImg}>
-                        <Image className={styles.profilephoto} src={profilePhoto} alt="Profile Photo" />
+                        <img className={styles.profilephoto} src={activeProfilePic} alt="Profile Photo" />
                     </div>
                     <div className={styles.username}>
-                        Juan Dela Cruz
+                        {username}
                     </div>
                     <div className={styles.userJob}>
-                        Quezon Local Farmer
+                        {role}
                     </div>
                 </div>
                 <Divider textAlign="right" component="div" role="presentation" className={styles.numConnections}>
@@ -99,7 +110,7 @@ export default function MyProfile(){
                             </div>
                             <div className={styles.locationtitle}>
                                 <Image sx={{width:'10px',height:'15px',}} src ={locationIcon} alt = "Location" width={20} height={25}/>
-                                <p className={styles.infoContent}>Lucena City, Quezon</p>
+                                <p className={styles.infoContent}>{address.street} {address.barangay} {address.cityOrMunicipality} {address.province}, {address.region}</p>
                             </div>
                             <div className={styles.contacttitle}>
                                 <Image sx={{width:'10px',height:'15px',}} src ={contactIcon} alt = "Contact Number" width={20} height={25}/>
