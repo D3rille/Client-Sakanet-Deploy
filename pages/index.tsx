@@ -1,5 +1,6 @@
 //@ts-nocheck
 import Head from 'next/head';
+import { useRouter } from 'next/router.js';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
@@ -17,6 +18,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   const {user} = useContext(AuthContext);
+  const router = useRouter();
 
 
   const CREATE_POST = gql`
@@ -104,6 +106,8 @@ const NOTIF_SUB = gql`
     }
   });
 
+  const variable = "testDynamic"
+
   // function executePost(){
   //   execute();
   // }
@@ -163,8 +167,27 @@ const NOTIF_SUB = gql`
         >
           Post
         </Button>
+        <Button
+      onClick={()=>{
+        router.push(`/testPage/${variable}`);
+      }}
+      sx={{
+        mt: "15px",
+        mr: "20px",
+        borderRadius: 28,
+        color: "#ffffff",
+        minWidth: "170px",
+        backgroundColor: "#02452d",
+        '&:hover': {
+            backgroundColor: '#FF9A01',
+        },
+        }}
+      >
+        To Dynamic Page
+      </Button>
 
       </Box>
+
       <Box sx={{color:"black",  width:"50%",margin:"auto"}}>
         <h1>Posts</h1>
         {data && data.createPost && (
