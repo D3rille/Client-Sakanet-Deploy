@@ -320,12 +320,16 @@ const Navbar = () => {
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                {Dropdown.map((item, index) => (
-                <MenuItem key={index} onClick={handleClose}>
-                  {item}
-                  </MenuItem>
-                  ))}
-                  </Menu>
+                <MenuItem onClick={handleClose}>
+                  Orders
+                </MenuItem>
+                <MenuItem onClick={handleClose}>
+                  Orders
+                </MenuItem>
+                <MenuItem onClick={logout}>
+                  Logout
+                </MenuItem>
+                </Menu>
             </div>
           </div>
         </Card>
