@@ -5,6 +5,7 @@ import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/auth';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Toaster } from 'react-hot-toast';
+import {NotificationProvider} from '../context/notificationContext'
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,8 +18,10 @@ export default function Layout({ children }: LayoutProps) {
     return (
       <>
         <Toaster/>
+        <NotificationProvider>
         <Navbar />
         <main>{children}</main>
+        </NotificationProvider>
       </>
     );
   } else{

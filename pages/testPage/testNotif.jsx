@@ -12,70 +12,28 @@ import {gql} from '@apollo/client';
 import TestNotif from "../../components/testNotifications.jsx";
 import { AuthContext } from '@/context/auth';
 import {useState, useContext, forwardRef , useRef } from 'react';
+import { CREATE_POST, GET_NOTIFICATIONS, NOTIF_SUB } from '../../graphql/subscriptions/notificationSub.js';
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function testNotif() {
   const {user} = useContext(AuthContext);
 
+  // const POST_SUB = gql`
+  //   subscription NewPost {
+  //     newPost {
+  //       id
+  //       body
+  //       createdAt
+  //       author
+  //       username
+  //     }
+  // }
+  // `;
 
-  const CREATE_POST = gql`
-    mutation CreatePost($body: String!) {
-      createPost(body: $body) {
-        id
-        body
-        createdAt
-        author
-        username
-      }
-    }
-    `;
-
-  const POST_SUB = gql`
-    subscription NewPost {
-      newPost {
-        id
-        body
-        createdAt
-        author
-        username
-      }
-  }
-  `;
-
-
-const GET_NOTIFICATIONS = gql`
-  query GetNotifications {
-    getNotifications {
-      _id
-      receiverId
-      from
-      photo
-      type
-      message
-      createdAt
-      read
-    }
-  }
-  `;
-
-const NOTIF_SUB = gql`
-  subscription NewNotification($receiverId: String) {
-    newNotification(receiverId: $receiverId) {
-      _id
-      receiverId
-      photo
-      from
-      type
-      message
-      createdAt
-      read
-    }
-  }
-`;
-  const { subscribeToMore, data:notifData} = useQuery(
-    GET_NOTIFICATIONS,
-  );
+  // const { subscribeToMore, data:notifData} = useQuery(
+  //   GET_NOTIFICATIONS,
+  // );
 
 
   const [post, setBody]= useState("Add post body here");
@@ -195,22 +153,7 @@ const NOTIF_SUB = gql`
         
       </Box> */}
       
-      <TestNotif notifData ={notifData}
-          subscribeToMoreNotif={() =>
-            subscribeToMore({
-              document: NOTIF_SUB,
-              variables: { receiverId:user.id },
-              updateQuery: (prev, { subscriptionData }) => {
-                if (!subscriptionData.data) return prev;
-                const newNotif = subscriptionData.data.newNotification;
-                return Object.assign({}, prev, {
-                  getNotifications: [newNotif, ...prev.getNotifications]
-                
-                });
-              }
-            })
-          }
-        />
+      <TestNotif />
 
 
       </div>

@@ -1,12 +1,16 @@
 import {useQuery} from "@apollo/client";
 import {useEffect} from 'react';
 import Box from "@mui/material/Box";
-function TestNotifs ({subscribeToMoreNotif, notifData}){
+import {useNotification} from "../context/notificationContext"
+
+function TestNotifs (){
+    const { notifData, subscribeToMoreNotif } = useNotification();
+
     useEffect(()=>subscribeToMoreNotif(),[])
     // console.log("In TestNotif");
     // console.log(notifData);
-    if(!notifData || notifData == []){
-        return(<p>No Notifications</p>);
+    if(!notifData || notifData == [] || notifData.length === 0){
+        return(<p>No Notifications<br></br></p>);
     }
     return (
         <Box sx={{width:"50%", margin:"auto"}}>
