@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useState } from "react";
 import {
   Grid,
@@ -12,9 +13,17 @@ import {
   Checkbox,
   FormGroup,
   Button,
+  Select,
+  MenuItem,
   InputAdornment,
   IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,13 +31,49 @@ import styles from "../../styles/availableProducts.module.css";
 import ProductGrid from "../../components/ProductGrid";
 import { DatePicker } from "@mui/x-date-pickers";
 import Pagination from "@mui/material/Pagination";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useRouter } from "next/router";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 export default function Products() {
-  const [sortBy, setSortBy] = useState("");
-  const [priceRange, setPriceRange] = useState([20, 80]);
+  const [showInput, setShowInput] = useState(false);
+  const [locationList, setLocationList] = useState([]);
+  const [currentLocation, setCurrentLocation] = useState("");
+
+  const handleAddLocation = () => {
+    setLocationList((prevList) => [...prevList, currentLocation]);
+    setCurrentLocation(""); 
+  };
+
+  const handleRemoveLocation = (index) => {
+    const newLocations = [...locationList];
+    newLocations.splice(index, 1);
+    setLocationList(newLocations);
+  };
+
+  const router = useRouter();
+
+  const goBack = () => {
+    router.push("/Products");
+  };
+
+  const [productsType, setProductsType] = React.useState("order");
+  const [productsSortBy, setProductsSortBy] = React.useState("available");
+  const [sortBy, setSortBy] = React.useState("All");
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   const [otherLocation, setOtherLocation] = useState("");
   const [checkedOther, setCheckedOther] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const handleProductTypeChange = (event, newType) => {
+    setProductsType(newType);
+  };
+
+  const handleSortChange = (event) => {
+    setSortBy(event.target.value);
+  };
 
   const handleChange = (event) => {
     setSortBy(event.target.value);
@@ -44,11 +89,10 @@ export default function Products() {
     setPriceRange(values);
   };
 
-  const handleCheckboxChange = (event) => {
-    if (event.target.name === "Other (Indicate)") {
-      setCheckedOther(event.target.checked);
-    }
+  const handleProductsSortChange = (event) => {
+    setProductsSortBy(event.target.value);
   };
+  
 
   const resetFilters = () => {
     setSortBy("");
@@ -62,16 +106,103 @@ export default function Products() {
     <Grid container className={styles.gridContainer}>
       <Grid item xs={12}>
         <Paper elevation={3} className={styles.paperContainer}>
-          {/* Header Section */}
-          <div className={styles.topRowContainer}>
-            <Typography
-              className={styles.topRowLeft}
-              variant="body1"
-              style={{ marginLeft: "3rem" }}
-            >
-              Filters
-            </Typography>
-          </div>
+        <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "1rem 2rem",
+  }}
+>
+  <IconButton
+    onClick={goBack}
+    sx={{
+      color: "#2F613A",
+      backgroundColor: "transparent",
+      fontSize: "1rem",
+    }}
+  >
+    <ArrowBackIcon /> Go Back
+  </IconButton>
+
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+    }}
+  >
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        borderRadius: "10px",
+        marginRight: "2rem",
+      }}
+    >
+      <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
+        Sort by:
+      </Typography>
+      <Select
+        value={productsSortBy}
+        onChange={handleProductsSortChange}
+        displayEmpty
+        style={{
+          height: "40px",
+          minWidth: "160px",
+          borderRadius: "10px",
+          backgroundColor: "#FEFEFF",
+        }}
+        IconComponent={ArrowDropDownIcon}
+        sx={{
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#2E603A',
+          },
+        }}
+      >
+        <MenuItem value={"available"}>Available Sellers</MenuItem>
+        <MenuItem value={"suggested"}>Suggested Sellers</MenuItem>
+      </Select>
+    </div>
+
+    <ToggleButtonGroup
+      sx={{
+        "& .Mui-selected": {
+          bgcolor: "#C2E7CB",
+        },
+      }}
+      color="primary"
+      value={productsType}
+      exclusive
+      onChange={handleProductTypeChange}
+      aria-label="Product Type"
+    >
+      <ToggleButton
+        value="order"
+        sx={{
+          color: "#2F613A",
+          "&.Mui-selected": {
+            color: "#2F613A",
+          },
+        }}
+      >
+        ORDER
+      </ToggleButton>
+      <ToggleButton
+        value="pre-order"
+        sx={{
+          color: "#2F613A",
+          "&.Mui-selected": {
+            color: "#2F613A",
+          },
+        }}
+      >
+        PRE-ORDER
+      </ToggleButton>
+    </ToggleButtonGroup>
+  </div>
+</div>
+
 
           {/* Content Section */}
           <div
@@ -179,47 +310,25 @@ export default function Products() {
               </div>
               <Divider sx={{ marginBottom: "1rem", marginTop: "1rem" }} />
               <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
-                Location/Area
+                Area Limit
               </Typography>
-              <FormGroup>
-                {[
-                  "Agdangan",
-                  "Alabat",
-                  "Atimonan",
-                  "Calauag",
-                  "Candelara",
-                  "Catanauan",
-                  "Gumaca",
-                  "Infanta",
-                  "Lopez",
-                  "Lucban",
-                  "Lucena City",
-                  "Mauban",
-                  "Padre Burgos",
-                  "Pagbilao",
-                  "Other (Indicate)",
-                ].map((area, index) => (
-                  <FormControlLabel
-                    key={index}
-                    control={
-                      <Checkbox
-                        onChange={handleCheckboxChange}
-                        name={area}
-                        sx={{ "&.Mui-checked": { color: "#2F603B" } }}
-                      />
-                    }
-                    label={area}
-                  />
-                ))}
-                {checkedOther && (
+
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <IconButton
+                  color="primary"
+                  style={{ color: "#2E603A" }}
+                  onClick={() => setShowInput(!showInput)}
+                >
+                  <AddIcon />
+                </IconButton>
+                {showInput && (
                   <TextField
-                    fullWidth
-                    margin="normal"
-                    size="small"
+                    placeholder="Quezon"
                     variant="outlined"
-                    value={otherLocation}
-                    onChange={(e) => setOtherLocation(e.target.value)}
-                    label="Specify other location/area"
+                    size="small"
+                    style={{ marginLeft: "1rem", borderColor: "#2E603A" }}
+                    value={currentLocation}
+                    onChange={(e) => setCurrentLocation(e.target.value)}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         "&:hover fieldset": { borderColor: "#2F603B" },
@@ -228,7 +337,39 @@ export default function Products() {
                     }}
                   />
                 )}
-              </FormGroup>
+              </div>
+
+              <List>
+                {locationList.map((location, index) => (
+                  <ListItem key={index}>
+                    <ListItemIcon>
+                      <IconButton
+                        onClick={() => handleRemoveLocation(index)}
+                        style={{ color: "#2E603A" }}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                    </ListItemIcon>
+                    <ListItemText primary={location} />
+                  </ListItem>
+                ))}
+              </List>
+              {showInput && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    marginTop: "1rem",
+                    marginBottom: "1rem",
+                    backgroundColor: "#2E603A",
+                    width: "100%",
+                  }}
+                  onClick={handleAddLocation}
+                >
+                  Add Location
+                </Button>
+              )}
+
               <Divider sx={{ marginTop: "1rem" }} />
 
               <Typography
@@ -260,7 +401,7 @@ export default function Products() {
                 }}
                 onClick={resetFilters}
               >
-                CLEAR ALL FILTERS
+                SEARCH
               </Button>
             </Paper>
             <div className={styles.parentContainer}>

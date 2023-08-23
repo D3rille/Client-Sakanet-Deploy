@@ -3,8 +3,8 @@
   }
 .paperContainer {
       display: flex;
-      flex-direction: column;  /* Change to column */
-      align-items: stretch;  /* Stretch child elements to fill width */
+      flex-direction: column;  
+      align-items: stretch; 
       background-color: #F9F8F8;
       text-align: center;
       width: 90%;

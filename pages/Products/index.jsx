@@ -18,7 +18,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import styles from "../../styles/products.module.css";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "@mui/material/Pagination";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ProductsToggleButton from "../../components/ProductsToggleButton";
 
 const productData = [
   {
@@ -211,45 +211,12 @@ const ProductsGrid = () => {
 };
 
 export default function Products() {
-  const [sortBy, setSortBy] = useState("");
-
-  const handleSortChange = (event) => {
-    setSortBy(event.target.value);
-  };
 
   return (
     <Grid container className={styles.gridContainer}>
       <Grid item xs={12}>
         <Paper elevation={3} className={styles.paperContainer}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              marginTop: "1rem",
-              borderRadius: "10px",
-              marginRight: "2rem",
-            }}
-          >
-            <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
-              Sort by:
-            </Typography>
-            <Select
-              value={sortBy}
-              onChange={handleSortChange}
-              displayEmpty
-              style={{
-                height: "40px",
-                minWidth: "90px",
-                borderRadius: "10px",
-                backgroundColor: "#FEFEFF",
-              }}
-              IconComponent={ArrowDropDownIcon}
-            >
-              <MenuItem value={"buy"}>Buy</MenuItem>
-              <MenuItem value={"pre-order"}>Pre-Order</MenuItem>
-            </Select>
-          </div>
+        <ProductsToggleButton />
           <Paper elevation={3} className={styles.logosearchbar}>
             <TextField
               size="small"
