@@ -74,8 +74,7 @@ import {
                     border: "20px solid #FEFEFF" }}
 
                     className={styles.mobileCardMedia}
-        image={product.img}
-        alt={product.title}
+      
                   image={product.img}
                   alt={product.title}
                 />
