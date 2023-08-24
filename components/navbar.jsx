@@ -31,6 +31,7 @@ import Image from "next/image";
 import { GET_MY_PROFILE } from "../graphql/queries/userProfileQueries";
 import { useQuery } from "@apollo/client";
 import CartModal from "./CartModal";
+import Notifications from './Notifications';
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -49,8 +50,31 @@ const Navbar = () => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const [notifAnchorEl, setNotifAnchorEl] = useState(null);
 
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleNotifClick = (event) => {
+    setNotifAnchorEl(event.currentTarget);
+  };
+
+  const handleNotifClose = () => {
+    setNotifAnchorEl(null);
+  };
+
+  const [notificationOpen, setNotificationOpen] = useState(false);
+const [notifications, setNotifications] = useState([
+  { user: 'Rachel Green', activity: 'Liked your post.', time: '3 min ago', unread: true },
+]);
+
+const handleNotificationClick = () => {
+  setNotificationOpen(!notificationOpen);
+};
+
+const markAllAsRead = () => {
+  const updatedNotifications = notifications.map(notif => ({ ...notif, unread: false }));
+  setNotifications(updatedNotifications);
+};
 
   const handleCartModalOpen = () => {
     setCartModalOpen(true);
@@ -317,7 +341,7 @@ const Navbar = () => {
                   height={40}
                 />
               </Avatar>
-              <Avatar
+              <Avatar onClick={handleNotifClick}
                 sx={{
                   cursor: "pointer",
                   bgcolor: "transparent",
@@ -325,8 +349,9 @@ const Navbar = () => {
                 }}
                 alt="Notifications"
               >
-                <Image src={notif} alt="Travis Howard" width={40} height={40} />
+                <Image src={notif} alt="Notifications" width={40} height={40} />
               </Avatar>
+              <Notifications anchorEl={notifAnchorEl} handleClose={handleNotifClose} />
               <Avatar
                 sx={{
                   cursor: "pointer",
@@ -373,8 +398,10 @@ const Navbar = () => {
               >
                 <MenuItem onClick={handleClose}>Orders</MenuItem>
                 <MenuItem onClick={handleCartModalOpen}>Cart</MenuItem>
+                <MenuItem onClick={handleClose}>Settings</MenuItem>
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
+              {notificationOpen && <Notifications markAsRead={markAllAsRead} />}
             </div>
             <CartModal
               open={cartModalOpen}
