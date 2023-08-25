@@ -157,7 +157,6 @@ const markAllAsRead = () => {
 
   const { profile_pic } = data.getMyProfile;
 
-  // const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
 
   return (
     <>

@@ -10,42 +10,6 @@ import { useEffect } from 'react';
 
 
 
-// const notificationsData = [
-//     { id: 1,
-//     user: 'Rachel Green', 
-//     activity: 'Liked your post.', 
-//     time: '3 min ago' },
-//     { id: 2,
-//     user: 'Mikaela Quinsanos', 
-//     activity: 'Liked your post.', 
-//     time: '5 min ago' },
-//     { id: 3,
-//     user: 'Jhan Derille', 
-//     activity: 'commented on your post.', 
-//     time: '45 min ago' },
-//     { id: 4,
-//     user: 'Ralph Adrian', 
-//     activity: 'Liked your post.', 
-//     time: '1:15' },
-//     { id: 5,
-//         user: 'Ralph Adrian', 
-//         activity: 'Liked your post.', 
-//         time: '1:15' },
-//         { id: 6,
-//             user: 'Ralph Adrian', 
-//             activity: 'Liked your post.', 
-//             time: '1:15' },
-//             { id: 7,
-//                 user: 'Ralph Adrian', 
-//                 activity: 'Liked your post.', 
-//                 time: '1:15' },
-//                 { id: 8,
-//                     user: 'Ralph Adrian', 
-//                     activity: 'Liked your post.', 
-//                     time: '1:15' },
-
-// ];
-
 const markAsRead = () => {
     
 };
