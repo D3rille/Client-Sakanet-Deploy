@@ -5,42 +5,46 @@ import { styled } from '@mui/material/styles';
 import Popover from '@mui/material/Popover';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import Tooltip from '@mui/material/Tooltip';
+import {useNotification} from "../context/notificationContext"
+import { useEffect } from 'react';
 
-const notificationsData = [
-    { id: 1,
-    user: 'Rachel Green', 
-    activity: 'Liked your post.', 
-    time: '3 min ago' },
-    { id: 2,
-    user: 'Mikaela Quinsanos', 
-    activity: 'Liked your post.', 
-    time: '5 min ago' },
-    { id: 3,
-    user: 'Jhan Derille', 
-    activity: 'commented on your post.', 
-    time: '45 min ago' },
-    { id: 4,
-    user: 'Ralph Adrian', 
-    activity: 'Liked your post.', 
-    time: '1:15' },
-    { id: 5,
-        user: 'Ralph Adrian', 
-        activity: 'Liked your post.', 
-        time: '1:15' },
-        { id: 6,
-            user: 'Ralph Adrian', 
-            activity: 'Liked your post.', 
-            time: '1:15' },
-            { id: 7,
-                user: 'Ralph Adrian', 
-                activity: 'Liked your post.', 
-                time: '1:15' },
-                { id: 8,
-                    user: 'Ralph Adrian', 
-                    activity: 'Liked your post.', 
-                    time: '1:15' },
 
-];
+
+// const notificationsData = [
+//     { id: 1,
+//     user: 'Rachel Green', 
+//     activity: 'Liked your post.', 
+//     time: '3 min ago' },
+//     { id: 2,
+//     user: 'Mikaela Quinsanos', 
+//     activity: 'Liked your post.', 
+//     time: '5 min ago' },
+//     { id: 3,
+//     user: 'Jhan Derille', 
+//     activity: 'commented on your post.', 
+//     time: '45 min ago' },
+//     { id: 4,
+//     user: 'Ralph Adrian', 
+//     activity: 'Liked your post.', 
+//     time: '1:15' },
+//     { id: 5,
+//         user: 'Ralph Adrian', 
+//         activity: 'Liked your post.', 
+//         time: '1:15' },
+//         { id: 6,
+//             user: 'Ralph Adrian', 
+//             activity: 'Liked your post.', 
+//             time: '1:15' },
+//             { id: 7,
+//                 user: 'Ralph Adrian', 
+//                 activity: 'Liked your post.', 
+//                 time: '1:15' },
+//                 { id: 8,
+//                     user: 'Ralph Adrian', 
+//                     activity: 'Liked your post.', 
+//                     time: '1:15' },
+
+// ];
 
 const markAsRead = () => {
     
@@ -132,6 +136,15 @@ const clearAllNotifications = () => {
   
   
   const Notifications = ({ anchorEl, handleClose }) => {
+    
+   const { notifData, subscribeToMoreNotif } = useNotification();
+
+    useEffect(()=>subscribeToMoreNotif(),[])
+
+    if(!notifData || notifData == [] || notifData.length === 0){
+        return(<p>No Notifications<br></br></p>);
+    }
+
     return (
         <Popover
       open={Boolean(anchorEl)}
@@ -155,16 +168,17 @@ const clearAllNotifications = () => {
                     Notifications
         </NotificationHeader>
         <StyledDivider />
-        {notificationsData.map((notif, index) => (
-           <React.Fragment key={index} onClick={() => handleNotificationClick(notif)}>
+        {notifData && notifData.getNotifications.map((notif) => (
+          <React.Fragment key={notif.id}> 
+          {/* onClick={() => handleNotificationClick(notif)} */}
             <NotificationItem>
             <LeftSection>
               <Avatar />
               <UserInfo>
                 <div>
-                <span style={{fontWeight: 'bold'}}>{notif.user}</span>
+                <span style={{fontWeight: 'bold'}}>{notif.from}</span>
                 </div>
-                <div>{notif.activity}</div>
+                <div>{notif.message}</div>
               </UserInfo>
             </LeftSection>
             <span style={{ 
@@ -173,9 +187,9 @@ const clearAllNotifications = () => {
                 marginRight:'1.1rem', 
                 color:'#D4D4D4',
                 margin:'0.6rem',
-                 }}>{notif.time}</span>
+                 }}>{notif.createdAt}</span>
                  </NotificationItem>
-                 {index !== notificationsData.length - 1 && <StyledDivider />}
+                 {notifData.length !== notifData.length - 1 && <StyledDivider />}
           </React.Fragment>
         ))}
         <NotificationFooter>
