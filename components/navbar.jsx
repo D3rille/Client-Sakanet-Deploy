@@ -30,6 +30,7 @@ import { AuthContext } from '@/context/auth';
 import Image from "next/image";
 import { GET_MY_PROFILE } from '../graphql/queries/userProfileQueries';
 import { useQuery } from '@apollo/client';
+import client from "../graphql/apollo-client.js"; // can be removed, but first try extracting client prop {client}
 
  
 
@@ -174,7 +175,12 @@ const Navbar = () => {
         <List>
     {['Edit Profile', 'Change Password', 'Logout'].map((text, index) => (
         <ListItem key={text} disablePadding>
-            <ListItemButton onClick={text === 'Logout' ? logout : null}>
+            <ListItemButton onClick={()=>{
+              if(text === 'Logout'){
+                logout();
+                client.clearStore();
+              }  
+            }}>
                 <ListItemText primary={text} />
             </ListItemButton>
         </ListItem>
@@ -326,7 +332,10 @@ const Navbar = () => {
                 <MenuItem onClick={handleClose}>
                   Orders
                 </MenuItem>
-                <MenuItem onClick={logout}>
+                <MenuItem onClick={()=>{
+                  logout()
+                  client.clearStore();
+                  }}>
                   Logout
                 </MenuItem>
                 </Menu>
