@@ -1,18 +1,17 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
 import Popover from '@mui/material/Popover';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import Tooltip from '@mui/material/Tooltip';
-import {useNotification} from "../context/notificationContext"
+import { useNotification } from "../context/notificationContext";
 import { useEffect } from 'react';
-
 
 
 const markAsRead = () => {
     
 };
+const clearAllNotifications = () => {
+}
 
 const NotificationContainer = styled('div')({
     backgroundColor: '#FFFFFF',
@@ -21,23 +20,24 @@ const NotificationContainer = styled('div')({
     width: '450px', 
     height: '600px', 
     boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.2)',
-    overflowY: "auto",
-  });
-  
-  const NotificationHeader = styled('div')({
     display: 'flex',
-    justifyContent:'center',
+    flexDirection: 'column',
+});
+
+const NotificationHeader = styled('div')({
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     padding: '10px',
     fontWeight: 'bolder',
     color: '#323233',
-    marginTop:'1rem',
-    marginBottom:'1rem',
-    fontSize:'17px',
+    marginTop: '1rem',
+    marginBottom: '1rem',
+    fontSize: '17px',
     width: '100%',
-  });
+});
 
-  const NotificationFooter = styled('div')({
+const NotificationFooter = styled('div')({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -45,7 +45,7 @@ const NotificationContainer = styled('div')({
     backgroundColor: 'white',
     position: 'sticky',
     bottom: 0,
-    fontSize:'13px',
+    fontSize: '13px',
     boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.2)',
 });
 
@@ -57,8 +57,8 @@ const FooterAction = styled('span')({
     cursor: 'pointer',
     height: '90%',
     padding: '5px 10px',
-    color:'#32816B',
-    fontWeight:500
+    color: '#32816B',
+    fontWeight: 500
 });
 
 const VerticalDivider = styled('div')({
@@ -67,103 +67,101 @@ const VerticalDivider = styled('div')({
     backgroundColor: '#e1e1e1',
 });
 
-const clearAllNotifications = () => {
-}
-
-  const NotificationItem = styled('div')({
+const NotificationItem = styled('div')({
     display: 'flex',
     justifyContent: 'space-between',
     padding: '10px',
     cursor: 'pointer',
-  });
+});
 
-
-  const LeftSection = styled('div')({
+const LeftSection = styled('div')({
     display: 'flex',
     alignItems: 'center',
-    marginLeft:'13px',
-    marginTop:'0.6rem',
-    marginBottom:'0.6rem',
-    fontSize:'14px'
-  });
-  
-  const UserInfo = styled('div')({
-    marginLeft: '10px',
-  });
+    marginLeft: '13px',
+    marginTop: '0.6rem',
+    marginBottom: '0.6rem',
+    fontSize: '14px'
+});
 
-  const StyledDivider = styled('div')({
+const UserInfo = styled('div')({
+    marginLeft: '10px',
+});
+
+const StyledDivider = styled('div')({
     borderTop: '1px solid #e1e1e1',
     marginLeft: '1.2rem',
     marginRight: '1.2rem',
-  });
-  
-  
-  
-  const Notifications = ({ anchorEl, handleClose }) => {
-    
-   const { notifData, subscribeToMoreNotif } = useNotification();
+});
 
-    useEffect(()=>subscribeToMoreNotif(),[])
+const NotificationContent = styled('div')({
+    flex: 1,
+    overflowY: 'auto'
+});
 
-    if(!notifData || notifData == [] || notifData.length === 0){
-        return(<p>No Notifications<br></br></p>);
+const Notifications = ({ anchorEl, handleClose }) => {
+    const { notifData, subscribeToMoreNotif } = useNotification();
+    useEffect(() => subscribeToMoreNotif(), []);
+
+    if (!notifData || notifData == [] || notifData.length === 0) {
+        return (<p>No Notifications<br></br></p>);
     }
 
     return (
         <Popover
-      open={Boolean(anchorEl)}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'left',
-      }}
-      sx={{
-        borderRadius:'10px'
-      }}
-    >
-      <NotificationContainer>
-        <NotificationHeader>
-        <NotificationsActiveIcon color="action" style={{ color: "#2F613A", marginRight: "8px" }} />
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+            }}
+            sx={{
+                borderRadius: '10px'
+            }}
+        >
+            <NotificationContainer>
+                <NotificationHeader>
+                    <NotificationsActiveIcon color="action" style={{ color: "#2F613A", marginRight: "8px" }} />
                     Notifications
-        </NotificationHeader>
-        <StyledDivider />
-        {notifData && notifData.getNotifications.map((notif) => (
-          <React.Fragment key={notif.id}> 
-          {/* onClick={() => handleNotificationClick(notif)} */}
-            <NotificationItem>
-            <LeftSection>
-              <Avatar />
-              <UserInfo>
-                <div>
-                <span style={{fontWeight: 'bold'}}>{notif.from}</span>
-                </div>
-                <div>{notif.message}</div>
-              </UserInfo>
-            </LeftSection>
-            <span style={{ 
-                fontSize: '0.77rem', 
-                fontWeight:100, 
-                marginRight:'1.1rem', 
-                color:'#D4D4D4',
-                margin:'0.6rem',
-                 }}>{notif.createdAt}</span>
-                 </NotificationItem>
-                 {notifData.length !== notifData.length - 1 && <StyledDivider />}
-          </React.Fragment>
-        ))}
-        <NotificationFooter>
+                </NotificationHeader>
+                <StyledDivider />
+                <NotificationContent>
+                    {notifData && notifData.getNotifications.map((notif) => (
+                        <React.Fragment key={notif.id}>
+                            <NotificationItem>
+                                <LeftSection>
+                                    <Avatar />
+                                    <UserInfo>
+                                        <div>
+                                            <span style={{ fontWeight: 'bold' }}>{notif.from}</span>
+                                        </div>
+                                        <div>{notif.message}</div>
+                                    </UserInfo>
+                                </LeftSection>
+                                <span style={{
+                                    fontSize: '0.77rem',
+                                    fontWeight: 100,
+                                    marginRight: '1.1rem',
+                                    color: '#D4D4D4',
+                                    margin: '0.6rem',
+                                }}>{notif.createdAt}</span>
+                            </NotificationItem>
+                            {notifData.length !== notifData.length - 1 && <StyledDivider />}
+                        </React.Fragment>
+                    ))}
+                </NotificationContent>
+                <NotificationFooter>
                     <FooterAction onClick={markAsRead}>Mark all as read</FooterAction>
                     <VerticalDivider />
                     <FooterAction onClick={clearAllNotifications}>Clear all</FooterAction>
                 </NotificationFooter>
-      </NotificationContainer>
-      </Popover>
+            </NotificationContainer>
+        </Popover>
     );
-  };
-  
-  export default Notifications;
+};
+
+export default Notifications;
