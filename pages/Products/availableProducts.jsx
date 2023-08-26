@@ -46,7 +46,7 @@ export default function Products() {
 
   const handleAddLocation = () => {
     setLocationList((prevList) => [...prevList, currentLocation]);
-    setCurrentLocation(""); 
+    setCurrentLocation("");
   };
 
   const handleRemoveLocation = (index) => {
@@ -94,7 +94,6 @@ export default function Products() {
   const handleProductsSortChange = (event) => {
     setProductsSortBy(event.target.value);
   };
-  
 
   const resetFilters = () => {
     setSortBy("");
@@ -108,103 +107,102 @@ export default function Products() {
     <Grid container className={styles.gridContainer}>
       <Grid item xs={12}>
         <Paper elevation={3} className={styles.paperContainer}>
-        <div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "1rem 2rem",
-  }}
->
-  <IconButton
-    onClick={goBack}
-    sx={{
-      color: "#2F613A",
-      backgroundColor: "transparent",
-      fontSize: "1rem",
-    }}
-  >
-    <ArrowBackIcon /> Go Back
-  </IconButton>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1rem 2rem",
+            }}
+          >
+            <IconButton
+              onClick={goBack}
+              sx={{
+                color: "#2F613A",
+                backgroundColor: "transparent",
+                fontSize: "1rem",
+              }}
+            >
+              <ArrowBackIcon /> Go Back
+            </IconButton>
 
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        borderRadius: "10px",
-        marginRight: "2rem",
-      }}
-    >
-      <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
-        Sort by:
-      </Typography>
-      <Select
-        value={productsSortBy}
-        onChange={handleProductsSortChange}
-        displayEmpty
-        style={{
-          height: "40px",
-          minWidth: "160px",
-          borderRadius: "10px",
-          backgroundColor: "#FEFEFF",
-        }}
-        IconComponent={ArrowDropDownIcon}
-        sx={{
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#2E603A',
-          },
-        }}
-      >
-        <MenuItem value={"available"}>Available Sellers</MenuItem>
-        <MenuItem value={"suggested"}>Suggested Sellers</MenuItem>
-      </Select>
-    </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  borderRadius: "10px",
+                  marginRight: "2rem",
+                }}
+              >
+                <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
+                  Sort by:
+                </Typography>
+                <Select
+                  value={productsSortBy}
+                  onChange={handleProductsSortChange}
+                  displayEmpty
+                  style={{
+                    height: "40px",
+                    minWidth: "160px",
+                    borderRadius: "10px",
+                    backgroundColor: "#FEFEFF",
+                  }}
+                  IconComponent={ArrowDropDownIcon}
+                  sx={{
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#2E603A",
+                    },
+                  }}
+                >
+                  <MenuItem value={"available"}>Available Sellers</MenuItem>
+                  <MenuItem value={"suggested"}>Suggested Sellers</MenuItem>
+                </Select>
+              </div>
 
-    <ToggleButtonGroup
-      sx={{
-        "& .Mui-selected": {
-          bgcolor: "#C2E7CB",
-        },
-      }}
-      color="primary"
-      value={productsType}
-      exclusive
-      onChange={handleProductTypeChange}
-      aria-label="Product Type"
-    >
-      <ToggleButton
-        value="order"
-        sx={{
-          color: "#2F613A",
-          "&.Mui-selected": {
-            color: "#2F613A",
-          },
-        }}
-      >
-        ORDER
-      </ToggleButton>
-      <ToggleButton
-        value="pre-order"
-        sx={{
-          color: "#2F613A",
-          "&.Mui-selected": {
-            color: "#2F613A",
-          },
-        }}
-      >
-        PRE-ORDER
-      </ToggleButton>
-    </ToggleButtonGroup>
-  </div>
-</div>
-
+              <ToggleButtonGroup
+                sx={{
+                  "& .Mui-selected": {
+                    bgcolor: "#C2E7CB",
+                  },
+                }}
+                color="primary"
+                value={productsType}
+                exclusive
+                onChange={handleProductTypeChange}
+                aria-label="Product Type"
+              >
+                <ToggleButton
+                  value="order"
+                  sx={{
+                    color: "#2F613A",
+                    "&.Mui-selected": {
+                      color: "#2F613A",
+                    },
+                  }}
+                >
+                  ORDER
+                </ToggleButton>
+                <ToggleButton
+                  value="pre-order"
+                  sx={{
+                    color: "#2F613A",
+                    "&.Mui-selected": {
+                      color: "#2F613A",
+                    },
+                  }}
+                >
+                  PRE-ORDER
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </div>
+          </div>
 
           {/* Content Section */}
           <div
@@ -446,34 +444,39 @@ export default function Products() {
                 </div>
               </Paper>
               <div className={styles.productGridContainer}>
-  {productsType === "order" ? <OrderProductGrid /> : <PreOrderProductGrid />}
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      marginTop: "1rem",
-      marginBottom: "2rem",
-    }}
-  >
-    <Pagination
-      count={10}
-      variant="outlined"
-      sx={{
-        "& .MuiPaginationItem-root": {
-          color: "#2F603B",
-        },
-        "& .MuiPaginationItem-page.Mui-selected": {
-          backgroundColor: "#2F603B",
-          color: "#fff",
-          "&:hover": {
-            backgroundColor: "#2F603B",
-          },
-        },
-        "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible": {
-          backgroundColor: "#2F603B",
-        },
-      }}
-    />
+                {productsType === "order" ? (
+                  <OrderProductGrid />
+                ) : (
+                  <PreOrderProductGrid />
+                )}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "1rem",
+                    marginBottom: "2rem",
+                  }}
+                >
+                  <Pagination
+                    count={10}
+                    variant="outlined"
+                    sx={{
+                      "& .MuiPaginationItem-root": {
+                        color: "#2F603B",
+                      },
+                      "& .MuiPaginationItem-page.Mui-selected": {
+                        backgroundColor: "#2F603B",
+                        color: "#fff",
+                        "&:hover": {
+                          backgroundColor: "#2F603B",
+                        },
+                      },
+                      "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible":
+                        {
+                          backgroundColor: "#2F603B",
+                        },
+                    }}
+                  />
                 </div>
               </div>
             </div>
