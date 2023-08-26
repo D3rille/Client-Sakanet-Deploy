@@ -21,13 +21,14 @@ import Pagination from "@mui/material/Pagination";
 import ProductsToggleButton from "../../components/ProductsToggleButton";
 import { GET_ALL_MARKET_PRODUCTS } from "../../graphql/queries/productQueries";
 import { useQuery } from "@apollo/client";
+import ProductCategories from "../../components/ProductCategory";
 
 function ProductCard({ product }) {
   return (
     <Card
       sx={{
         width: "100%",
-        height: "297px",
+        height: "305px",
         borderRadius: "12px",
         mb: 1,
         boxShadow: 3,
@@ -62,8 +63,10 @@ function ProductCard({ product }) {
           fontSize: "0.7rem",
           borderBottomLeftRadius: "12px",
           borderBottomRightRadius: "12px",
-          margin: 0,
-          borderRadius: 0,
+          position: "absolute",
+          bottom: "0",
+          left: "0", 
+          right: "0",
         }}
       >
         View available products
@@ -88,7 +91,7 @@ const ProductsGrid = () => {
   <div
   style={{
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", // Adjust the minmax values as needed
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
     gap: "16px",
     marginTop: "20px",
   }}
@@ -107,7 +110,10 @@ export default function Products() {
     <Grid container className={styles.gridContainer}>
       <Grid item xs={12}>
         <Paper elevation={3} className={styles.paperContainer}>
-        <ProductsToggleButton />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <ProductCategories />
+            <ProductsToggleButton />
+          </div>
           <Paper elevation={3} className={styles.logosearchbar}>
             <TextField
               size="small"

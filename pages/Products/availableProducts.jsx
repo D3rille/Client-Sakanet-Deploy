@@ -28,7 +28,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import SearchIcon from "@mui/icons-material/Search";
 import styles from "../../styles/availableProducts.module.css";
-import ProductGrid from "../../components/ProductGrid";
+import OrderProductGrid from "../../components/OrderProductGrid";
+import PreOrderProductGrid from "../../components/PreOrderProductGrid";
+
 import { DatePicker } from "@mui/x-date-pickers";
 import Pagination from "@mui/material/Pagination";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -444,35 +446,34 @@ export default function Products() {
                 </div>
               </Paper>
               <div className={styles.productGridContainer}>
-                <ProductGrid />
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "1rem",
-                    marginBottom: "2rem",
-                  }}
-                >
-                  <Pagination
-                    count={10}
-                    variant="outlined"
-                    sx={{
-                      "& .MuiPaginationItem-root": {
-                        color: "#2F603B",
-                      },
-                      "& .MuiPaginationItem-page.Mui-selected": {
-                        backgroundColor: "#2F603B",
-                        color: "#fff",
-                        "&:hover": {
-                          backgroundColor: "#2F603B",
-                        },
-                      },
-                      "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible":
-                        {
-                          backgroundColor: "#2F603B",
-                        },
-                    }}
-                  />
+  {productsType === "order" ? <OrderProductGrid /> : <PreOrderProductGrid />}
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      marginTop: "1rem",
+      marginBottom: "2rem",
+    }}
+  >
+    <Pagination
+      count={10}
+      variant="outlined"
+      sx={{
+        "& .MuiPaginationItem-root": {
+          color: "#2F603B",
+        },
+        "& .MuiPaginationItem-page.Mui-selected": {
+          backgroundColor: "#2F603B",
+          color: "#fff",
+          "&:hover": {
+            backgroundColor: "#2F603B",
+          },
+        },
+        "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible": {
+          backgroundColor: "#2F603B",
+        },
+      }}
+    />
                 </div>
               </div>
             </div>
