@@ -32,6 +32,13 @@ import { GET_MY_PROFILE } from "../graphql/queries/userProfileQueries";
 import { useQuery } from "@apollo/client";
 import CartModal from "./CartModal";
 import Notifications from './Notifications';
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import OrderIcon from "@mui/icons-material/Assignment";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ListItemIcon from "@mui/material/ListItemIcon";
+
+
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -93,10 +100,6 @@ const markAllAsRead = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleTabClick = (index) => {
     setActiveTab(index);
   };
@@ -107,6 +110,14 @@ const markAllAsRead = () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleClose = (path) => {
+    if (path) {
+      router.push(path);
+    }
+    setAnchorEl(null);
+  };
+  
 
   useEffect(() => {
     const handleResize = () => {
@@ -363,43 +374,68 @@ const markAllAsRead = () => {
                 <Image src={drop} alt="Travis Howard" width={40} height={40} />
               </Avatar>
               <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                PaperProps={{
-                  elevation: 0,
-                  sx: {
-                    overflow: "visible",
-                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                    mt: 1.5,
-                    "& .MuiAvatar-root": {
-                      width: 32,
-                      height: 32,
-                      ml: -0.5,
-                      mr: 1,
-                    },
-                    "&:before": {
-                      content: '""',
-                      display: "block",
-                      position: "absolute",
-                      top: 0,
-                      right: 14,
-                      width: 10,
-                      height: 10,
-                      bgcolor: "background.paper",
-                      transform: "translateY(-50%) rotate(45deg)",
-                      zIndex: 0,
-                    },
-                  },
-                }}
-                transformOrigin={{ horizontal: "right", vertical: "top" }}
-                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-              >
-                <MenuItem onClick={handleClose}>Orders</MenuItem>
-                <MenuItem onClick={handleCartModalOpen}>Cart</MenuItem>
-                <MenuItem onClick={handleClose}>Settings</MenuItem>
-                <MenuItem onClick={logout}>Logout</MenuItem>
-              </Menu>
+  anchorEl={anchorEl}
+  open={Boolean(anchorEl)}
+  onClose={handleClose}
+  PaperProps={{
+    elevation: 0,
+    sx: {
+      overflow: "visible",
+      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+      mt: 1.5,
+      width: '200px',
+      "& .MuiAvatar-root": {
+        width: 32,
+        height: 32,
+        ml: -0.5,
+        mr: 1,
+      },
+      "&:before": {
+        content: '""',
+        display: "block",
+        position: "absolute",
+        top: 0,
+        right: 14,
+        width: 10,
+        height: 10,
+        bgcolor: "background.paper",
+        transform: "translateY(-50%) rotate(45deg)",
+        zIndex: 0,
+      },
+    },
+  }}
+  transformOrigin={{ horizontal: "right", vertical: "top" }}
+  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+>
+  <MenuItem onClick={handleClose}>
+    <ListItemIcon>
+      <OrderIcon fontSize="small" />
+    </ListItemIcon>
+    Orders
+  </MenuItem>
+  <MenuItem onClick={handleCartModalOpen}>
+    <ListItemIcon>
+      <ShoppingCartIcon fontSize="small" />
+    </ListItemIcon>
+    Cart
+  </MenuItem>
+  <MenuItem onClick={() => handleClose("/Settings")}>
+  <ListItemIcon>
+    <SettingsIcon fontSize="small" />
+  </ListItemIcon>
+  Settings
+</MenuItem>
+
+  <Divider style={{ marginLeft: '16px', marginRight: '16px' }} />
+  <MenuItem onClick={logout}>
+    <ListItemIcon>
+      <LogoutIcon fontSize="small" />
+    </ListItemIcon>
+    Logout
+  </MenuItem>
+</Menu>
+
+
               {notificationOpen && <Notifications markAsRead={markAllAsRead} />}
             </div>
             <CartModal
