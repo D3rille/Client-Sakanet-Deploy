@@ -9,10 +9,13 @@ import LockIcon from '@mui/icons-material/Lock';
 import PaymentIcon from '@mui/icons-material/Payment';
 import Profile from "../../components/settingsComponents/Profile";
 import EmailAndPassword from "../../components/settingsComponents/PasswordAndEmail";
+import PaymentChannels from "../../components/settingsComponents/PaymentChannels";
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 
 const GridContainer = styled(Grid)({
     background: '#F4F4F4',
-    height:'100vh',
+    height: '100vh',
 });
 
 const StyledPaperContainer = styled(Paper)({
@@ -27,7 +30,6 @@ const StyledPaperContainer = styled(Paper)({
     marginTop: '6.5rem',
     borderRadius: '20px',
     overflow: 'hidden',
-    
 });
 
 const InnerPaperLeft = styled(Paper)({
@@ -38,7 +40,21 @@ const InnerPaperLeft = styled(Paper)({
     flex: 1, 
     textAlign: 'left',
     marginLeft: '3rem',
+    height:'auto'
 });
+
+const HeaderContainer = styled('div')({
+    marginTop:'0.3rem',
+    marginBottom: '1rem',  
+    marginLeft: '1rem'   
+  });
+  
+const StyledDivider = styled(Divider)({
+    width: '50%',
+    margin: '1rem 0',
+    color:'#2E603A'
+  });
+  
 
 const ParentContainer = styled('div')({
     width: '95%',
@@ -53,7 +69,6 @@ const InnerPaperRight = styled(Paper)({
     marginRight: '3rem',
     borderRadius: '15px',
     textAlign: 'left',
-
 });
 
 const StyledTab = styled(Tab)({
@@ -83,6 +98,17 @@ const Settings = () => {
             <Grid item xs={12}>
                 <StyledPaperContainer elevation={3}>
                     <InnerPaperLeft elevation={3} sx={{ borderRadius: "13px", padding: "1rem" }}>
+                        
+                    <HeaderContainer>
+                            <Typography variant="h6" style={{fontWeight:'bolder'}}>
+                                SETTINGS
+                            </Typography>
+                            <Typography variant="caption" display="block" gutterBottom>
+                                This page allows you to customize what you have made
+                            </Typography>
+                            <StyledDivider />
+                        </HeaderContainer>
+
                         <Tabs
                             orientation="vertical"
                             value={value}
@@ -132,7 +158,7 @@ const Settings = () => {
                         <InnerPaperRight elevation={3}>
                             {value === 0 && <Profile />}
                             {value === 1 && <EmailAndPassword />}
-                            {/* Add more components for other tabs if necessary */}
+                            {value === 2 && <PaymentChannels />}
                         </InnerPaperRight>
                     </ParentContainer>
                 </StyledPaperContainer>

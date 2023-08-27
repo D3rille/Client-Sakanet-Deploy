@@ -73,10 +73,10 @@ const Profile = () => {
   return (
     <ProfileContainer>
       <div style={{ marginTop: "1rem" }}>
-        <h3>Username</h3>
+        <h3>Display Name</h3>
         <UsernameField
           variant="outlined"
-          placeholder="Enter your username"
+          placeholder="Enter your display name"
           InputProps={{
             style: {
               borderColor: "#2E603A",
@@ -84,9 +84,10 @@ const Profile = () => {
             },
           }}
         />
+        {/*
         <Typography variant="caption" style={{ display: "block" }}>
           Username must be unique
-        </Typography>
+        </Typography> */}
       </div>
 
       <StyledDivider />
