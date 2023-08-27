@@ -7,12 +7,13 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";  
 
 
-const ProductCategories = () => {
-  const [productsSortBy, setProductsSortBy] = useState(null); 
+const ProductCategories = ({ onCategoryChange }) => {
+  const [productsSortBy, setProductsSortBy] = useState(""); 
   const handleProductsSortChange = (event) => {
-    setProductsSortBy(event.target.value);
+    const selectedCategory = event.target.value;
+    setProductsSortBy(selectedCategory);
+    onCategoryChange(selectedCategory);
   };
-
   return (
     <div
       style={{
@@ -33,9 +34,11 @@ const ProductCategories = () => {
         displayEmpty
         style={{
           height: "40px",
-          minWidth: "160px",
+          minWidth: 300,
           borderRadius: "10px",
           backgroundColor: "#FEFEFF",
+          width: 300,
+          
         }}
         IconComponent={ArrowDropDownIcon}
         sx={{
@@ -44,8 +47,16 @@ const ProductCategories = () => {
           },
         }}
       >
-        <MenuItem value={"available"}>Product Category 1</MenuItem>
-        <MenuItem value={"suggested"}>Produt Category 2</MenuItem>
+        <MenuItem value={"Cereals"}>Cereals</MenuItem>
+        <MenuItem value={"Rootcrops"}>Root Crops</MenuItem>
+        <MenuItem value={"Beans and Legumes"}>Beans and Legumes</MenuItem>
+        <MenuItem value={"Condiments"}>Condiments</MenuItem>
+        <MenuItem value={"Fruit Vegetables"}>Fruit Vegetables</MenuItem>
+        <MenuItem value={"Leafy Vegetables"}>Leafy Vegetables</MenuItem>
+        <MenuItem value={"Fruits"}>Fruits</MenuItem>
+        <MenuItem value={"Commercial Crops"}>Commercial Crops</MenuItem>
+        <MenuItem value={"Cutflowers"}>Cut Flowers</MenuItem>
+        <MenuItem value={"Livestock and Poultry (Backyard)"}>Livestock and Poultry (Backyard)</MenuItem>
       </Select>
     </div>
   );

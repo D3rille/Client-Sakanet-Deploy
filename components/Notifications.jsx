@@ -100,7 +100,7 @@ const NotificationContent = styled('div')({
 
 const Notifications = ({ anchorEl, handleClose }) => {
     const { notifData, subscribeToMoreNotif } = useNotification();
-    useEffect(() => subscribeToMoreNotif(), []);
+    useEffect(() => subscribeToMoreNotif(), [notifData]);
 
     if (!notifData || notifData == [] || notifData.length === 0) {
         return (<p>No Notifications<br></br></p>);

@@ -11,6 +11,9 @@ import {
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Link from "next/link";
+import { GET_AVAILABLE_PRODUCTS} from "../graphql/queries/productQueries";
+import { useQuery } from "@apollo/client";
+import { formatWideAddress } from "../util/addresssUtils";
 
 function ProductCard({ product }) {
   return (
@@ -45,14 +48,14 @@ function ProductCard({ product }) {
             }}
           >
             <Typography variant="body1" sx={{ fontWeight: "bolder", fontSize: '0.9rem' }}>
-              {product.userName}
+              {product.seller.name}
             </Typography>
             <Typography
               color="textSecondary"
               variant="body2"
               sx={{ fontWeight: "bolder", fontSize: '0.8rem' }}
             >
-              {product.location}
+              {formatWideAddress(product.seller.address)}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Rating
@@ -65,7 +68,8 @@ function ProductCard({ product }) {
                 variant="caption"
                 sx={{ fontWeight: "bolder", marginLeft: 1 }}
               >
-                {`${product.rating} (${product.ratingCount} ratings)`}
+                {/* TO:DO FIX RATINGS */}
+                {`${product.seller.rating} (${product.seller.rating} ratings)`} 
               </Typography>
             </Box>
           </Box>
@@ -83,19 +87,22 @@ function ProductCard({ product }) {
         component="img"
         alt={product.title}
         height="200"
-        image={product.img}
+        image={product.item.photo}
       />
 
       {/* Product details */}
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography variant="body1" align="right" sx={{ fontWeight: "bold" }}>
-          ₱ {product.price}/kg
+          ₱ {product.price}/{product.unit}
         </Typography>
         <Typography gutterBottom align="left" sx={{ fontWeight: "bolder" }}>
-          {product.title}
-        </Typography>
+            {product.item.tagalogName ? (
+                `${product.item.tagalogName} | ${product.item.englishName}`
+              ) : (
+                product.item.englishName
+              )}        </Typography>
         <Typography align="left" sx={{}}>
-          Stocks: {product.stock} kg
+          Stocks: {product.stocks} {product.unit}
         </Typography>
       </CardContent>
 
@@ -132,7 +139,7 @@ function ProductCard({ product }) {
             borderRadius: 0,
           }}
           component={Link}
-          href={`/Products/productOverview?productId=${product.id}`}
+          href={`/Products/productOverview/${product._id}`}
         >
           Add to Cart
         </Button>
@@ -141,154 +148,35 @@ function ProductCard({ product }) {
   );
 }
 
-const productData = [
-    {
-      id: 1,
-      title: "Apple | Mansanas",
-      img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      location: "Pagbilao, Quezon",
-      price: 30.0,
-      stock: 633,
-      userName: "Juan Dela Cruz",
-      userAvatar: "JD",
-      rating: 4.7,
-      ratingCount: 250
-      },
-      {
-        id: 2,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Gumaca, Quezon",
-        price: 110.3,
-        stock: 633,
-        userName: "Stephanie Encomienda",
-        userAvatar: "MC",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 3,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Tayabas, Quezon",
-        price: 50.0,
-        stock: 633,
-        userName: "Juan Dela Cruz",
-        userAvatar: "JD",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 4,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Gumaca, Quezon",
-        price: 110.3,
-        stock: 633,
-        userName: "Maria Clara",
-        userAvatar: "MC",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 5,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Mauban, Quezon",
-        price: 70.0,
-        stock: 633,
-        userName: "Juan Dela Cruz",
-        userAvatar: "JD",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 6,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Atimonan, Quezon",
-        price: 100.0,
-        stock: 633,
-        userName: "Maria Clara",
-        userAvatar: "MC",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 7,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Candelaria, Quezon",
-        price: 40.5,
-        stock: 633,
-        userName: "Juan Dela Cruz",
-        userAvatar: "JD",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 8,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Lopez, Quezon",
-        price: 100.0,
-        stock: 633,
-        userName: "Maria Clara",
-        userAvatar: "MC",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 9,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Pagbilao, Quezon",
-        price: 90.7,
-        stock: 633,
-        userName: "Juan Dela Cruz",
-        userAvatar: "JD",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 10,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Alabat, Quezon",
-        price: 60.0,
-        stock: 633,
-        userName: "Maria Clara",
-        userAvatar: "MC",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 11,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Calauag, Quezon",
-        price: 112.0,
-        stock: 633,
-        userName: "Juan Dela Cruz",
-        userAvatar: "JD",
-        rating: 4.7,
-        ratingCount: 250
-      },
-      {
-        id: 12,
-        title: "Apple | Mansanas",
-        img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        location: "Sariaya, Quezon",
-        price: 90.0,
-        stock: 633,
-        userName: "Maria Clara",
-        userAvatar: "MC",
-        rating: 4.7,
-        ratingCount: 250
-      },
-    ];
 
-const OrderProductGrid = () => {
+const OrderProductGrid = ({ productId }) => {
+const dummyFilter = {
+  category: "Sell",
+  itemId: "64e1ce75d79545b3991e19e7",
+  filter: {
+
+    modeOfDelivery: "pick-up", 
+    area_limit: "Quezon",
+  },
+};
+
+  //Query for Products
+  const { data, loading, error } = useQuery(GET_AVAILABLE_PRODUCTS, {
+    variables: {
+      category: "Sell",
+      itemId: productId,
+      filter: dummyFilter.filter,
+    },
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const availableProducts = data.getAvailableProducts;
+
+  console.log(availableProducts);
+
+
   return (
     <div
       style={{
@@ -298,8 +186,8 @@ const OrderProductGrid = () => {
         marginTop: "20px",
       }}
     >
-      {productData.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {availableProducts.map((product) => (
+        <ProductCard key={productId} product={product} />
       ))}
     </div>
   );

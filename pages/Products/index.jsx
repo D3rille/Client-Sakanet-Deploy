@@ -19,7 +19,7 @@ import styles from "../../styles/products.module.css";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "@mui/material/Pagination";
 import ProductsToggleButton from "../../components/ProductsToggleButton";
-import { GET_ALL_MARKET_PRODUCTS } from "../../graphql/queries/productQueries";
+import { GET_ALL_MARKET_PRODUCTS, GET_AVAILABLE_MARKET_PRODUCTS } from "../../graphql/queries/productQueries";
 import { useQuery } from "@apollo/client";
 import ProductCategories from "../../components/ProductCategory";
 
@@ -28,6 +28,7 @@ function ProductCard({ product }) {
     <Card
       sx={{
         width: "100%",
+        maxWidth: "400px",
         height: "305px",
         borderRadius: "12px",
         mb: 1,
@@ -52,7 +53,7 @@ function ProductCard({ product }) {
          </Typography>
       </CardContent>
       <Button
-        href="/Products/availableProducts"
+        href={`/Products/${product._id}`}
         // passHref
         variant="contained"
         endIcon={<ArrowForwardIosIcon />}
@@ -75,17 +76,8 @@ function ProductCard({ product }) {
   );
 }
 
-const ProductsGrid = () => {
-   const { loading, error, data } = useQuery(GET_ALL_MARKET_PRODUCTS, {
-    variables: {
-      type: "Leafy Vegetables", 
-    },
-  });
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  const productData = data.getAllMarketProducts;
+const ProductsGrid = ( { productData }) => {
+  
 
   return (
   <div
@@ -105,14 +97,38 @@ const ProductsGrid = () => {
 };
 
 export default function Products() {
+ const [selectedCategory, setSelectedCategory] = useState("");
+const [selectedProductType, setSelectedProductType] = useState('all');
+const { loading, error, data } = useQuery(
+  selectedProductType === "available"
+    ? GET_AVAILABLE_MARKET_PRODUCTS
+    : GET_ALL_MARKET_PRODUCTS,
+  {
+    variables: {
+      type: selectedCategory,
+    },
+  }
+);
 
+
+const handleProductTypeChange = (newType) => {
+  setSelectedProductType(newType);
+};
+
+if (loading) return <p>Loading...</p>;
+if (error) return <p>Error: {error.message}</p>;
+
+const productData = selectedProductType === "available"
+  ? data.getAvailableMarketProducts
+  : data.getAllMarketProducts;
+  
   return (
     <Grid container className={styles.gridContainer}>
       <Grid item xs={12}>
         <Paper elevation={3} className={styles.paperContainer}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <ProductCategories />
-            <ProductsToggleButton />
+            <ProductCategories onCategoryChange={setSelectedCategory} />
+            <ProductsToggleButton onProductTypeChange={handleProductTypeChange}/>
           </div>
           <Paper elevation={3} className={styles.logosearchbar}>
             <TextField
@@ -151,7 +167,7 @@ export default function Products() {
             />
           </Paper>
           <div className={styles.productGridContainer}>
-            <ProductsGrid />
+            <ProductsGrid  productData={productData}/>
           </div>
           <div
             style={{
