@@ -7,11 +7,11 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";  
 
 
-const ProductCategories = ({ onCategoryChange }) => {
-  const [productsSortBy, setProductsSortBy] = useState(""); 
+const ProductCategories = ({categoryType, onCategoryChange }) => {
+  // const [productsSortBy, setProductsSortBy] = useState(""); 
   const handleProductsSortChange = (event) => {
     const selectedCategory = event.target.value;
-    setProductsSortBy(selectedCategory);
+    // setProductsSortBy(selectedCategory);
     onCategoryChange(selectedCategory);
   };
   return (
@@ -29,7 +29,7 @@ const ProductCategories = ({ onCategoryChange }) => {
         Product Categories:
       </Typography>
       <Select
-        value={productsSortBy}
+        value={categoryType}
         onChange={handleProductsSortChange}
         displayEmpty
         style={{

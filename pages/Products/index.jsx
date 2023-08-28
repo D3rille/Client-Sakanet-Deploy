@@ -97,7 +97,7 @@ const ProductsGrid = ( { productData }) => {
 };
 
 export default function Products() {
- const [selectedCategory, setSelectedCategory] = useState("");
+ const [selectedCategory, setSelectedCategory] = useState("Cereals");
 const [selectedProductType, setSelectedProductType] = useState('all');
 const { loading, error, data } = useQuery(
   selectedProductType === "available"
@@ -127,8 +127,8 @@ const productData = selectedProductType === "available"
       <Grid item xs={12}>
         <Paper elevation={3} className={styles.paperContainer}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <ProductCategories onCategoryChange={setSelectedCategory} />
-            <ProductsToggleButton onProductTypeChange={handleProductTypeChange}/>
+            <ProductCategories categoryType={selectedCategory} onCategoryChange={setSelectedCategory} />
+            <ProductsToggleButton productsType={selectedProductType} onProductTypeChange={handleProductTypeChange}/>
           </div>
           <Paper elevation={3} className={styles.logosearchbar}>
             <TextField
