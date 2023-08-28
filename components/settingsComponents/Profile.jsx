@@ -8,6 +8,14 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { uploadCoverPhoto, uploadImage } from "../../util/imageUtils";
+import { UPLOAD_COVER_PIC, UPLOAD_PROFILE_PIC } from "../../graphql/mutations/imageMutations";
+import { useMutation } from "@apollo/client";
+import { GET_MY_PROFILE } from "../../graphql/queries/userProfileQueries";
+
+
 
 const ProfileContainer = styled("div")({
   paddingTop: "0.3rem",
@@ -70,6 +78,84 @@ const SaveButtonContainer = styled("div")({
 
 
 const Profile = () => {
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [coverPhoto, setCoverPhoto] = useState(null);
+  const [uploadProfilePic] = useMutation(UPLOAD_PROFILE_PIC,{
+    refetchQueries:[
+      GET_MY_PROFILE
+    ]
+  });
+  const [uploadCoverPic] = useMutation(UPLOAD_COVER_PIC,{
+    refetchQueries:[
+      GET_MY_PROFILE
+    ]
+  });
+
+  const handleProfilePictureDrop = (acceptedFiles) => {
+    setProfilePicture(acceptedFiles[0]);
+  };
+
+  const handleCoverPhotoDrop = (acceptedFiles) => {
+    setCoverPhoto(acceptedFiles[0]);
+  };
+  
+  const handleProfilePicUpload = async (profilePicture) =>
+  {
+    try {
+      const secureUrl = await uploadImage(profilePicture);
+      console.log(secureUrl);
+
+      if (secureUrl) {
+        try {
+          await uploadProfilePic({
+            
+            variables: {
+              profile_pic: secureUrl,
+            },
+          });
+          console.log('Image uploaded and URL stored in MongoDB.');
+        } catch (error) {
+          console.error('Error uploading image and storing URL:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+  const handleCoverPhotoUpload = async (coverPhoto) => 
+  {
+    try {
+      const secureUrl = await uploadCoverPhoto(coverPhoto);
+      console.log(secureUrl);
+
+      if (secureUrl) {
+        try {
+          await uploadCoverPic({
+            variables: {
+              cover_photo: secureUrl,
+            },
+          });
+          console.log('Image uploaded and URL stored in MongoDB.');
+        } catch (error) {
+          console.error('Error uploading image and storing URL:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
+  const profilePictureDropzone = useDropzone({
+    accept: {'image/jpeg': ['.jpeg', '.png']},
+    maxFiles:1,
+    onDrop: handleProfilePictureDrop,
+  });
+
+  const coverPhotoDropzone = useDropzone({
+    accept:  {'image/jpeg': ['.jpeg', '.png']},
+    maxFiles:1,
+    onDrop: handleCoverPhotoDrop,
+  });
   return (
     <ProfileContainer>
       <div style={{ marginTop: "1rem" }}>
@@ -123,10 +209,8 @@ const Profile = () => {
       </div>
 
       <StyledDivider />
-
-      <div
-        style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}
-      >
+ {/* PROFILE PIC UPLOAD */}
+         <div style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}>
         <div
           style={{
             marginRight: "1rem",
@@ -135,11 +219,31 @@ const Profile = () => {
             alignItems: "center",
           }}
         >
-          <Avatar
-            variant="square"
-            style={{ width: "90px", height: "90px", marginBottom: "5px" }}
-          />
-          <Typography variant="caption">Max size 2mb</Typography>
+          <div
+            {...profilePictureDropzone.getRootProps()}
+            style={{
+              width: "90px",
+              height: "90px",
+              marginBottom: "5px",
+              border: "2px dashed #ccc",
+              borderRadius: "4px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {profilePicture ? (
+              <img
+                src={URL.createObjectURL(profilePicture)}
+                alt="Profile"
+                style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: "4px" }}
+              />
+            ) : (
+              <Typography variant="caption" textAlign="center">Drop profile picture here</Typography>
+            )}
+          </div>
+          <Typography variant="caption">Max size 10mb</Typography>
         </div>
 
         <div
@@ -152,6 +256,7 @@ const Profile = () => {
         >
           <h3>Profile Picture</h3>
           <StyledButton
+            onClick= {() => handleProfilePicUpload(profilePicture)} //Image upload 
             variant="contained"
             style={{
               width: "150px",
@@ -170,46 +275,69 @@ const Profile = () => {
 
       <StyledDivider />
 
-      <div
-        style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}
-      >
-        <div
-          style={{
-            marginRight: "1rem",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <CoverPhoto variant="square" />
-          <Typography variant="caption">Max size 5mb</Typography> 
-        </div>
+      <div style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}>
+  <div
+    style={{
+      marginRight: "1rem",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    }}
+  >
+    <div
+      {...coverPhotoDropzone.getRootProps()}
+      style={{
+        width: "200px", // Retain the width
+        height: "120px", // Retain the height
+        marginBottom: "5px",
+        border: "2px dashed #ccc",
+        borderRadius: "4px",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {coverPhoto ? (
+        <img
+          src={URL.createObjectURL(coverPhoto)}
+          alt="Cover"
+          style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: "4px" }}
+        />
+      ) : (
+        <Typography variant="caption" textAlign="center">Drop cover photo here</Typography>
+      )}
+    </div>
+    <Typography variant="caption">Max size 10mb</Typography>
+  </div>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            height: "100%",
-          }}
-        >
-          <h3>Cover Photo</h3>
-          <StyledButton
-            variant="contained"
-            style={{
-              width: "150px",
-              margin: "auto 0",
-              marginBottom: "5px",
-              marginTop: "7px",
-            }}
-          >
-            Upload New
-          </StyledButton>
-          <Typography variant="caption">
-            This setting will change your profile's cover photo.
-          </Typography>
-        </div>
-      </div>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      height: "100%",
+    }}
+  >
+    <h3>Cover Photo</h3>
+    <StyledButton
+      onClick={() => handleCoverPhotoUpload(coverPhoto)} // Cover Photo upload logic here
+      variant="contained"
+      style={{
+        width: "150px",
+        margin: "auto 0",
+        marginBottom: "5px",
+        marginTop: "7px",
+      }}
+    >
+      Upload New
+    </StyledButton>
+    <Typography variant="caption">
+      This setting will change your profile's cover photo.
+    </Typography>
+  </div>
+</div>
+
 
       <StyledDivider />
 

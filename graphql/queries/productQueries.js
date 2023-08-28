@@ -79,6 +79,50 @@ query GetAvailableProducts($category: String, $itemId: String, $filter: productF
 }
 `;
 
+export const GET_SUGGESTED_PRODUCT = gql`
+query GetSuggestedProducts($category: String, $itemId: String, $filter: productFilter) {
+  getSuggestedProducts(category: $category, itemId: $itemId, filter: $filter) {
+    _id
+    category
+    product_description
+    photo
+    seller {
+      id
+      name
+      profile_pic
+      rating
+      address {
+        street
+        barangay
+        cityOrMunicipality
+        province
+        region
+      }
+    }
+    item {
+      id
+      englishName
+      tagalogName
+      photo
+      product_type
+    }
+    unit
+    price
+    stocks
+    minimum_order
+    until
+    dateOfHarvest
+    area_limit
+    modeOfDelivery
+    pickup_location
+    deletable
+    status
+    createdAt
+  }
+}
+
+`;
+
 
 export const GET_PRODUCT = gql`
 query GetProduct($productId: String) {
@@ -122,3 +166,5 @@ query GetProduct($productId: String) {
   }
 }
 `;
+
+

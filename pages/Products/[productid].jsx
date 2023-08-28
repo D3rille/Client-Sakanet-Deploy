@@ -62,24 +62,24 @@ export default function Products() {
     router.push("/Products");
   };
 
-  const [productsType, setProductsType] = React.useState("order");
-  const [productsSortBy, setProductsSortBy] = React.useState("available");
-  const [sortBy, setSortBy] = React.useState("All");
-  const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [otherLocation, setOtherLocation] = useState("");
-  const [checkedOther, setCheckedOther] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [productsType, setProductsType] = React.useState("order"); //Order or Preorder 
+  const [productsSortBy, setProductsSortBy] = React.useState("available"); //Available or Suggested Products
+  const [deliveryFilter, setDeliveryFilter] = React.useState("All"); //Delivery Filter
+  const [priceRange, setPriceRange] = useState([0, 1000]); //Price Range Filter
+  const [otherLocation, setOtherLocation] = useState(""); //Location Filter
+  const [checkedOther, setCheckedOther] = useState(false);  //???Reset Filter?
+  const [selectedDate, setSelectedDate] = useState(new Date()); //Date Filter
 
   const handleProductTypeChange = (event, newType) => {
     setProductsType(newType);
   };
 
   const handleSortChange = (event) => {
-    setSortBy(event.target.value);
+    setDeliveryFilter(event.target.value);
   };
 
-  const handleChange = (event) => {
-    setSortBy(event.target.value);
+  const handleDeliveryFilter = (event) => {
+    setDeliveryFilter(event.target.value);
   };
 
   const handleSliderChange = (event, newValue) => {
@@ -98,7 +98,7 @@ export default function Products() {
   
 
   const resetFilters = () => {
-    setSortBy("");
+    setDeliveryFilter("");
     setPriceRange([20, 80]);
     setCheckedOther(false);
     setSelectedDate(new Date());
@@ -230,8 +230,8 @@ export default function Products() {
               <RadioGroup
                 aria-label="mode-of-delivery"
                 name="mode-of-delivery"
-                value={sortBy}
-                onChange={handleChange}
+                value={deliveryFilter}
+                onChange={handleDeliveryFilter}
                 flexDirection="column"
                 sx={{ marginLeft: "1rem", marginBottom: "1rem" }}
               >
@@ -450,7 +450,7 @@ export default function Products() {
                 </div>
               </Paper>
               <div className={styles.productGridContainer}>
-{productsType === "order" ? <OrderProductGrid productId={productId} /> : <PreOrderProductGrid productId={productId} />}
+{productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} /> : <PreOrderProductGrid productId={productId} sortBy={productsSortBy} />}
 
   <div
     style={{

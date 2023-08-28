@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Link from "next/link";
-import { GET_AVAILABLE_PRODUCTS} from "../graphql/queries/productQueries";
+import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT} from "../graphql/queries/productQueries";
 import { useQuery } from "@apollo/client";
 import { formatWideAddress } from "../util/addresssUtils";
 
@@ -149,45 +149,54 @@ function ProductCard({ product }) {
 }
 
 
-const OrderProductGrid = ({ productId }) => {
-const dummyFilter = {
-  category: "Sell",
-  itemId: "64e1ce75d79545b3991e19e7",
-  filter: {
-
-    modeOfDelivery: "pick-up", 
-    area_limit: "Quezon",
-  },
-};
-
-  //Query for Products
-  const { data, loading, error } = useQuery(GET_AVAILABLE_PRODUCTS, {
-    variables: {
-      category: "Sell",
-      itemId: productId,
-      filter: dummyFilter.filter,
+const OrderProductGrid = ({ productId, sortBy }) => {
+  let products = [];
+  const dummyFilter = { //TODO: take in filter prop from [propId].jsx 
+    category: 'Sell',
+    itemId: '64e1ce75d79545b3991e19e7',
+    filter: {
+      modeOfDelivery: 'pick-up',
+      area_limit: 'Quezon',
     },
-  });
+  };
 
-  if (loading) return <p>Loading...</p>;
+  // Use different queries based on the sortBy property
+  const { data, loading, error } = sortBy === 'available'
+    ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
+        variables: {
+          category: 'Sell',
+          itemId: productId,
+          filter: dummyFilter.filter,
+        },
+      })
+    : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
+        variables: {
+          category: 'Sell',
+          itemId: productId,
+          filter: dummyFilter.filter,
+        },
+      });
+
+  if (loading) return <p>Loading...</p>; //Implement Loading and Error messaging
   if (error) return <p>Error: {error.message}</p>;
 
-  const availableProducts = data.getAvailableProducts;
-
-  console.log(availableProducts);
-
+  if (sortBy === 'available') {
+    products = data.getAvailableProducts;
+  } else if (sortBy === 'suggested') {
+    products = data.getSuggestedProducts;
+  }
 
   return (
     <div
       style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        gap: "16px",
-        marginTop: "20px",
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        gap: '16px',
+        marginTop: '20px',
       }}
     >
-      {availableProducts.map((product) => (
-        <ProductCard key={productId} product={product} />
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} />
       ))}
     </div>
   );

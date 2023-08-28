@@ -1,9 +1,32 @@
 import crypto from 'crypto';
 
-//Image Upload to cloudinary
+//Profile Pic Upload to cloudinary
 export async function uploadImage(imageFile) {
   const data = new FormData();
   data.append('file', imageFile);
+  data.append('folder', 'profile_pic')
+  data.append('upload_preset', 'sakanet');
+  data.append('cloud_name', 'sakanet');
+
+  try {
+    const response = await fetch('https://api.cloudinary.com/v1_1/sakanet/image/upload', {
+      method: 'post',
+      body: data,
+    });
+
+    const cloudinaryData = await response.json();
+    return cloudinaryData.secure_url;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+//Cover Photo Upload to cloudinary
+export async function uploadCoverPhoto(imageFile) {
+  const data = new FormData();
+  data.append('file', imageFile);
+  data.append('folder', 'cover_photo')
   data.append('upload_preset', 'sakanet');
   data.append('cloud_name', 'sakanet');
 
