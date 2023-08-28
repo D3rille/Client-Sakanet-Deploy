@@ -19,15 +19,17 @@ import styles from "../../styles/products.module.css";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "@mui/material/Pagination";
 import ProductsToggleButton from "../../components/ProductsToggleButton";
-import { GET_ALL_MARKET_PRODUCTS } from "../../graphql/queries/productQueries";
+import { GET_ALL_MARKET_PRODUCTS, GET_AVAILABLE_MARKET_PRODUCTS } from "../../graphql/queries/productQueries";
 import { useQuery } from "@apollo/client";
+import ProductCategories from "../../components/ProductCategory";
 
 function ProductCard({ product }) {
   return (
     <Card
       sx={{
         width: "100%",
-        height: "297px",
+        maxWidth: "400px",
+        height: "305px",
         borderRadius: "12px",
         mb: 1,
         boxShadow: 3,
@@ -51,7 +53,7 @@ function ProductCard({ product }) {
          </Typography>
       </CardContent>
       <Button
-        href="/Products/availableProducts"
+        href={`/Products/${product._id}`}
         // passHref
         variant="contained"
         endIcon={<ArrowForwardIosIcon />}
@@ -62,8 +64,10 @@ function ProductCard({ product }) {
           fontSize: "0.7rem",
           borderBottomLeftRadius: "12px",
           borderBottomRightRadius: "12px",
-          margin: 0,
-          borderRadius: 0,
+          position: "absolute",
+          bottom: "0",
+          left: "0", 
+          right: "0",
         }}
       >
         View available products
@@ -72,23 +76,14 @@ function ProductCard({ product }) {
   );
 }
 
-const ProductsGrid = () => {
-   const { loading, error, data } = useQuery(GET_ALL_MARKET_PRODUCTS, {
-    variables: {
-      type: "Leafy Vegetables", 
-    },
-  });
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  const productData = data.getAllMarketProducts;
+const ProductsGrid = ( { productData }) => {
+  
 
   return (
   <div
   style={{
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", // Adjust the minmax values as needed
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
     gap: "16px",
     marginTop: "20px",
   }}
@@ -102,12 +97,39 @@ const ProductsGrid = () => {
 };
 
 export default function Products() {
+ const [selectedCategory, setSelectedCategory] = useState("");
+const [selectedProductType, setSelectedProductType] = useState('all');
+const { loading, error, data } = useQuery(
+  selectedProductType === "available"
+    ? GET_AVAILABLE_MARKET_PRODUCTS
+    : GET_ALL_MARKET_PRODUCTS,
+  {
+    variables: {
+      type: selectedCategory,
+    },
+  }
+);
 
+
+const handleProductTypeChange = (newType) => {
+  setSelectedProductType(newType);
+};
+
+if (loading) return <p>Loading...</p>;
+if (error) return <p>Error: {error.message}</p>;
+
+const productData = selectedProductType === "available"
+  ? data.getAvailableMarketProducts
+  : data.getAllMarketProducts;
+  
   return (
     <Grid container className={styles.gridContainer}>
       <Grid item xs={12}>
         <Paper elevation={3} className={styles.paperContainer}>
-        <ProductsToggleButton />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <ProductCategories onCategoryChange={setSelectedCategory} />
+            <ProductsToggleButton onProductTypeChange={handleProductTypeChange}/>
+          </div>
           <Paper elevation={3} className={styles.logosearchbar}>
             <TextField
               size="small"
@@ -145,7 +167,7 @@ export default function Products() {
             />
           </Paper>
           <div className={styles.productGridContainer}>
-            <ProductsGrid />
+            <ProductsGrid  productData={productData}/>
           </div>
           <div
             style={{

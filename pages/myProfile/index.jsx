@@ -49,7 +49,7 @@ export default function MyProfile(){
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
-    const { profile_pic, username, address, is_verified, role, rating, ratingStatistics, account_mobile, account_email } = data.getMyProfile;
+    const { profile_pic, username, address, is_verified, role, rating, ratingStatistics, account_mobile, account_email, cover_photo} = data.getMyProfile;
 
     const ratingsData = {
         5: ratingStatistics.oneStar ?? 0,
@@ -68,7 +68,7 @@ export default function MyProfile(){
             <div className={styles.profileContainer}>
                 <div className={styles.topPortion}>
                     <div className={styles.userCoverImg}>
-                        <Image className={styles.coverphoto} src={coverPhoto} alt="Cover Photo" />
+                        <img className={styles.coverphoto} src={cover_photo} alt="Cover Photo" />
                     </div>
                     <div className={styles.profileImg}>
                         <Avatar src={profile_pic} className={styles.profilephoto}/>

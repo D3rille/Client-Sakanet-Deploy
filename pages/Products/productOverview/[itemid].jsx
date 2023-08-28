@@ -18,27 +18,49 @@ import {
     TableHead,
     TableRow,
   } from "@mui/material";
-  import styles from "../../styles/productOverview.module.css";
+import styles from "../../../styles/productOverview.module.css";
+import { useRouter } from "next/router";
+import { useQuery } from "@apollo/client";
+import { GET_PRODUCT } from "../../../graphql/queries/productQueries";
+import { formatWideAddress } from "../../../util/addresssUtils";
   
   export default function ProductOverview() {
-    const productDetails = [
-      { key: "Stocks", value: "130kg" },
-      { key: "Location", value: "Pagbilao, Quezon" },
-      { key: "Pick up", value: "Yes" },
-      { key: "Time Limit", value: "September 1, 2023" },
-    ];
+    const router = useRouter();
+    const queryData = router.query.itemid
+    
+
+    const { data, loading, error } = useQuery(GET_PRODUCT, {
+    variables: {
+      productId: queryData,
+    },
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+
+ 
+  const product = data.getProduct;
+
+  console.log(product);
+    // const productDetails = [
+    //   { key: "Stocks", value: "130kg" },
+    //   { key: "Location", value: "Pagbilao, Quezon" },
+    //   { key: "Pick up", value: "Yes" },
+    //   { key: "Time Limit", value: "September 1, 2023" },
+    // ];
   
-    const product = {
-      img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      title: "Apple | Mansanas",
-      price: 37,
-      description: "Short description about the product.",
-      seller: {
-        name: "Juan Dela Cruz",
-        avatar: "JD",
-        rating: 4.7,
-      },
-    };
+    // const product = {
+    //   img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    //   title: "Apple | Mansanas",
+    //   price: 37,
+    //   description: "Short description about the product.",
+    //   seller: {
+    //     name: "Juan Dela Cruz",
+    //     avatar: "JD",
+    //     rating: 4.7,
+    //   },
+    // };
   
     return (
       <Grid container className={styles.gridContainer}>
@@ -74,7 +96,7 @@ import {
                     border: "20px solid #FEFEFF" }}
 
                     className={styles.mobileCardMedia}
-                  image={product.img}
+                  image={product.item.photo}
                   alt={product.title}
                   
                   
@@ -91,7 +113,7 @@ import {
                   <div>
                     <Box display="flex" alignItems="center" mb={2}>
                       <Avatar
-                        src={product.seller.avatar}
+                        src={product.seller.profile_pic}
                         sx={{ mr: 3, width: "50px", height: "50px" }}
                       >
                         {product.seller.avatar}
@@ -116,7 +138,7 @@ import {
                       {product.title}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      ₱ {product.price} /kg
+                      ₱ {product.price} /{product.unit}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -124,7 +146,7 @@ import {
                       gutterBottom
                       sx={{ marginTop: 2, marginBottom: 2 }}
                     >
-                      {product.description}
+                      {product.product_description}
                     </Typography>
                   </div>
                   <div>
@@ -144,15 +166,16 @@ import {
                       variant="contained"
                       sx={{
                         backgroundColor: "#2F613A",
-                        borderRadius: 20,
+                        borderRadis: 20,
                         flex: 2,
                       }}
                     >
                       Add to Cart
                     </Button>
-                    <a href="availableProducts">
+                    {/* <a href="availableProducts"> */}
                       <Button
                         variant="contained"
+                        onClick={() => router.back()}
                         sx={{
                           backgroundColor: "#F6F6F6",
                           color: "#2F613A",
@@ -162,7 +185,6 @@ import {
                       >
                         Cancel
                       </Button>
-                    </a>
                   </Box>
                 </CardContent>
               </Card>
@@ -180,6 +202,8 @@ import {
                 marginTop:'3rem'
               }}
             >
+
+              {/* Product Description */}
               <TableContainer>
                 <Table sx={{ minWidth: 650 }}>
                   <TableHead>
@@ -189,15 +213,32 @@ import {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {productDetails.map((detail, index) => (
-                      <TableRow key={detail.key} className={styles.alternateRow}>
-                        <TableCell>{detail.key}</TableCell>
-                        <TableCell>{detail.value}</TableCell>
+                      <TableRow className={styles.alternateRow}>
+                        <TableCell>Stocks</TableCell>
+                        <TableCell>{product.stocks}</TableCell>
                       </TableRow>
-                    ))}
+                      <TableRow className={styles.alternateRow}>
+                        <TableCell>Location</TableCell>
+                        <TableCell>{formatWideAddress(product.seller.address)}</TableCell>
+                      </TableRow>
+                      <TableRow className={styles.alternateRow}>
+                        <TableCell>Delivery Method</TableCell>
+                        <TableCell>{product.modeOfDelivery}</TableCell>
+                      </TableRow>
+                      {product.modeOfDelivery === "pick-up" ? ( //Check if delivery mode pick then display location
+                        <TableRow className={styles.alternateRow}>
+                          <TableCell>Pickup Location</TableCell>
+                          <TableCell>{product.pickup_location}</TableCell>
+                        </TableRow>
+                      ) : null}
+                      <TableRow className={styles.alternateRow}>
+                        <TableCell>Time Limit</TableCell>
+                        <TableCell>{product.until}</TableCell>
+                      </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
+
             </Paper>
           </Paper>
         </Grid>

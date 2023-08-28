@@ -2,11 +2,11 @@ import * as React from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-export function ProductsToggleButton() {
-  const [productsType, setProductsType] = React.useState('all');
+export function ProductsToggleButton({ productsType, onProductTypeChange }) {
 
   const handleProductTypeChange = (event, newType) => {
-    setProductsType(newType);
+    onProductTypeChange(newType);
+
   };
 
   return (
