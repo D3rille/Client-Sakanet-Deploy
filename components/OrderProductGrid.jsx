@@ -149,35 +149,27 @@ function ProductCard({ product }) {
 }
 
 
-const OrderProductGrid = ({ productId, sortBy }) => {
+const OrderProductGrid = ({ productId, sortBy, filter }) => {
   let products = [];
-  const dummyFilter = { //TODO: take in filter prop from [propId].jsx 
-    category: 'Sell',
-    itemId: '64e1ce75d79545b3991e19e7',
-    filter: {
-      modeOfDelivery: 'pick-up',
-      area_limit: 'Quezon',
-    },
-  };
-
+  
   // Use different queries based on the sortBy property
   const { data, loading, error } = sortBy === 'available'
     ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
         variables: {
           category: 'Sell',
           itemId: productId,
-          filter: dummyFilter.filter,
+          filter: filter,
         },
       })
     : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
         variables: {
           category: 'Sell',
           itemId: productId,
-          filter: dummyFilter.filter,
+          filter: filter,
         },
       });
 
-  if (loading) return <p>Loading...</p>; //Implement Loading and Error messaging
+  if (loading) return <p>Loading...</p>; //TODO: Implement Loading and Error messaging
   if (error) return <p>Error: {error.message}</p>;
 
   if (sortBy === 'available') {

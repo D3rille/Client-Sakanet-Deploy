@@ -43,24 +43,7 @@ import { formatWideAddress } from "../../../util/addresssUtils";
   const product = data.getProduct;
 
   console.log(product);
-    // const productDetails = [
-    //   { key: "Stocks", value: "130kg" },
-    //   { key: "Location", value: "Pagbilao, Quezon" },
-    //   { key: "Pick up", value: "Yes" },
-    //   { key: "Time Limit", value: "September 1, 2023" },
-    // ];
   
-    // const product = {
-    //   img: "https://images.pexels.com/photos/6097872/pexels-photo-6097872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    //   title: "Apple | Mansanas",
-    //   price: 37,
-    //   description: "Short description about the product.",
-    //   seller: {
-    //     name: "Juan Dela Cruz",
-    //     avatar: "JD",
-    //     rating: 4.7,
-    //   },
-    // };
   
     return (
       <Grid container className={styles.gridContainer}>

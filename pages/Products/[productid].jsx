@@ -41,21 +41,6 @@ import RemoveIcon from "@mui/icons-material/Remove";
 
 
 export default function Products() {
-  const [showInput, setShowInput] = useState(false);
-  const [locationList, setLocationList] = useState([]);
-  const [currentLocation, setCurrentLocation] = useState("");
-
-  const handleAddLocation = () => {
-    setLocationList((prevList) => [...prevList, currentLocation]);
-    setCurrentLocation(""); 
-  };
-
-  const handleRemoveLocation = (index) => {
-    const newLocations = [...locationList];
-    newLocations.splice(index, 1);
-    setLocationList(newLocations);
-  };
-
   const router = useRouter();
   const productId = router.query.productid; //Product Id for dynamic page
   const goBack = () => {
@@ -64,18 +49,24 @@ export default function Products() {
 
   const [productsType, setProductsType] = React.useState("order"); //Order or Preorder 
   const [productsSortBy, setProductsSortBy] = React.useState("available"); //Available or Suggested Products
-  const [deliveryFilter, setDeliveryFilter] = React.useState("All"); //Delivery Filter
+  const [deliveryFilter, setDeliveryFilter] = React.useState(""); //Delivery Filter
   const [priceRange, setPriceRange] = useState([0, 1000]); //Price Range Filter
-  const [otherLocation, setOtherLocation] = useState(""); //Location Filter
-  const [checkedOther, setCheckedOther] = useState(false);  //???Reset Filter?
-  const [selectedDate, setSelectedDate] = useState(new Date()); //Date Filter
+  const [currentLocation, setCurrentLocation] = useState("");//Area Limit Filter
+  const [selectedDate, setSelectedDate] = useState(null); //Date Filter
+
+  const productFilters = 
+   {
+      modeOfDelivery: deliveryFilter,      
+      area_limit: currentLocation,
+      maxPrice: priceRange[1],
+      minPrice: priceRange[0],
+      until: selectedDate,
+      
+    }
+  ;
 
   const handleProductTypeChange = (event, newType) => {
     setProductsType(newType);
-  };
-
-  const handleSortChange = (event) => {
-    setDeliveryFilter(event.target.value);
   };
 
   const handleDeliveryFilter = (event) => {
@@ -99,10 +90,9 @@ export default function Products() {
 
   const resetFilters = () => {
     setDeliveryFilter("");
-    setPriceRange([20, 80]);
-    setCheckedOther(false);
-    setSelectedDate(new Date());
-    setOtherLocation("");
+    setPriceRange([0, 1000]);
+    setSelectedDate(null);
+    setCurrentLocation("");
   };
 
   
@@ -236,7 +226,7 @@ export default function Products() {
                 sx={{ marginLeft: "1rem", marginBottom: "1rem" }}
               >
                 <FormControlLabel
-                  value="Pick Up"
+                  value="pick-up"
                   control={
                     <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
                   }
@@ -245,7 +235,7 @@ export default function Products() {
                   }
                 />
                 <FormControlLabel
-                  value="Delivery"
+                  value="delivery"
                   control={
                     <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
                   }
@@ -254,7 +244,7 @@ export default function Products() {
                   }
                 />
                 <FormControlLabel
-                  value="All"
+                  value=""
                   control={
                     <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
                   }
@@ -319,62 +309,14 @@ export default function Products() {
                 Area Limit
               </Typography>
 
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <IconButton
-                  color="primary"
-                  style={{ color: "#2E603A" }}
-                  onClick={() => setShowInput(!showInput)}
-                >
-                  <AddIcon />
-                </IconButton>
-                {showInput && (
-                  <TextField
-                    placeholder="Quezon"
-                    variant="outlined"
-                    size="small"
-                    style={{ marginLeft: "1rem", borderColor: "#2E603A" }}
-                    value={currentLocation}
-                    onChange={(e) => setCurrentLocation(e.target.value)}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&:hover fieldset": { borderColor: "#2F603B" },
-                        "&.Mui-focused fieldset": { borderColor: "#2F603B" },
-                      },
-                    }}
-                  />
-                )}
-              </div>
-
-              <List>
-                {locationList.map((location, index) => (
-                  <ListItem key={index}>
-                    <ListItemIcon>
-                      <IconButton
-                        onClick={() => handleRemoveLocation(index)}
-                        style={{ color: "#2E603A" }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </ListItemIcon>
-                    <ListItemText primary={location} />
-                  </ListItem>
-                ))}
-              </List>
-              {showInput && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    marginTop: "1rem",
-                    marginBottom: "1rem",
-                    backgroundColor: "#2E603A",
-                    width: "100%",
-                  }}
-                  onClick={handleAddLocation}
-                >
-                  Add Location
-                </Button>
-              )}
+              <TextField
+                  placeholder="Enter location: ex. Quezon"
+                  variant="outlined"
+                  size="small"
+                  style={{ borderColor: "#2E603A", width: "100%" }}
+                  value={currentLocation}
+                  onChange={(e) => setCurrentLocation(e.target.value)}
+                />
 
               <Divider sx={{ marginTop: "1rem" }} />
 
@@ -394,6 +336,8 @@ export default function Products() {
                   sx={{
                     width: "100%",
                   }}
+                  value={selectedDate}
+                  onAccept={(newValue) => setSelectedDate(newValue.toISOString())} // This triggers after user selects a date                  
                 />
               </LocalizationProvider>
 
@@ -407,7 +351,7 @@ export default function Products() {
                 }}
                 onClick={resetFilters}
               >
-                SEARCH
+                CLEAR FILTERS
               </Button>
             </Paper>
             <div className={styles.parentContainer}>
@@ -450,7 +394,8 @@ export default function Products() {
                 </div>
               </Paper>
               <div className={styles.productGridContainer}>
-{productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} /> : <PreOrderProductGrid productId={productId} sortBy={productsSortBy} />}
+{productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters} /> : 
+<PreOrderProductGrid productId={productId} sortBy={productsSortBy} />}
 
   <div
     style={{

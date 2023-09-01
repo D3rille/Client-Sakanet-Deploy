@@ -10,10 +10,11 @@ import {
 import { styled } from "@mui/system";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { uploadCoverPhoto, uploadImage } from "../../util/imageUtils";
+import { imageDelete, uploadCoverPhoto, uploadImage } from "../../util/imageUtils";
 import { UPLOAD_COVER_PIC, UPLOAD_PROFILE_PIC } from "../../graphql/mutations/imageMutations";
 import { useMutation } from "@apollo/client";
 import { GET_MY_PROFILE } from "../../graphql/queries/userProfileQueries";
+import { UPDATE_DISPLAY_NAME } from "../../graphql/mutations/settingsMutations";
 
 
 
@@ -77,9 +78,11 @@ const SaveButtonContainer = styled("div")({
   });
 
 
-const Profile = () => {
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [coverPhoto, setCoverPhoto] = useState(null);
+const Profile = ({currentProfilePic, currentCoverPic}) => {
+  const [profilePicture, setProfilePicture] = useState(null); //Profile Pic
+  const [coverPhoto, setCoverPhoto] = useState(null); //Cover photo
+  const [displayName, setDisplayName] = useState(""); // Display Name
+
   const [uploadProfilePic] = useMutation(UPLOAD_PROFILE_PIC,{
     refetchQueries:[
       GET_MY_PROFILE
@@ -91,6 +94,20 @@ const Profile = () => {
     ]
   });
 
+  const [updateDisplayName] = useMutation(UPDATE_DISPLAY_NAME,{
+    refetchQueries:[
+      GET_MY_PROFILE
+    ]
+  });
+  const handleSave = () => {
+    if (displayName !== "") {
+      updateDisplayName({
+        variables: {
+          displayName: displayName
+        }
+      });
+  }
+}
   const handleProfilePictureDrop = (acceptedFiles) => {
     setProfilePicture(acceptedFiles[0]);
   };
@@ -101,6 +118,10 @@ const Profile = () => {
   
   const handleProfilePicUpload = async (profilePicture) =>
   {
+      if (currentCoverPic !== "" || null)
+    {
+      imageDelete(currentProfilePic);
+    }
     try {
       const secureUrl = await uploadImage(profilePicture);
       console.log(secureUrl);
@@ -124,6 +145,10 @@ const Profile = () => {
   };
   const handleCoverPhotoUpload = async (coverPhoto) => 
   {
+    if (currentCoverPic !== "" || null)
+    {
+      imageDelete(currentCoverPic)
+    }
     try {
       const secureUrl = await uploadCoverPhoto(coverPhoto);
       console.log(secureUrl);
@@ -158,8 +183,10 @@ const Profile = () => {
   });
   return (
     <ProfileContainer>
+      
+      {/* Display Name */}
       <div style={{ marginTop: "1rem" }}>
-        <h3>Display Name</h3>
+        <h3>Display Name</h3> 
         <UsernameField
           variant="outlined"
           placeholder="Enter your display name"
@@ -169,6 +196,8 @@ const Profile = () => {
               marginTop: "10px",
             },
           }}
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
         />
         {/*
         <Typography variant="caption" style={{ display: "block" }}>
@@ -360,7 +389,7 @@ const Profile = () => {
       </div>
 
       <SaveButtonContainer>
-        <StyledButton variant="contained" style={{marginBottom: '1rem',}}>Save Changes</StyledButton>
+        <StyledButton variant="contained" onClick={handleSave} style={{marginBottom: '1rem',}}>Save Changes</StyledButton>
       </SaveButtonContainer>
     </ProfileContainer>
   );

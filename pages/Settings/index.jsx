@@ -12,6 +12,8 @@ import EmailAndPassword from "../../components/settingsComponents/PasswordAndEma
 import PaymentChannels from "../../components/settingsComponents/PaymentChannels";
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import { useQuery } from '@apollo/client';
+import { GET_MY_PROFILE } from '../../graphql/queries/userProfileQueries';
 
 const GridContainer = styled(Grid)({
     background: '#F4F4F4',
@@ -88,6 +90,14 @@ const StyledTab = styled(Tab)({
 
 const Settings = () => {
     const [value, setValue] = React.useState(0);
+    
+
+    const { loading, error, data } = useQuery(GET_MY_PROFILE);
+     const { profile_pic, cover_photo} = data.getMyProfile;
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error.message}</p>;
+
+    
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -156,7 +166,7 @@ const Settings = () => {
                     </InnerPaperLeft>
                     <ParentContainer>
                         <InnerPaperRight elevation={3}>
-                            {value === 0 && <Profile />}
+                            {value === 0 && <Profile currentProfilePic = {profile_pic} currentCoverPic = {cover_photo} />}
                             {value === 1 && <EmailAndPassword />}
                             {value === 2 && <PaymentChannels />}
                         </InnerPaperRight>

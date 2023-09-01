@@ -8,10 +8,8 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 
 const ProductCategories = ({categoryType, onCategoryChange }) => {
-  // const [productsSortBy, setProductsSortBy] = useState(""); 
   const handleProductsSortChange = (event) => {
     const selectedCategory = event.target.value;
-    // setProductsSortBy(selectedCategory);
     onCategoryChange(selectedCategory);
   };
   return (
