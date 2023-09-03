@@ -15,6 +15,7 @@ import client from "../graphql/apollo-client";
 import ClientOnly from "../components/ClientOnly";
 import {AuthProvider} from '../context/auth';
 import AuthRoute from '../util/AuthRoute';
+import { SubscriptionProvider } from '../context/SubscriptionProvider.js';
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -48,16 +49,18 @@ export default function MyApp(props) {
             {excludeLayout ? (
               // Render content without Layout
               <ClientOnly>
-                <AuthRoute component={Component} {...pageProps} />
-                {/* <Component {...pageProps}/> */}
+                {/* <AuthRoute component={Component} {...pageProps} /> */}
+                <Component {...pageProps}/>
               </ClientOnly>
             ) : (
               // Render content with Layout
               <ClientOnly>
+                <SubscriptionProvider>
                 <Layout>
                 <AuthRoute component={Component} {...pageProps} />
                 {/* <Component {...pageProps}/> */}
                 </Layout>
+                </SubscriptionProvider>
               </ClientOnly>
             )}
           </ThemeProvider>

@@ -1,11 +1,11 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
-import Popover from '@mui/material/Popover';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import { useNotification } from "../context/notificationContext";
-import { useEffect } from 'react';
 
+import { useEffect } from 'react';
+import { useSubs } from '../context/SubscriptionProvider.js';
+import {timePassed} from "../util/dateUtils";
 
 const markAsRead = () => {
     
@@ -98,69 +98,52 @@ const NotificationContent = styled('div')({
     overflowY: 'auto'
 });
 
-const Notifications = ({ anchorEl, handleClose }) => {
-    const { notifData, subscribeToMoreNotif } = useNotification();
-    useEffect(() => subscribeToMoreNotif(), [notifData]);
+const Notifications = () => {
+    const { notifData } = useSubs();
 
-    if (!notifData || notifData == [] || notifData.length === 0) {
+    if (!notifData || notifData == []) {
         return (<p>No Notifications<br></br></p>);
     }
 
     return (
-        <Popover
-            open={Boolean(anchorEl)}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-            }}
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-            }}
-            sx={{
-                borderRadius: '10px'
-            }}
-        >
-            <NotificationContainer>
-                <NotificationHeader>
-                    <NotificationsActiveIcon color="action" style={{ color: "#2F613A", marginRight: "8px" }} />
-                    Notifications
-                </NotificationHeader>
-                <StyledDivider />
-                <NotificationContent>
-                    {notifData && notifData.getNotifications.map((notif) => (
-                        <React.Fragment key={notif.id}>
-                            <NotificationItem>
-                                <LeftSection>
-                                    <Avatar />
-                                    <UserInfo>
-                                        <div>
-                                            <span style={{ fontWeight: 'bold' }}>{notif.from}</span>
-                                        </div>
-                                        <div>{notif.message}</div>
-                                    </UserInfo>
-                                </LeftSection>
-                                <span style={{
-                                    fontSize: '0.77rem',
-                                    fontWeight: 100,
-                                    marginRight: '1.1rem',
-                                    color: '#D4D4D4',
-                                    margin: '0.6rem',
-                                }}>{notif.createdAt}</span>
-                            </NotificationItem>
-                            {notifData.length !== notifData.length - 1 && <StyledDivider />}
-                        </React.Fragment>
-                    ))}
-                </NotificationContent>
-                <NotificationFooter>
-                    <FooterAction onClick={markAsRead}>Mark all as read</FooterAction>
-                    <VerticalDivider />
-                    <FooterAction onClick={clearAllNotifications}>Clear all</FooterAction>
-                </NotificationFooter>
-            </NotificationContainer>
-        </Popover>
+        <NotificationContainer>
+            <NotificationHeader>
+                <NotificationsActiveIcon color="action" style={{ color: "#2F613A", marginRight: "8px" }} />
+                Notifications
+            </NotificationHeader>
+            <StyledDivider />
+            <NotificationContent>
+                {notifData && notifData.getNotifications.map((notif) => (
+                    <React.Fragment key={notif._id}>
+                        <NotificationItem>
+                            <LeftSection>
+                                <Avatar />
+                                <UserInfo>
+                                    <div>
+                                        <span style={{ fontWeight: 'bold' }}>{notif.from}</span>
+                                    </div>
+                                    <div>{notif.message}</div>
+                                </UserInfo>
+                            </LeftSection>
+                            <span style={{
+                                fontSize: '0.77rem',
+                                fontWeight: 100,
+                                marginRight: '1.1rem',
+                                color: '#D4D4D4',
+                                margin: '0.6rem',
+                            }}>{timePassed(notif.createdAt)}</span>
+                        </NotificationItem>
+                        {notifData.length !== notifData.length - 1 && <StyledDivider />}
+                    </React.Fragment>
+                ))}
+            </NotificationContent>
+            <NotificationFooter>
+                <FooterAction onClick={markAsRead}>Mark all as read</FooterAction>
+                <VerticalDivider />
+                <FooterAction onClick={clearAllNotifications}>Clear all</FooterAction>
+            </NotificationFooter>
+        </NotificationContainer>
+      
     );
 };
 

@@ -29,7 +29,7 @@ import { useRouter } from "next/router";
 import { AuthContext } from "@/context/auth";
 import Image from "next/image";
 import { GET_MY_PROFILE } from "../graphql/queries/userProfileQueries";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import CartModal from "./CartModal";
 import Notifications from './Notifications';
 import client from "@/graphql/apollo-client";
@@ -38,7 +38,11 @@ import OrderIcon from "@mui/icons-material/Assignment";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ListItemIcon from "@mui/material/ListItemIcon";
-
+import { useSubs } from "../context/SubscriptionProvider.js";
+import Popover from '@mui/material/Popover';
+import Badge from '@mui/material/Badge';
+import {READ_ALL_NOTIF} from "../graphql/mutations/noficationMutations";
+import { GET_NOTIFICATIONS } from "@/graphql/subscriptions/notificationSub";
 
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -50,6 +54,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const Navbar = () => {
+  const {newNotifCount} = useSubs();
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const Dropdown = ["Orders", "Cart", "Settings", "Logout"];
   const { user, logout } = useContext(AuthContext);
@@ -62,8 +67,14 @@ const Navbar = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
 
+  //Reading all Notification
+  const [readAllNotif] = useMutation(READ_ALL_NOTIF, {
+    refetchQueries:[GET_NOTIFICATIONS]
+  });
+
   const handleNotifClick = (event) => {
     setNotifAnchorEl(event.currentTarget);
+    readAllNotif();
   };
 
   const handleNotifClose = () => {
@@ -71,9 +82,7 @@ const Navbar = () => {
   };
 
   const [notificationOpen, setNotificationOpen] = useState(false);
-const [notifications, setNotifications] = useState([
-  { user: 'Rachel Green', activity: 'Liked your post.', time: '3 min ago', unread: true },
-]);
+  const [notifications, setNotifications] = useState([]);
 
 const handleNotificationClick = () => {
   setNotificationOpen(!notificationOpen);
@@ -316,18 +325,17 @@ const markAllAsRead = () => {
           </div>
           <div className={styles.components}>
             <div className={styles.username}>
-              {/* <Chip
-                  variant="plain"
-                  color="neutral"
-                  size="lg"
-                  sx={{marginLeft:'20px'}}
-                  startDecorator={<Avatar size="lg" src={Profile} />}
-              >
-                  Juan Dela Cr...
-              </Chip> */}
-              {/* <Chip label="Chip Outlined" variant="outlined" /> */}
-
-              <Chip
+              {router.pathname == "/myProfile" ? (
+                <Chip
+                avatar={<Avatar src={profile_pic} />}
+                onClick={() => {
+                  router.push("/myProfile");
+                }}
+                label={user?.username ?? "user"}
+                color = "success"
+              />
+              ):(
+                <Chip
                 avatar={<Avatar src={profile_pic} />}
                 onClick={() => {
                   router.push("/myProfile");
@@ -335,6 +343,7 @@ const markAllAsRead = () => {
                 label={user?.username ?? "user"}
                 variant="outlined"
               />
+              )}
             </div>
             <div className={styles.icons}>
               <Avatar
@@ -348,21 +357,47 @@ const markAllAsRead = () => {
                 <Image
                   src={message}
                   alt="Travis Howard"
-                  width={40}
-                  height={40}
+                  width={30}
+                  height={30}
                 />
               </Avatar>
-              <Avatar onClick={handleNotifClick}
+              <Badge badgeContent={newNotifCount} color="primary">
+                <Image 
                 sx={{
                   cursor: "pointer",
                   bgcolor: "transparent",
                   "& img": { width: "auto", height: "auto" },
                 }}
-                alt="Notifications"
+                onClick={handleNotifClick} src={notif} alt="Notifications" width={30} height={30} />
+                {/* <Avatar onClick={handleNotifClick}
+                  sx={{
+                    cursor: "pointer",
+                    bgcolor: "transparent",
+                    "& img": { width: "auto", height: "auto" },
+                  }}
+                  alt="Notifications"
+                >
+                  
+                </Avatar> */}
+              </Badge>
+              <Popover
+                  open={Boolean(notifAnchorEl)}
+                  anchorEl={notifAnchorEl}
+                  onClose={handleNotifClose}
+                  anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                  }}
+                  sx={{
+                      borderRadius: '10px'
+                  }}
               >
-                <Image src={notif} alt="Notifications" width={40} height={40} />
-              </Avatar>
-              <Notifications anchorEl={notifAnchorEl} handleClose={handleNotifClose} />
+                <Notifications/>
+              </Popover>
               <Avatar
                 sx={{
                   cursor: "pointer",

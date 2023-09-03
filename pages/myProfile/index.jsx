@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import Avatar from '@mui/material/Avatar';
 import styles from '../../styles/Profile.module.css';
 import coverPhoto from '../../public/images/coverphoto.jpg';
-import profilePhoto from '../../public/images/pfp.jpg';
+// import profilePhoto from '../../public/images/pfp.jpg';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { TextField,Card, Button,Link } from '@mui/material';
@@ -49,14 +49,22 @@ export default function MyProfile(){
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
-    const { profile_pic, username, address, is_verified, role, rating, ratingStatistics, account_mobile, account_email, cover_photo} = data.getMyProfile;
+    const { profile_pic, 
+        username, address, 
+        is_verified, role, 
+        rating, 
+        ratingStatistics, 
+        account_mobile, 
+        account_email, 
+        cover_photo
+    } = data.getMyProfile.profile;
 
     const ratingsData = {
-        5: ratingStatistics.oneStar ?? 0,
-        4: ratingStatistics.twoStar ?? 0,
+        1: ratingStatistics.oneStar ?? 0,
+        2: ratingStatistics.twoStar ?? 0,
         3: ratingStatistics.threeStar ?? 0,
-        2: ratingStatistics.fourStar ?? 0,
-        1: ratingStatistics.fiveStar ?? 0,
+        4: ratingStatistics.fourStar ?? 0,
+        5: ratingStatistics.fiveStar ?? 0,
     };
 
 
@@ -71,7 +79,7 @@ export default function MyProfile(){
                         <img className={styles.coverphoto} src={cover_photo} alt="Cover Photo" />
                     </div>
                     <div className={styles.profileImg}>
-                        <Avatar src={profile_pic} className={styles.profilephoto}/>
+                        <Avatar src={profile_pic ?? ""} alt="Profile"  className={styles.profilephoto}/>
                         {/* <img className={styles.profilephoto} src={activeProfilePic} alt="Profile Photo" /> */}
                     </div>
                     <div className={styles.username}>
@@ -86,12 +94,12 @@ export default function MyProfile(){
                     variant="h4" 
                     component="span" 
                     style={{ fontWeight: 'bolder', color: '#057a59' }}>
-                        107  
+                        {data.getMyProfile.connections}  
                     </Typography>
                     <Typography 
                     variant="h6" 
                     component="span" 
-                    style={{ fontWeight: 'normal', color: 'black'}}>
+                    style={{ fontWeight: 'normal', color: 'black', marginInline:"4px"}}>
                          Connections
                     </Typography>
                 </Divider>
@@ -166,7 +174,7 @@ export default function MyProfile(){
                             <div className={styles.topContainer}>
                                 <div className={styles.feedInputContainer}>
                                     <div className={styles.avatarContainer}>
-                                        <Avatar src={profilePhoto} alt="">
+                                        <Avatar src={profile_pic ?? ""}>
                                         </Avatar>
                                     </div>
                                     <div className={styles.inputContainer}>
@@ -196,7 +204,7 @@ export default function MyProfile(){
                                     <div className={styles.headPosition}>
                                         <div className={styles.userInfoPortion}>
                                             <div className={styles.userAvatar}>
-                                                <Avatar src={profilePhoto}></Avatar>
+                                                <Avatar src={profile_pic}></Avatar>
                                             </div>
                                             <div className={styles.userInfoDetails}>
                                                 <div className={styles.userName}>Juan Dela Cruz</div>
@@ -229,7 +237,7 @@ export default function MyProfile(){
                                     <div className={styles.headPosition}>
                                         <div className={styles.userInfoPortion}>
                                             <div className={styles.userAvatar}>
-                                                <Avatar src={profilePhoto}></Avatar>
+                                                <Avatar src={profile_pic}></Avatar>
                                             </div>
                                             <div className={styles.userInfoDetails}>
                                                 <div className={styles.userName}>Juan Dela Cruz</div>
@@ -262,7 +270,7 @@ export default function MyProfile(){
                                     <div className={styles.headPosition}>
                                         <div className={styles.userInfoPortion}>
                                             <div className={styles.userAvatar}>
-                                                <Avatar src={profilePhoto}></Avatar>
+                                                <Avatar src={profile_pic}></Avatar>
                                             </div>
                                             <div className={styles.userInfoDetails}>
                                                 <div className={styles.userName}>Juan Dela Cruz</div>
@@ -295,7 +303,7 @@ export default function MyProfile(){
                                     <div className={styles.headPosition}>
                                         <div className={styles.userInfoPortion}>
                                             <div className={styles.userAvatar}>
-                                                <Avatar src={profilePhoto}></Avatar>
+                                                <Avatar src={profile_pic}></Avatar>
                                             </div>
                                             <div className={styles.userInfoDetails}>
                                                 <div className={styles.userName}>Juan Dela Cruz</div>
