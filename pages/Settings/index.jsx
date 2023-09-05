@@ -93,12 +93,11 @@ const Settings = () => {
     
 
     const { loading, error, data } = useQuery(GET_MY_PROFILE);
-     const { profile_pic, cover_photo} = data.getMyProfile;
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
-    
-
+    const { profile_pic, cover_photo } = data.getMyProfile.profile;
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };

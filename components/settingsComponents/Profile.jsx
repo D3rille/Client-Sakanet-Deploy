@@ -118,13 +118,12 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
   
   const handleProfilePicUpload = async (profilePicture) =>
   {
-      if (currentCoverPic !== "" || null)
+      if (currentProfilePic !== "" || null)
     {
       imageDelete(currentProfilePic);
     }
     try {
       const secureUrl = await uploadImage(profilePicture);
-      console.log(secureUrl);
 
       if (secureUrl) {
         try {
@@ -147,11 +146,10 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
   {
     if (currentCoverPic !== "" || null)
     {
-      imageDelete(currentCoverPic)
+      imageDelete(currentCoverPic);
     }
     try {
       const secureUrl = await uploadCoverPhoto(coverPhoto);
-      console.log(secureUrl);
 
       if (secureUrl) {
         try {
