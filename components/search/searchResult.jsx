@@ -24,7 +24,7 @@ function SearchResult({loading, data, query, setQuery, setFocus}){
         return(
             <>
                 <div>
-                    <Paper elevation={3} sx={{overflow:"scroll", maxHeight:"200px", width:"500px"}}>
+                    <Paper elevation={3} sx={{overflow:"scroll", maxHeight:"200px", width:"35vw"}}>
                         <List>
                         {data &&
                             data.searchUsers.map((user) => (
