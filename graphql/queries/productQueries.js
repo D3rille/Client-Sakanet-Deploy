@@ -1,8 +1,9 @@
 import {gql} from "@apollo/client";
 
 export const GET_ALL_MARKET_PRODUCTS = gql`
-  query Query($type: String) {
-    getAllMarketProducts(type: $type) {
+ query GetAllMarketProducts($type: String, $limit: Int, $page: Int) {
+  getAllMarketProducts(type: $type, limit: $limit, page: $page) {
+    product {
       _id
       name {
         english
@@ -14,23 +15,28 @@ export const GET_ALL_MARKET_PRODUCTS = gql`
       averagePrice
       priceChange
     }
+    totalProduct
   }
+}
 `;
 
 
 export const GET_AVAILABLE_MARKET_PRODUCTS = gql`
-query GetAvailableMarketProducts($type: String) {
-  getAvailableMarketProducts(type: $type) {
-    _id
-    name {
-      english
-      tagalog
+query GetAvailableMarketProducts($type: String, $limit: Int, $page: Int) {
+  getAvailableMarketProducts(type: $type, limit: $limit, page: $page) {
+    product {
+      _id
+      name {
+        english
+        tagalog
+      }
+      photo
+      type
+      units
+      averagePrice
+      priceChange
     }
-    photo
-    type
-    units
-    averagePrice
-    priceChange
+    totalProduct
   }
 }
 `;
