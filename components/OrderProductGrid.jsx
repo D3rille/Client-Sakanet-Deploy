@@ -122,7 +122,7 @@ function ProductCard({ product }) {
             borderRadius: 0,
           }}
           component={Link}
-          href={`/Products/productOverviewBuy?productId=${product.id}`}
+          href={`/Products/productOverview/${product._id}`}
         >
           Buy Now
         </Button>
@@ -188,7 +188,7 @@ const OrderProductGrid = ({ productId, sortBy, filter }) => {
       }}
     >
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product._id} product={product} />
       ))}
     </div>
   );

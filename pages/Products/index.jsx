@@ -97,31 +97,57 @@ const ProductsGrid = ( { productData }) => {
 };
 
 export default function Products() {
- const [selectedCategory, setSelectedCategory] = useState("Cereals");
-const [selectedProductType, setSelectedProductType] = useState('all');
-const { loading, error, data } = useQuery(
-  selectedProductType === "available"
-    ? GET_AVAILABLE_MARKET_PRODUCTS
-    : GET_ALL_MARKET_PRODUCTS,
-  {
-    variables: {
-      type: selectedCategory,
-    },
-  }
-);
+  const [selectedCategory, setSelectedCategory] = useState("Cereals");
+  const [selectedProductType, setSelectedProductType] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1); //Pagination
 
-
-const handleProductTypeChange = (newType) => {
-  setSelectedProductType(newType);
+  const handlePageChange = (event, page) => { //Pagination
+  setCurrentPage(page);
 };
 
-if (loading) return <p>Loading...</p>;
-if (error) return <p>Error: {error.message}</p>;
+  const { loading, error, data } = useQuery(
+    selectedProductType === "available"
+      ? GET_AVAILABLE_MARKET_PRODUCTS
+      : GET_ALL_MARKET_PRODUCTS,
+    {
+      variables: {
+        type: selectedCategory,
+        limit:10,
+        page: currentPage,
+      },
+    }
+  );
 
-const productData = selectedProductType === "available"
-  ? data.getAvailableMarketProducts
-  : data.getAllMarketProducts;
+
+  const handleProductTypeChange = (newType) => {
+    setSelectedProductType(newType);
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  // const productData = selectedProductType === "available"
+  //   ? data.getAvailableMarketProducts.map(item => item.product)
+  //   : data.getAllMarketProducts.map(item => item.product),   setTotalProduct(data?.getAllMarketProducts[0]?.totalProduct || 0);
+;
+
+let productData;
+let totalProduct;
+
+if (selectedProductType === "available") {
+  productData = data.getAvailableMarketProducts.product;
+  totalProduct = data?.getAvailableMarketProducts.totalProduct;
+} else {
+  productData = data.getAllMarketProducts.product;
+  totalProduct = data?.getAllMarketProducts.totalProduct;
+}
+
   
+  // Access the product list from the data object
+
+
+  const totalPages = Math.ceil(totalProduct/ 10);
+
   return (
     <Grid container className={styles.gridContainer}>
       <Grid item xs={12}>
@@ -178,7 +204,9 @@ const productData = selectedProductType === "available"
             }}
           >
             <Pagination
-              count={10}
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
               variant="outlined"
               sx={{
                 "& .MuiPaginationItem-root": {
