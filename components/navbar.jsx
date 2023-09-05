@@ -43,6 +43,9 @@ import Popover from '@mui/material/Popover';
 import Badge from '@mui/material/Badge';
 import {READ_ALL_NOTIF} from "../graphql/mutations/noficationMutations";
 import { GET_NOTIFICATIONS } from "@/graphql/subscriptions/notificationSub";
+import { useLazyQuery } from '@apollo/client';
+import { SEARCH_USERS } from '../graphql/queries/searchQueries';
+import SearchResult from "../components/search/searchResult";
 
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -56,7 +59,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 const Navbar = () => {
   const {newNotifCount} = useSubs();
   const [cartModalOpen, setCartModalOpen] = useState(false);
-  const Dropdown = ["Orders", "Cart", "Settings", "Logout"];
   const { user, logout } = useContext(AuthContext);
   const drawerWidth = 240;
   const [activeTab, setActiveTab] = useState(0);
@@ -66,6 +68,15 @@ const Navbar = () => {
   const [notifAnchorEl, setNotifAnchorEl] = useState(null);
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [query, setQuery] = useState("");
+  const [focus, setFocus] = useState(true);
+  const [getSuggestions, {loading:searchLoading, data:searchData}] = useLazyQuery(SEARCH_USERS);
+
+  const handleQueryChange=(event)=>{
+    const newQuery = event.target.value;
+    setQuery(newQuery);
+    getSuggestions({ variables: { searchInput: query } });
+  }
 
   //Reading all Notification
   const [readAllNotif] = useMutation(READ_ALL_NOTIF, {
@@ -240,15 +251,25 @@ const markAllAsRead = () => {
         </List>
       </Drawer>
       <div key="element1" className={styles.header}>
-        <Card className={styles.navsection} style={cardStyle} elevation={3}>
+        <div className={[styles.navsection]}  style={cardStyle} elevation={3}>
           <div className={styles.menu} onClick={handleDrawerOpen}>
             <MenuIcon />
           </div>
+          
+          <div style={{paddingInline:"1vw", paddingBlock:"2px"}}>
+            <Image src={Logo} alt="Logo" width={70} height={50} />
+          </div>
+            
           <div className={styles.logosearchbar}>
-            <Image src={Logo} alt="Logo" width={50} height={50} />
             <TextField
               size="small"
               type="text"
+              valued ={query}
+              onChange={handleQueryChange}
+              onFocus={()=>{setFocus(true)}}
+              onBlur={()=>{
+                setFocus(false);
+              }}
               className={styles.searchicon}
               fullWidth
               sx={{
@@ -276,6 +297,7 @@ const markAllAsRead = () => {
               }}
               placeholder="Search "
             />
+            <SearchResult data={searchData} loading={searchLoading} query={query} setQuery={setQuery} setFocus={setFocus}/>
           </div>
           <div className={styles.tabs}>
             <ul>
@@ -482,7 +504,7 @@ const markAllAsRead = () => {
               handleClose={handleCartModalClose}
             />
           </div>
-        </Card>
+        </div>
       </div>
     </>
   );
