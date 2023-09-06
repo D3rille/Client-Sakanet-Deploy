@@ -99,9 +99,13 @@ export default function Products() {
 
 
   return (
+    
     <Grid container className={styles.gridContainer}>
+      
       <Grid item xs={12}>
+      
         <Paper elevation={3} className={styles.paperContainer}>
+        <h1 style={{paddingTop:"1rem"}}>Seller Offers</h1>
         <div
   style={{
     display: "flex",
@@ -127,6 +131,7 @@ export default function Products() {
       alignItems: "center",
     }}
   >
+    
     <div
       style={{
         display: "flex",

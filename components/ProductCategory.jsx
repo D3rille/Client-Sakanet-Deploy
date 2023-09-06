@@ -7,10 +7,12 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";  
 
 
-const ProductCategories = ({categoryType, onCategoryChange }) => {
+const ProductCategories = ({categoryType, onCategoryChange, setCurrentPage }) => {
   const handleProductsSortChange = (event) => {
     const selectedCategory = event.target.value;
+    setCurrentPage(1);
     onCategoryChange(selectedCategory);
+
   };
   return (
     <div
@@ -45,6 +47,7 @@ const ProductCategories = ({categoryType, onCategoryChange }) => {
           },
         }}
       >
+        <MenuItem value={""}>All</MenuItem>
         <MenuItem value={"Cereals"}>Cereals</MenuItem>
         <MenuItem value={"Rootcrops"}>Root Crops</MenuItem>
         <MenuItem value={"Beans and Legumes"}>Beans and Legumes</MenuItem>

@@ -29,24 +29,26 @@ export function ProductsToggleButton({ productsType, onProductTypeChange }) {
       <ToggleButton 
         value="all" 
         sx={{ 
+          width:"10vw",
           color: '#2F613A',
           '&.Mui-selected': {
             color: '#2F613A',
           }
         }}
       >
-        All market products
+        All
       </ToggleButton>
       <ToggleButton 
         value="available" 
         sx={{ 
+          width:"10vw",
           color: '#2F613A',
           '&.Mui-selected': {
             color: '#2F613A',
           }
         }}
       >
-        Available market products
+        Available
       </ToggleButton>
     </ToggleButtonGroup>
   );

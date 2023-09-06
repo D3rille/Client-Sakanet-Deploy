@@ -19,9 +19,15 @@ import styles from "../../styles/products.module.css";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "@mui/material/Pagination";
 import ProductsToggleButton from "../../components/ProductsToggleButton";
-import { GET_ALL_MARKET_PRODUCTS, GET_AVAILABLE_MARKET_PRODUCTS } from "../../graphql/queries/productQueries";
-import { useQuery } from "@apollo/client";
+import { 
+  GET_ALL_MARKET_PRODUCTS, 
+  GET_AVAILABLE_MARKET_PRODUCTS, 
+  SEARCH_ALL_PRODUCT,
+  SEARCH_AVAILABLE_PRODUCT
+  } from "../../graphql/queries/productQueries";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import ProductCategories from "../../components/ProductCategory";
+import CircularLoading from "../../components/circularLoading";
 
 function ProductCard({ product }) {
   return (
@@ -77,7 +83,6 @@ function ProductCard({ product }) {
 }
 
 const ProductsGrid = ( { productData }) => {
-  
 
   return (
   <div
@@ -88,7 +93,7 @@ const ProductsGrid = ( { productData }) => {
     marginTop: "20px",
   }}
 >
-  {productData.map((product) => (
+  {productData?.map((product) => (
     <ProductCard key={product._id} product={product} />
   ))}
 </div>
@@ -97,136 +102,195 @@ const ProductsGrid = ( { productData }) => {
 };
 
 export default function Products() {
-  const [selectedCategory, setSelectedCategory] = useState("Cereals");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedProductType, setSelectedProductType] = useState('all');
   const [currentPage, setCurrentPage] = useState(1); //Pagination
+  const [filter, setFilter] = useState("");
+  const [searchFocus, setSearchFocus]=useState(false);
+
+  const handleFilterChange=(event)=>{
+    event.preventDefault();
+    const newFilter = event.target.value;
+    setFilter(newFilter);
+    searchProduct();
+  }
 
   const handlePageChange = (event, page) => { //Pagination
-  setCurrentPage(page);
+    event.preventDefault();
+    setCurrentPage(page);
 };
 
-  const { loading, error, data } = useQuery(
-    selectedProductType === "available"
-      ? GET_AVAILABLE_MARKET_PRODUCTS
-      : GET_ALL_MARKET_PRODUCTS,
-    {
-      variables: {
-        type: selectedCategory,
-        limit:10,
-        page: currentPage,
-      },
-    }
-  );
+const handleProductTypeChange = (newType) => {
+  setSelectedProductType(newType);
+  setCurrentPage(1);
+  
+};
 
+const { loading, error, data } = useQuery(
+  selectedProductType === "available"
+    ? GET_AVAILABLE_MARKET_PRODUCTS
+    : GET_ALL_MARKET_PRODUCTS,
+  {
+    variables: {
+      type: selectedCategory,
+      // limit:(searchFocus && filter)?136:10,
+      limit:10,
+      page: currentPage,
+    },
+  }
+);
 
-  const handleProductTypeChange = (newType) => {
-    setSelectedProductType(newType);
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  // const productData = selectedProductType === "available"
-  //   ? data.getAvailableMarketProducts.map(item => item.product)
-  //   : data.getAllMarketProducts.map(item => item.product),   setTotalProduct(data?.getAllMarketProducts[0]?.totalProduct || 0);
-;
-
-let productData;
-let totalProduct;
-
-if (selectedProductType === "available") {
-  productData = data.getAvailableMarketProducts.product;
-  totalProduct = data?.getAvailableMarketProducts.totalProduct;
-} else {
-  productData = data.getAllMarketProducts.product;
-  totalProduct = data?.getAllMarketProducts.totalProduct;
+const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}]=useLazyQuery(
+  selectedProductType === "available"
+  ? SEARCH_AVAILABLE_PRODUCT
+  : SEARCH_ALL_PRODUCT,
+{
+  variables: {
+    type: selectedCategory,
+    searchInput: filter
+  },
 }
+);
+
+
+
+
+
+  if (loading) return (<CircularLoading/>);
+  if (error) return <p>Error: {error.message}</p>;
+  
+
+  if(data){
+    let productData;
+    let totalProduct;
+
+    const regex = new RegExp(`^${filter}`, 'i');
+
+    if (selectedProductType === "available") {
+      if(searchFocus && filter && searchData){
+        productData=searchData.searchAvailableMarketProduct
+        totalProduct = productData.length
+      } else{
+        productData = data.getAvailableMarketProducts.product;
+        totalProduct = data?.getAvailableMarketProducts.totalProduct;
+      }
+
+    } else {
+      if(searchFocus && filter && searchData){
+        productData = searchData.searchAllMarketProduct
+        totalProduct = productData.length
+      } else{
+        productData = data.getAllMarketProducts.product;
+        totalProduct = data?.getAllMarketProducts.totalProduct;
+      } 
+      
+    }
+    
+    const totalPages = Math.ceil(totalProduct/ 10);
+    return (
+      <Grid container className={styles.gridContainer}>
+        <Grid item xs={12}>
+          <Paper elevation={3} className={styles.paperContainer}>
+          <h1 style={{paddingTop:"1rem"}}>Market Products</h1>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <ProductCategories categoryType={selectedCategory} onCategoryChange={setSelectedCategory} setCurrentPage={setCurrentPage}/>
+              <ProductsToggleButton productsType={selectedProductType} onProductTypeChange={handleProductTypeChange}/>
+            </div>
+
+            <Paper elevation={3} className={styles.logosearchbar}>
+              <TextField
+                size="small"
+                type="text"
+                onFocus={()=>{
+                  setSearchFocus(true);
+                }}
+                onBlur={()=>{
+                  setSearchFocus(false);
+                }}
+                value={filter}
+                onChange={handleFilterChange}
+                fullWidth
+                className={styles.searchicon}
+                sx={{
+                  borderRadius: "30px",
+                  backgroundColor: "#FFFEFE",
+                  justifyItems: "right",
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "transparent",
+                      borderRadius: "30px",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "transparent",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "transparent",
+                    },
+                    "& .MuiOutlinedInput-input": {
+                      padding: "10px 10px 10px 15px",
+                    },
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                placeholder="Search"
+              />
+            </Paper>
+            <div className={styles.productGridContainer}>
+              <ProductsGrid  productData={productData}/>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "1rem",
+                marginBottom: "2rem",
+              }}
+            >
+              {!searchFocus && (
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  variant="outlined"
+                  sx={{
+                    "& .MuiPaginationItem-root": {
+                      color: "#2F603B",
+                    },
+                    "& .MuiPaginationItem-page.Mui-selected": {
+                      backgroundColor: "#2F603B",
+                      color: "#fff",
+                      "&:hover": {
+                        backgroundColor: "#2F603B",
+                      },
+                    },
+                    "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible": {
+                      backgroundColor: "#2F603B",
+                    },
+                  }}
+                />)
+              }
+
+            </div>
+          </Paper>
+        </Grid>
+      </Grid>
+    );
+
+
+    
+  
+  }
+    
 
   
-  // Access the product list from the data object
+  
 
 
-  const totalPages = Math.ceil(totalProduct/ 10);
 
-  return (
-    <Grid container className={styles.gridContainer}>
-      <Grid item xs={12}>
-        <Paper elevation={3} className={styles.paperContainer}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <ProductCategories categoryType={selectedCategory} onCategoryChange={setSelectedCategory} />
-            <ProductsToggleButton productsType={selectedProductType} onProductTypeChange={handleProductTypeChange}/>
-          </div>
-          <Paper elevation={3} className={styles.logosearchbar}>
-            <TextField
-              size="small"
-              type="text"
-              fullWidth
-              className={styles.searchicon}
-              sx={{
-                borderRadius: "30px",
-                backgroundColor: "#FFFEFE",
-                justifyItems: "right",
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "transparent",
-                    borderRadius: "30px",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "transparent",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "transparent",
-                  },
-                  "& .MuiOutlinedInput-input": {
-                    padding: "10px 10px 10px 15px",
-                  },
-                },
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              placeholder="Search"
-            />
-          </Paper>
-          <div className={styles.productGridContainer}>
-            <ProductsGrid  productData={productData}/>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "1rem",
-              marginBottom: "2rem",
-            }}
-          >
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              variant="outlined"
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  color: "#2F603B",
-                },
-                "& .MuiPaginationItem-page.Mui-selected": {
-                  backgroundColor: "#2F603B",
-                  color: "#fff",
-                  "&:hover": {
-                    backgroundColor: "#2F603B",
-                  },
-                },
-                "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible": {
-                  backgroundColor: "#2F603B",
-                },
-              }}
-            />
-          </div>
-        </Paper>
-      </Grid>
-    </Grid>
-  );
 }

@@ -17,9 +17,7 @@ function SearchResult({loading, data, query, setQuery, setFocus}){
     if(loading){
         <CircularProgress/>
     }
-    // if(!query){
-    //     return
-    // }
+   
     if(query){
         return(
             <>
@@ -38,7 +36,7 @@ function SearchResult({loading, data, query, setQuery, setFocus}){
                                         <Link className={styles.searchLink} onClick={()=>{
                                             setFocus(false);
                                             setQuery("");
-                                            router.push("/");
+                                            router.push(`/Find/${user._id}`);
                                         }} >
                                             <h3>{user.username}</h3>
                                         </Link>

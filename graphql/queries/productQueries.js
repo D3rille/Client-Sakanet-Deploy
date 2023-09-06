@@ -173,4 +173,37 @@ query GetProduct($productId: String) {
 }
 `;
 
+export const SEARCH_ALL_PRODUCT = gql`
+ query SearchAllMarketProduct($type: String, $searchInput: String) {
+  searchAllMarketProduct(type: $type, searchInput: $searchInput) {
+    _id
+    name {
+      english
+      tagalog
+    }
+    photo
+    type
+    units
+    averagePrice
+    priceChange
+  }
+}
+`;
+
+export const SEARCH_AVAILABLE_PRODUCT = gql`
+ query SearchAvailableMarketProduct($type: String, $searchInput: String) {
+  searchAvailableMarketProduct(type: $type, searchInput: $searchInput) {
+    _id
+    name {
+      english
+      tagalog
+    }
+    photo
+    type
+    units
+    averagePrice
+    priceChange
+  }
+}
+`;
 
