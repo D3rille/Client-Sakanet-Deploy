@@ -72,7 +72,6 @@ export async function imageDelete(imageUrl) {
 
   const folderPath = getFolderPathFromUrl(imageUrl);
 
-
   const timestamp = new Date().getTime();
   const signature = generateSHA1(generateSignature(`${folderPath}`, apiSecret));
   const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`;
