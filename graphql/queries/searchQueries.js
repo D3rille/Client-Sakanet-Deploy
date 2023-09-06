@@ -59,6 +59,7 @@ query GoToProfile($userId: String) {
       managed_group
     }
     connectionStatus
+    connections
   }
 }
 `;

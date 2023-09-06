@@ -3,12 +3,15 @@ import Avatar from '@mui/material/Avatar';
 import { Card, CircularProgress } from '@mui/material';
 import styles from '../../styles/Navbar.module.css';
 import toast from 'react-hot-toast';
+import Link from  '@mui/material/Link';
+import {useRouter} from "next/router";
 
 import { GET_SUGGESTED_USERS } from '../../graphql/queries/myNetworkQueries';
 import { formatWideAddress } from '../../util/addresssUtils';
 
 
 function SuggestedUsers({requestConnection}){
+    const router = useRouter();
     const {data, error, loading} = useQuery(GET_SUGGESTED_USERS);
   
     if (loading){return (
@@ -47,7 +50,11 @@ function SuggestedUsers({requestConnection}){
               </div>
             </div>
               <div style={{margin:'5px', textAlign:"center"}}>
-              <h2 style={{fontSize:'12px'}}>{user.username}</h2>
+              <Link className={styles.searchLink} onClick={()=>{
+                  router.push(`/Find/${user._id}`);
+              }} >
+                 <h2 style={{fontSize:'12px'}}>{user.username}</h2>
+              </Link>
               <p style={{fontSize:'12px'}}>{formatWideAddress(user.address)}</p>
               </div>
               <div style={{display:'flex'}}>

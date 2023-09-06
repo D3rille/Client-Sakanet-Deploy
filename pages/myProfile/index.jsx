@@ -5,7 +5,7 @@ import coverPhoto from '../../public/images/coverphoto.jpg';
 // import profilePhoto from '../../public/images/pfp.jpg';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { TextField,Card, Button,Link } from '@mui/material';
+import { TextField,Card, Button,Link, Rating} from '@mui/material';
 import locationIcon from '../../public/icons/location.svg';
 import contactIcon from '../../public/icons/contact.svg';
 import emailIcon from '../../public/icons/email.svg';
@@ -69,6 +69,7 @@ export default function MyProfile(){
 
 
     const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
+    const reviewerNumber = `Rating Overview (${ratingStatistics.reviewerCount ?? 0})`;
 
     return (
         <>
@@ -80,7 +81,6 @@ export default function MyProfile(){
                     </div>
                     <div className={styles.profileImg}>
                         <Avatar src={profile_pic ?? ""} alt="Profile"  className={styles.profilephoto}/>
-                        {/* <img className={styles.profilephoto} src={activeProfilePic} alt="Profile Photo" /> */}
                     </div>
                     <div className={styles.username}>
                         {username}
@@ -143,13 +143,22 @@ export default function MyProfile(){
                         backgroundColor:"#FCFCFF",
                         boxShadow: '0 3px 3px 3px rgba(0, 0, 0, 0.1)'
                         }}>
-                            <div className={styles.contentheader}>
-                                <Typography sx={{fontSize:'20px',
-                                fontWeight: 'bolder'}}>
-                                    Rating Overview
-                                </Typography>
+                            <div style={{display:"flex", flexDirection:"row", alignItems:'center'}}>
+                                <div style={{width:"40%", textAlign:"center"}}>
+                                    <Typography sx={{fontSize:'20px',
+                                        fontWeight: 'bolder'}}>
+                                           {reviewerNumber}
+                                    </Typography>
+                                    <Typography sx ={{fontSize:"5rem", fontWeight:"bold"}}>
+                                        {rating}
+                                    </Typography>
+                                    <Rating name="read-only" value={rating} readOnly />
+                                    
+                                </div>
+                                <div style={{width:"60%"}}>
+                                <StarRatingChart ratings={ratingsData} />
+                                </div>
                             </div>
-                            <StarRatingChart ratings={ratingsData} />
                         </Card>
 
                         <Card className={styles.aboutCard} sx={{width:'100%',
