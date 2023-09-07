@@ -24,33 +24,48 @@ import {formatWideAddress} from '../../util/addresssUtils.js';
 import { useRouter } from "next/router";
 import Rating from '@mui/material/Rating';
 import toast from 'react-hot-toast';
-import { REQUEST_CONNECTION } from '../../graphql/mutations/MyNetworkMutations';
+import { REQUEST_CONNECTION, REMOVE_CONNECTION } from '../../graphql/mutations/MyNetworkMutations';
 // import { GET_SUGGESTED_USERS } from '../../graphql/queries/myNetworkQueries';
+import OptionsMenu from '../../components/popups/OptionsMenu';
 
-const ButtonsDisplay = ({userId, connStatus, requestConnection}) =>{
-    var DynamicBtn = () =>{
+const ButtonsDisplay = ({userId, connStatus, requestConnection, onMoreList}) =>{
+    const DynamicBtn = () =>{
         if(!connStatus || connStatus == "disconnected"){
             return(<Button variant="contained" disableElevation color="success" onClick={()=>{
                 requestConnection({variables:{"connectTo":userId}})
             }}>Connect</Button>)
         } else if(connStatus == "pending"){
             return(<Button variant="contained" disableElevation color="success" disabled>Pending...</Button>)
-        } else{
+        } else if(connStatus=="connected"){
             return(<Button variant="contained" disableElevation color="success" endIcon={<CheckIcon/>}>Connected</Button>)
         }
     }
     
+    const triggerComponent=(handleClickOpen)=>{
+        return(
+            <>
+            <Button variant="outlined" color="success" onClick={handleClickOpen}>
+                <MoreHorizIcon/>
+            </Button>
+            </>
+        );
+    }
+
+    const DynamicMoreBtn = () =>{
+        if(connStatus=="connected"){
+            return( <OptionsMenu triggerComponent={triggerComponent} itemAndFunc={onMoreList}/>);
+        }
+    }
+
     return(
     <>
     <Stack direction="row" spacing={2}>
         {/* <Button variant="contained" disableElevation color="success" disabled>Connect</Button> */}
         <DynamicBtn/>
         <Button variant="outlined" color="success" startIcon={<SmsIcon/>}>
-        Message
+            Message
         </Button>
-        <Button variant="outlined" color="success">
-            <MoreHorizIcon/>
-        </Button>
+        <DynamicMoreBtn/>
     </Stack>
     </>)
 
@@ -99,6 +114,17 @@ export default function FindUser(){
             userId:id
         }
     });
+    // Remove Connection
+    const [removeConnection, {data:removeConnectionData}] = useMutation(REMOVE_CONNECTION,{
+        refetchQueries:[GO_TO_PROFILE],
+        onError:(err)=>{
+            toast.error(err.graphQLErrors[0].message);
+        },
+        onCompleted:(removeConnectionData)=>{
+            toast.success(removeConnectionData.removeConnection.message);
+        }
+        });
+
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -123,6 +149,12 @@ export default function FindUser(){
 
     const connStatus = data.goToProfile.connectionStatus;
 
+        
+    //Name and callback functions of listItem upon clicking ... or more
+    var onMoreList = [
+        {name:"Disconnect", function:()=>{removeConnection({variables:{connectedUserId:_id}})}},
+    ]
+
     const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
     const reviewerNumber = `Rating Overview (${ratingStatistics.reviewerCount ?? 0})`;
     return (
@@ -145,7 +177,7 @@ export default function FindUser(){
                 </div>
 
                 <div style={{display:"flex", justifyContent:"flex-end", width:"90%", paddingTop:"1em"}}>
-                    <ButtonsDisplay userId={_id} connStatus={connStatus} requestConnection={requestConnection}/>
+                    <ButtonsDisplay userId={_id} connStatus={connStatus} requestConnection={requestConnection} onMoreList={onMoreList}/>
                 </div>
 
                 <Divider textAlign="right" component="div" role="presentation" className={styles.numConnections}>

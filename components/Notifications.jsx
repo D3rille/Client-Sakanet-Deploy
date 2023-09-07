@@ -2,16 +2,18 @@ import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { useEffect } from 'react';
 import { useSubs } from '../context/SubscriptionProvider.js';
 import {timePassed} from "../util/dateUtils";
 
-const markAsRead = () => {
+// const markAsRead = () => {
     
-};
-const clearAllNotifications = () => {
-}
+// };
+// const clearAllNotifications = () => {
+// }
 
 const NotificationContainer = styled('div')({
     backgroundColor: '#FFFFFF',
@@ -98,7 +100,7 @@ const NotificationContent = styled('div')({
     overflowY: 'auto'
 });
 
-const Notifications = () => {
+const Notifications = ({deleteNotif, clearNotifs}) => {
     const { notifData } = useSubs();
 
     if (!notifData || notifData == []) {
@@ -125,22 +127,40 @@ const Notifications = () => {
                                     <div>{notif.message}</div>
                                 </UserInfo>
                             </LeftSection>
-                            <span style={{
-                                fontSize: '0.77rem',
-                                fontWeight: 100,
-                                marginRight: '1.1rem',
-                                color: '#D4D4D4',
-                                margin: '0.6rem',
-                            }}>{timePassed(notif.createdAt)}</span>
+                            <div style={{display:"flex", flexDirection:"column", justifyContent:"start", alignItems:"flex-end"}}>
+                                <div >
+                                <IconButton
+                                    onClick={()=>{
+                                        deleteNotif({variables:{notificationId:notif._id}})
+                                    }}
+                                    sx={{
+                                    color: (theme) => theme.palette.grey[500],
+                                    }}
+                                >
+                                    <CloseIcon sx={{fontSize:"1rem"}} />
+                                </IconButton>
+                                </div>
+                                <div style={{justifyContent:"end", alignItems:"flex-end"}}>
+                                    <span style={{
+                                        fontSize: '0.77rem',
+                                        fontWeight: 100,
+                                        marginRight: '1.1rem',
+                                        color: '#D4D4D4',
+                                        margin: '0.6rem',
+                                    }}>{timePassed(notif.createdAt)}</span>
+                                </div>
+                            </div>
+ 
+                            
                         </NotificationItem>
                         {notifData.length !== notifData.length - 1 && <StyledDivider />}
                     </React.Fragment>
                 ))}
             </NotificationContent>
             <NotificationFooter>
-                <FooterAction onClick={markAsRead}>Mark all as read</FooterAction>
-                <VerticalDivider />
-                <FooterAction onClick={clearAllNotifications}>Clear all</FooterAction>
+                <FooterAction onClick={()=>{
+                    clearNotifs();
+                }}>Clear all</FooterAction>
             </NotificationFooter>
         </NotificationContainer>
       

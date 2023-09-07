@@ -43,6 +43,7 @@ import Popover from '@mui/material/Popover';
 import Badge from '@mui/material/Badge';
 import {READ_ALL_NOTIF} from "../graphql/mutations/noficationMutations";
 import { GET_NOTIFICATIONS } from "@/graphql/subscriptions/notificationSub";
+import { DELETE_NOTIFICATION, CLEAR_NOTIFICATIONS} from "../graphql/mutations/noficationMutations";
 import { useLazyQuery } from '@apollo/client';
 import { SEARCH_USERS } from '../graphql/queries/searchQueries';
 import SearchResult from "../components/search/searchResult";
@@ -183,6 +184,12 @@ const markAllAsRead = () => {
   const cardStyle = getResponsiveCardStyle();
 
   const { loading, error, data } = useQuery(GET_MY_PROFILE);
+  const [deleteNotif]= useMutation(DELETE_NOTIFICATION, {
+    refetchQueries:[GET_NOTIFICATIONS]
+  });
+  const [clearNotifs] = useMutation(CLEAR_NOTIFICATIONS, {
+    refetchQueries:[GET_NOTIFICATIONS]
+  });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -418,7 +425,7 @@ const markAllAsRead = () => {
                       borderRadius: '10px'
                   }}
               >
-                <Notifications/>
+                <Notifications deleteNotif={deleteNotif} clearNotifs={clearNotifs}/>
               </Popover>
               <Avatar
                 sx={{

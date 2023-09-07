@@ -26,5 +26,12 @@ export const REQUEST_CONNECTION = gql`
   }
 `;
 
+export const REMOVE_CONNECTION = gql`
+  mutation RemoveConnection($connectedUserId: String) {
+    removeConnection(connectedUserId: $connectedUserId) {
+      message
+    }
+  }
+`;
 
 
