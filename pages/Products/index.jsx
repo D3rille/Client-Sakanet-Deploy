@@ -188,9 +188,11 @@ const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}
     
     const totalPages = Math.ceil(totalProduct/ 10);
     return (
-      <Grid container className={styles.gridContainer}>
+      <Grid container className={styles.gridContainer}
+      style={{ minHeight: '100vh' }}>
         <Grid item xs={12}>
-          <Paper elevation={3} className={styles.paperContainer}>
+          <Paper elevation={3} className={styles.paperContainer}
+          style={{ minHeight: '80vh' }}>
           <h1 style={{paddingTop:"1rem"}}>Market Products</h1>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <ProductCategories categoryType={selectedCategory} onCategoryChange={setSelectedCategory} setCurrentPage={setCurrentPage}/>
