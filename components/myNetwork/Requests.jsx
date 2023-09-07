@@ -3,13 +3,15 @@ import Avatar from '@mui/material/Avatar';
 import { Card,CircularProgress } from '@mui/material';
 import styles from '../../styles/Navbar.module.css';
 import toast from 'react-hot-toast';
+import Link from  '@mui/material/Link';
+import {useRouter} from "next/router";
 
 
 import {GET_CONNECTION_REQUESTS} from '../../graphql/queries/myNetworkQueries';
 import { formatWideAddress } from '../../util/addresssUtils';
 
 function Requests({acceptConnection, declineConnection}){
-  
+    const router = useRouter();
     const {data, loading, error} = useQuery(GET_CONNECTION_REQUESTS);
   
     if (loading){return (
@@ -45,7 +47,11 @@ function Requests({acceptConnection, declineConnection}){
               </Avatar> */}
             </div>
           <div style={{margin:'5px', textAlign:"center"}}>
-          <h2 style={{fontSize:'12px'}}>{request.requesterName}</h2>
+            <Link className={styles.searchLink} onClick={()=>{
+                router.push(`/Find/${request.requesterId}`);
+            }} >
+                <h2 style={{fontSize:'12px'}}>{request.requesterName}</h2>
+            </Link>
           <p style={{fontSize:'12px'}}>{formatWideAddress(request.address)}</p>
           </div>
           <div style={{display:'flex'}}>

@@ -132,10 +132,10 @@ const markAllAsRead = () => {
     setOpen(false);
   };
 
-  const handleClose = (path) => {
-    if (path) {
-      router.push(path);
-    }
+  const handleClose = () => {
+    // if (path) {
+    //   router.push(path);
+    // }
     setAnchorEl(null);
   };
   

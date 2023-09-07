@@ -4,7 +4,7 @@ import styles from '../../styles/Profile.module.css';
 import coverPhoto from '../../public/images/coverphoto.jpg';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { TextField,Card, Button,Link } from '@mui/material';
+import { TextField,Card, Button,Link,  Box, Stack} from '@mui/material';
 import locationIcon from '../../public/icons/location.svg';
 import contactIcon from '../../public/icons/contact.svg';
 import emailIcon from '../../public/icons/email.svg';
@@ -13,12 +13,48 @@ import StarRatingChart from '../../components/StarRatingChart'
 import IconButton from '@mui/material/IconButton';
 import samplePost from '../../public/images/samplepost.jpg'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
+import SmsIcon from '@mui/icons-material/Sms';
+import CheckIcon from '@mui/icons-material/Check';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Head from 'next/head';
 import Image from "next/image";
 import { GO_TO_PROFILE } from '../../graphql/queries/searchQueries';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import {formatWideAddress} from '../../util/addresssUtils.js';
 import { useRouter } from "next/router";
+import Rating from '@mui/material/Rating';
+import toast from 'react-hot-toast';
+import { REQUEST_CONNECTION } from '../../graphql/mutations/MyNetworkMutations';
+// import { GET_SUGGESTED_USERS } from '../../graphql/queries/myNetworkQueries';
+
+const ButtonsDisplay = ({userId, connStatus, requestConnection}) =>{
+    var DynamicBtn = () =>{
+        if(!connStatus || connStatus == "disconnected"){
+            return(<Button variant="contained" disableElevation color="success" onClick={()=>{
+                requestConnection({variables:{"connectTo":userId}})
+            }}>Connect</Button>)
+        } else if(connStatus == "pending"){
+            return(<Button variant="contained" disableElevation color="success" disabled>Pending...</Button>)
+        } else{
+            return(<Button variant="contained" disableElevation color="success" endIcon={<CheckIcon/>}>Connected</Button>)
+        }
+    }
+    
+    return(
+    <>
+    <Stack direction="row" spacing={2}>
+        {/* <Button variant="contained" disableElevation color="success" disabled>Connect</Button> */}
+        <DynamicBtn/>
+        <Button variant="outlined" color="success" startIcon={<SmsIcon/>}>
+        Message
+        </Button>
+        <Button variant="outlined" color="success">
+            <MoreHorizIcon/>
+        </Button>
+    </Stack>
+    </>)
+
+}
 
 export default function FindUser(){
     const router = useRouter();
@@ -27,6 +63,17 @@ export default function FindUser(){
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
     const [UserPostDescrip, setUserPostDescrip ] = useState("");
+
+    // Request Connection
+    const [requestConnection, {data:requestConnectionData}] = useMutation(REQUEST_CONNECTION,{
+    refetchQueries:[GO_TO_PROFILE],
+    onError:(err)=>{
+        toast.error(err.graphQLErrors[0].message);
+    },
+    onCompleted:(requestConnectionData)=>{
+        toast.success(requestConnectionData.requestConnection.message);
+    }
+    });
 
     const handleButtonClick=(e)=>{
         e.preventDefault();
@@ -56,7 +103,7 @@ export default function FindUser(){
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
-    const { profile_pic, 
+    const { _id, profile_pic, 
         username, address, 
         is_verified, role, 
         rating, 
@@ -74,10 +121,10 @@ export default function FindUser(){
         5: ratingStatistics.fiveStar ?? 0,
     };
 
-    const isConnected = data.goToProfile.connectionStatus;
+    const connStatus = data.goToProfile.connectionStatus;
 
     const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
-
+    const reviewerNumber = `Rating Overview (${ratingStatistics.reviewerCount ?? 0})`;
     return (
         <>
         <div key='profile' className={styles.mainProfile}>
@@ -88,7 +135,6 @@ export default function FindUser(){
                     </div>
                     <div className={styles.profileImg}>
                         <Avatar src={profile_pic ?? ""} alt="Profile"  className={styles.profilephoto}/>
-                        {/* <img className={styles.profilephoto} src={activeProfilePic} alt="Profile Photo" /> */}
                     </div>
                     <div className={styles.username}>
                         {username}
@@ -97,12 +143,17 @@ export default function FindUser(){
                         {role}
                     </div>
                 </div>
+
+                <div style={{display:"flex", justifyContent:"flex-end", width:"90%", paddingTop:"1em"}}>
+                    <ButtonsDisplay userId={_id} connStatus={connStatus} requestConnection={requestConnection}/>
+                </div>
+
                 <Divider textAlign="right" component="div" role="presentation" className={styles.numConnections}>
                     <Typography 
                     variant="h4" 
                     component="span" 
                     style={{ fontWeight: 'bolder', color: '#057a59' }}>
-                        0  
+                        {data.goToProfile.connections}
                     </Typography>
                     <Typography 
                     variant="h6" 
@@ -151,13 +202,24 @@ export default function FindUser(){
                         backgroundColor:"#FCFCFF",
                         boxShadow: '0 3px 3px 3px rgba(0, 0, 0, 0.1)'
                         }}>
-                            <div className={styles.contentheader}>
-                                <Typography sx={{fontSize:'20px',
-                                fontWeight: 'bolder'}}>
-                                    Rating Overview
-                                </Typography>
+                            {/* <div className={styles.contentheader}>
+                                
+                            </div> */}
+                            <div style={{display:"flex", flexDirection:"row", alignItems:'center'}}>
+                                <div style={{width:"40%", textAlign:"center"}}>
+                                    <Typography sx={{fontSize:'20px',
+                                        fontWeight: 'bolder'}}>
+                                             {reviewerNumber}
+                                    </Typography>
+                                    <Typography sx ={{fontSize:"5rem", fontWeight:"bold"}}>
+                                        {rating}
+                                    </Typography>
+                                    <Rating name="read-only" value={rating} readOnly />
+                                </div>
+                                <div style={{width:"60%"}}>
+                                <StarRatingChart ratings={ratingsData} />
+                                </div>
                             </div>
-                            <StarRatingChart ratings={ratingsData} />
                         </Card>
 
                         <Card className={styles.aboutCard} sx={{width:'100%',

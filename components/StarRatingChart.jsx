@@ -6,7 +6,8 @@ import Typography from '@mui/material/Typography';
 function RatingBar({ rating, count, maxCount }) {
   return (
     <Box display="flex" alignItems="center" mb={0.5} mr={2}>
-      <Rating name={`rating-${rating}`} value={rating} readOnly size="small" />
+      {/* <Rating name={`rating-${rating}`} value={rating} readOnly size="small" /> */}
+      <Typography variant="body2">{rating}</Typography>
       <Box mx={1} flexGrow={1}>
         <Box
           bgcolor="primary.main"

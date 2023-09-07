@@ -1,16 +1,18 @@
 import {useQuery} from '@apollo/client';
 import Avatar from '@mui/material/Avatar';
-
 import { Button, CircularProgress } from '@mui/material';
 import SmsIcon from '@mui/icons-material/Sms';
 import styles from '../../styles/Navbar.module.css';
 import toast from 'react-hot-toast';
+import Link from  '@mui/material/Link';
+import {useRouter} from "next/router";
 
 import { GET_CONNECTED_USERS} from '../../graphql/queries/myNetworkQueries';
 import { formatWideAddress } from '../../util/addresssUtils';
 
 
 function MyConnectionList(){
+    const router = useRouter();
     const {data, loading, error} = useQuery(GET_CONNECTED_USERS);
   
     if (loading){return (
@@ -46,7 +48,11 @@ function MyConnectionList(){
               </Avatar> */}
             </div>
             <div className={styles.details}>
-              <h2>{user.username}</h2>
+              <Link className={styles.searchLink} onClick={()=>{
+                  router.push(`/Find/${user._id}`);
+              }} >
+                <h2>{user.username}</h2>
+              </Link>
               <p className={styles.title}>{formatWideAddress(user.address)}</p>
             </div>
             </div>
