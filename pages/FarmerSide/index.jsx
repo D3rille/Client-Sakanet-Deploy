@@ -13,21 +13,58 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  IconButton,
+  Modal,
 } from "@mui/material";
+import styled from "@emotion/styled";
+import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import styles from "../../styles/products.module.css";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "@mui/material/Pagination";
-import ProductsToggleButton from "../../components/ProductsToggleButton";
-import { 
-  GET_ALL_MARKET_PRODUCTS, 
-  GET_AVAILABLE_MARKET_PRODUCTS, 
+import FarmerSideToggleButton from "../../components/FarmerSide/FarmerSideToggleButton";
+import {
+  GET_ALL_MARKET_PRODUCTS,
+  GET_AVAILABLE_MARKET_PRODUCTS,
   SEARCH_ALL_PRODUCT,
-  SEARCH_AVAILABLE_PRODUCT
-  } from "../../graphql/queries/productQueries";
+  SEARCH_AVAILABLE_PRODUCT,
+} from "../../graphql/queries/productQueries";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import ProductCategories from "../../components/ProductCategory";
 import CircularLoading from "../../components/circularLoading";
+import SellModal from "../../components/FarmerSide/SellModal";
+import PreSellModal from "../../components/FarmerSide/PreSellModal";
+
+const StyledIconButton = styled(IconButton)({
+  background: "#2E603A",
+  color: "#ECECED",
+  transition: "width 0.2s, background-color 0.5s",
+  borderRadius: "50%",
+  width: "48px",
+  height: "48px",
+  padding: "12px",
+  marginLeft: "2rem",
+  marginTop: "2rem",
+  "& .hover-text": {
+    display: "none",
+    color: "#2E603A",
+    fontWeight: "bolder",
+    fontSize: "15px",
+  },
+  "&:hover": {
+    background: "#ECECED",
+    borderRadius: "24px",
+    width: "200px",
+    paddingRight: "8px",
+    paddingLeft: "12px",
+    "& .MuiSvgIcon-root": {
+      color: "#2E603A",
+    },
+    "& .hover-text": {
+      display: "inline",
+    },
+  },
+});
 
 function ProductCard({ product }) {
   return (
@@ -55,8 +92,9 @@ function ProductCard({ product }) {
           align="left"
           sx={{ fontSize: "1.1rem", fontWeight: "bolder" }}
         >
-        {product.name.tagalog && (<>{product.name.tagalog} |{" "} </> )}{product.name.english}       
-         </Typography>
+          {product.name.tagalog && <>{product.name.tagalog} | </>}
+          {product.name.english}
+        </Typography>
       </CardContent>
       <Button
         href={`/Products/${product._id}`}
@@ -72,7 +110,7 @@ function ProductCard({ product }) {
           borderBottomRightRadius: "12px",
           position: "absolute",
           bottom: "0",
-          left: "0", 
+          left: "0",
           right: "0",
         }}
       >
@@ -82,131 +120,148 @@ function ProductCard({ product }) {
   );
 }
 
-const ProductsGrid = ( { productData }) => {
-
+const ProductsGrid = ({ productData }) => {
   return (
-  <div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "16px",
-    marginTop: "20px",
-  }}
->
-  {productData?.map((product) => (
-    <ProductCard key={product._id} product={product} />
-  ))}
-</div>
-
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+        gap: "16px",
+        marginTop: "20px",
+      }}
+    >
+      {productData?.map((product) => (
+        <ProductCard key={product._id} product={product} />
+      ))}
+    </div>
   );
 };
 
-export default function Products() {
+export default function FarmerSide() {
+  const [isSellModalOpen, setIsSellModalOpen] = useState(false);
+  const [isPreSellModalOpen, setIsPreSellModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedProductType, setSelectedProductType] = useState('all');
+  const [selectedProductType, setSelectedProductType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1); //Pagination
   const [filter, setFilter] = useState("");
-  const [searchFocus, setSearchFocus]=useState(false);
+  const [searchFocus, setSearchFocus] = useState(false);
 
-  const handleFilterChange=(event)=>{
+  const handleFilterChange = (event) => {
     event.preventDefault();
     const newFilter = event.target.value;
     setFilter(newFilter);
     searchProduct();
-  }
+  };
 
-  const handlePageChange = (event, page) => { //Pagination
+  const handlePageChange = (event, page) => {
+    //Pagination
     event.preventDefault();
     setCurrentPage(page);
-};
+  };
 
-const handleProductTypeChange = (newType) => {
-  setSelectedProductType(newType);
-  setCurrentPage(1);
-  
-};
+  const handleProductTypeChange = (newType) => {
+    setSelectedProductType(newType);
+    setCurrentPage(1);
+  };
 
-const { loading, error, data } = useQuery(
-  selectedProductType === "available"
-    ? GET_AVAILABLE_MARKET_PRODUCTS
-    : GET_ALL_MARKET_PRODUCTS,
-  {
-    variables: {
-      type: selectedCategory,
-      // limit:(searchFocus && filter)?136:10,
-      limit:10,
-      page: currentPage,
-    },
-  }
-);
+  const { loading, error, data } = useQuery(
+    selectedProductType === "available"
+      ? GET_AVAILABLE_MARKET_PRODUCTS
+      : GET_ALL_MARKET_PRODUCTS,
+    {
+      variables: {
+        type: selectedCategory,
+        // limit:(searchFocus && filter)?136:10,
+        limit: 10,
+        page: currentPage,
+      },
+    }
+  );
 
-const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}]=useLazyQuery(
-  selectedProductType === "available"
-  ? SEARCH_AVAILABLE_PRODUCT
-  : SEARCH_ALL_PRODUCT,
-{
-  variables: {
-    type: selectedCategory,
-    searchInput: filter
-  },
-}
-);
+  const [
+    searchProduct,
+    { data: searchData, error: searchError, loading: searchLoading },
+  ] = useLazyQuery(
+    selectedProductType === "available"
+      ? SEARCH_AVAILABLE_PRODUCT
+      : SEARCH_ALL_PRODUCT,
+    {
+      variables: {
+        type: selectedCategory,
+        searchInput: filter,
+      },
+    }
+  );
 
-
-
-
-
-  if (loading) return (<CircularLoading/>);
+  if (loading) return <CircularLoading />;
   if (error) return <p>Error: {error.message}</p>;
-  
 
-  if(data){
+  if (data) {
     let productData;
     let totalProduct;
 
-    const regex = new RegExp(`^${filter}`, 'i');
+    const regex = new RegExp(`^${filter}`, "i");
 
     if (selectedProductType === "available") {
-      if(searchFocus && filter && searchData){
-        productData=searchData.searchAvailableMarketProduct
-        totalProduct = productData.length
-      } else{
+      if (searchFocus && filter && searchData) {
+        productData = searchData.searchAvailableMarketProduct;
+        totalProduct = productData.length;
+      } else {
         productData = data.getAvailableMarketProducts.product;
         totalProduct = data?.getAvailableMarketProducts.totalProduct;
       }
-
     } else {
-      if(searchFocus && filter && searchData){
-        productData = searchData.searchAllMarketProduct
-        totalProduct = productData.length
-      } else{
+      if (searchFocus && filter && searchData) {
+        productData = searchData.searchAllMarketProduct;
+        totalProduct = productData.length;
+      } else {
         productData = data.getAllMarketProducts.product;
         totalProduct = data?.getAllMarketProducts.totalProduct;
-      } 
-      
+      }
     }
-    
-    const totalPages = Math.ceil(totalProduct/ 10);
+
+    const totalPages = Math.ceil(totalProduct / 10);
     return (
       <Grid container className={styles.gridContainer}
       style={{ minHeight: '100vh' }}>
         <Grid item xs={12}>
           <Paper elevation={3} className={styles.paperContainer}
           style={{ minHeight: '80vh' }}>
-          <h1 style={{paddingTop:"1rem"}}>Market Products</h1>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <ProductCategories categoryType={selectedCategory} onCategoryChange={setSelectedCategory} setCurrentPage={setCurrentPage}/>
-              <ProductsToggleButton productsType={selectedProductType} onProductTypeChange={handleProductTypeChange}/>
+            {/*<h1 style={{paddingTop:"1rem"}}>Market Products</h1>*/}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <StyledIconButton
+                size="small"
+                onClick={() => {
+                  if (selectedProductType === "all") {
+                    setIsSellModalOpen(true);
+                  } else {
+                    setIsPreSellModalOpen(true);
+                  }
+                }}
+              >
+                <AddIcon />
+                <Typography className="hover-text">ADD PRODUCT</Typography>
+              </StyledIconButton>
+              <FarmerSideToggleButton
+                productsType={selectedProductType}
+                onProductTypeChange={handleProductTypeChange}
+              />
             </div>
 
             <Paper elevation={3} className={styles.logosearchbar}>
               <TextField
                 size="small"
                 type="text"
-                onFocus={()=>{
+                onFocus={() => {
                   setSearchFocus(true);
                 }}
-                onBlur={()=>{
+                onBlur={() => {
                   setSearchFocus(false);
                 }}
                 value={filter}
@@ -244,7 +299,7 @@ const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}
               />
             </Paper>
             <div className={styles.productGridContainer}>
-              <ProductsGrid  productData={productData}/>
+              <ProductsGrid productData={productData} />
             </div>
             <div
               style={{
@@ -275,24 +330,21 @@ const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}
                       backgroundColor: "#2F603B",
                     },
                   }}
-                />)
-              }
-
+                />
+              )}
             </div>
+            {/* Modals */}
+            <SellModal
+              isOpen={isSellModalOpen}
+              onClose={() => setIsSellModalOpen(false)}
+            />
+            <PreSellModal
+              isOpen={isPreSellModalOpen}
+              onClose={() => setIsPreSellModalOpen(false)}
+            />
           </Paper>
         </Grid>
       </Grid>
     );
-
-
-    
-  
   }
-    
-
-  
-  
-
-
-
 }
