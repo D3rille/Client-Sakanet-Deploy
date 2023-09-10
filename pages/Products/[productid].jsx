@@ -53,6 +53,8 @@ export default function Products() {
   const [priceRange, setPriceRange] = useState([0, 1000]); //Price Range Filter
   const [currentLocation, setCurrentLocation] = useState("");//Area Limit Filter
   const [selectedDate, setSelectedDate] = useState(null); //Date Filter
+  const [currentPage, setCurrentPage] = useState(1); //Pagination
+  const [totalPages, setTotalPages] = useState(0);
 
   const productFilters = 
    {
@@ -87,6 +89,10 @@ export default function Products() {
     setProductsSortBy(event.target.value);
   };
   
+   const handlePageChange = (event, page) => { //Pagination
+    event.preventDefault();
+    setCurrentPage(page);
+  };
 
   const resetFilters = () => {
     setDeliveryFilter("");
@@ -94,6 +100,11 @@ export default function Products() {
     setSelectedDate(null);
     setCurrentLocation("");
   };
+
+  const getTotalProduct = (totalProduct) => //Calculate Number of AvailableProduct 
+  {
+    setTotalPages(Math.ceil(totalProduct/ 10));
+  }
 
   
 
@@ -398,9 +409,12 @@ export default function Products() {
                   />
                 </div>
               </Paper>
+              
               <div className={styles.productGridContainer}>
-{productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters} /> : 
-<PreOrderProductGrid productId={productId} sortBy={productsSortBy} />}
+{productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}
+  getTotalProduct={getTotalProduct} currentPage={currentPage} /> : 
+<PreOrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}  
+  getTotalProduct={getTotalProduct} currentPage={currentPage} />}
 
   <div
     style={{
@@ -411,7 +425,9 @@ export default function Products() {
     }}
   >
     <Pagination
-      count={10}
+      count={totalPages}
+      page={currentPage}
+      onChange={handlePageChange}
       variant="outlined"
       sx={{
         "& .MuiPaginationItem-root": {

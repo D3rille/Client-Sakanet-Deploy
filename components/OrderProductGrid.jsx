@@ -14,6 +14,7 @@ import Link from "next/link";
 import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT} from "../graphql/queries/productQueries";
 import { useQuery } from "@apollo/client";
 import { formatWideAddress } from "../util/addresssUtils";
+import CircularLoading from "./circularLoading";
 
 function ProductCard({ product }) {
   return (
@@ -32,7 +33,7 @@ function ProductCard({ product }) {
       <Box sx={{ paddingLeft: 2, paddingTop: 2, paddingBottom: 1 }}>
         <Box sx={{ display: "flex", alignItems: 'center' }}>
           <Avatar
-            src={product.userAvatar}
+            src={product.photo}
             sx={{
               width: 48,
               height: 48,
@@ -149,8 +150,9 @@ function ProductCard({ product }) {
 }
 
 
-const OrderProductGrid = ({ productId, sortBy, filter }) => {
+const OrderProductGrid = ({ productId, sortBy, filter, currentPage, getTotalProduct }) => {
   let products = [];
+  let totalProduct = 0;
   
   // Use different queries based on the sortBy property
   const { data, loading, error } = sortBy === 'available'
@@ -159,6 +161,8 @@ const OrderProductGrid = ({ productId, sortBy, filter }) => {
           category: 'Sell',
           itemId: productId,
           filter: filter,
+          page: currentPage,
+          limit: 6,
         },
       })
     : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
@@ -166,17 +170,23 @@ const OrderProductGrid = ({ productId, sortBy, filter }) => {
           category: 'Sell',
           itemId: productId,
           filter: filter,
+          page: currentPage,
+          limit: 6,
         },
       });
 
-  if (loading) return <p>Loading...</p>; //TODO: Implement Loading and Error messaging
+  if (loading) return CircularLoading; //TODO: Implement Loading and Error messaging
   if (error) return <p>Error: {error.message}</p>;
 
   if (sortBy === 'available') {
-    products = data.getAvailableProducts;
+    products = data.getAvailableProducts.product;
+    totalProduct = data.getAvailableProducts.totalProduct;
   } else if (sortBy === 'suggested') {
-    products = data.getSuggestedProducts;
+    products = data.getSuggestedProducts.product;
+    totalProduct = data.getSuggestedProducts.totalProduct;
   }
+
+  getTotalProduct(totalProduct);
 
   return (
     <div
