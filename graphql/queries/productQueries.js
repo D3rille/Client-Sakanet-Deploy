@@ -207,3 +207,106 @@ export const SEARCH_AVAILABLE_PRODUCT = gql`
 }
 `;
 
+export const GET_MY_PRODUCTS = gql`
+  query GetMyProducts($category: String, $limit: Int, $page: Int, $status: String) {
+    getMyProducts(category: $category, limit: $limit, page: $page, status: $status) {
+      totalProduct
+      product {
+        _id
+        category
+        product_description
+        photo
+        seller {
+          id
+          name
+          profile_pic
+          rating
+          address {
+            street
+            barangay
+            cityOrMunicipality
+            province
+            region
+          }
+        }
+        item {
+          id
+          englishName
+          tagalogName
+          photo
+          product_type
+        }
+        unit
+        price
+        stocks
+        minimum_order
+        until
+        dateOfHarvest
+        area_limit
+        modeOfDelivery
+        pickup_location
+        deletable
+        status
+        createdAt
+      }
+    }
+  }
+`;
+
+export const SEARCH_MY_PRODUCTS = gql`
+  query SearchMyProducts($category: String, $status: String, $searchInput: String) {
+    searchMyProducts(category: $category, status: $status, searchInput: $searchInput) {
+      _id
+      category
+      product_description
+      photo
+      seller {
+        id
+        name
+        profile_pic
+        rating
+        address {
+          street
+          barangay
+          cityOrMunicipality
+          province
+          region
+        }
+      }
+      item {
+        id
+        englishName
+        tagalogName
+        photo
+        product_type
+      }
+      unit
+      price
+      stocks
+      minimum_order
+      until
+      dateOfHarvest
+      area_limit
+      modeOfDelivery
+      pickup_location
+      deletable
+      status
+      createdAt
+    }
+  }
+`;
+
+export const GET_MARKET_PRODUCT = gql`
+  query GetMarketProduct($productId: String) {
+    getMarketProduct(productId: $productId) {
+      _id
+      name {
+        english
+        tagalog
+      }
+      photo
+      type
+      units
+    }
+  }
+`;

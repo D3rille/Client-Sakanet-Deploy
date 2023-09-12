@@ -42,29 +42,24 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
-
-export default function ConfirmationDialog({triggerComponent, title, message, btnDisplay, callback}) {
+// 'message' needs to be a component
+export default function ConfirmationDialog({open, setOpen, title, message, btnDisplay, callback}) {
     const buttonDisplay = [
         ["Yes", "No"],
         ["Save", "Cancel"],
         ["Confirm", "Cancel"],
         ["Agree", "Disagree"]
-    ]
-    const [open, setOpen] = useState(false);
+    ];
 
     const handleClickOpen = () => {
-    setOpen(true);
+        setOpen(true);
     };
     const handleClose = () => {
-    setOpen(false);
+        setOpen(false);
     };
 
     return (
     <div>
-        {triggerComponent(handleClickOpen)}
-        {/* <IconButton color="success" onClick={handleClickOpen} >
-            <MoreVertIcon/>
-        </IconButton> */}
         <BootstrapDialog
         fullWidth
         maxWidth={"xs"}
@@ -88,17 +83,25 @@ export default function ConfirmationDialog({triggerComponent, title, message, bt
             <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-            <Typography gutterBottom>
-            {message}
-            </Typography>
+            {message()}
         </DialogContent>
         <DialogActions>
-            <Button autoFocus onClick={()=>{callback(); handleClose();}} variant="contained" color="success">
-                {buttonDisplay[btnDisplay][0]}
-            </Button>
-            <Button autoFocus onClick={handleClose} variant="outlined" color="error">
-                {buttonDisplay[btnDisplay][1]}
-            </Button>
+            {callback ? (
+                <>
+                    <Button autoFocus onClick={()=>{callback(); handleClose();}} variant="contained" color="success">
+                        {buttonDisplay[btnDisplay][0]}
+                    </Button>
+                    <Button autoFocus onClick={handleClose} variant="outlined" color="error">
+                        {buttonDisplay[btnDisplay][1]}
+                    </Button>
+                </>
+                       
+            ):(
+                <Button autoFocus onClick={handleClose} variant="outlined" color="error">
+                    Close
+                </Button>
+            )}
+
         </DialogActions>
         </BootstrapDialog>
     </div>

@@ -318,7 +318,15 @@ const markAllAsRead = () => {
                       }
                     : { cursor: "pointer" }
                 }
-                onClick={() => router.push("/Products")}
+                onClick={() =>{ 
+                    if(user.role == "BUYER"){
+                      router.push("/Products")
+                    }
+                    else {
+                      router.push("/myProducts")
+                    }
+                  }
+                 }
               >
                 Products
               </li>
@@ -484,7 +492,10 @@ const markAllAsRead = () => {
                 </ListItemIcon>
                 Cart
               </MenuItem>
-              <MenuItem onClick={() => handleClose("/Settings")}>
+              <MenuItem onClick={() => {
+                setAnchorEl(null);
+                router.push("/Settings");
+              }}>
               <ListItemIcon>
                 <SettingsIcon fontSize="small" />
               </ListItemIcon>

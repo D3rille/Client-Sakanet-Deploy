@@ -2,11 +2,10 @@ import * as React from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-export function ProductsToggleButton({ productsType, onProductTypeChange }) {
+export function ProductsToggleButton({ productsCategory, onProductCategoryChange }) {
 
-  const handleProductTypeChange = (event, newType) => {
-    onProductTypeChange(newType);
-
+  const handleProductCategoryChange = (event, newType) => {
+    onProductCategoryChange(newType);
   };
 
   return (
@@ -21,13 +20,13 @@ export function ProductsToggleButton({ productsType, onProductTypeChange }) {
         }
       }}
       color="primary"
-      value={productsType}
+      value={productsCategory}
       exclusive
-      onChange={handleProductTypeChange}
+      onChange={handleProductCategoryChange}
       aria-label="Product Type"
     >
       <ToggleButton 
-        value="all" 
+        value="Sell" 
         sx={{ 
           width:"10vw",
           color: '#2F613A',
@@ -39,7 +38,7 @@ export function ProductsToggleButton({ productsType, onProductTypeChange }) {
        Sell 
       </ToggleButton>
       <ToggleButton 
-        value="available" 
+        value="Pre-Sell" 
         sx={{ 
           width:"10vw",
           color: '#2F613A',
