@@ -23,7 +23,7 @@ Example use of this component:
         );
     }
 ### On the page, insert this component wherever you want to place the trigger for this dialog
-    <ConfirmationDialog 
+    <TriggeredDialog 
     triggerComponent={triggerComponent} 
     title={"Confirmation"} 
     message={"Are you sure?"}
@@ -43,13 +43,15 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 // 'message' needs to be a component
-export default function ConfirmationDialog({open, setOpen, title, message, btnDisplay, callback}) {
+export default function TriggeredDialog({triggerComponent, title, message, btnDisplay, callback}) {
     const buttonDisplay = [
         ["Yes", "No"],
         ["Save", "Cancel"],
         ["Confirm", "Cancel"],
         ["Agree", "Disagree"]
     ];
+
+    const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -60,7 +62,8 @@ export default function ConfirmationDialog({open, setOpen, title, message, btnDi
 
     return (
     <div>
-        <BootstrapDialog
+        {triggerComponent && triggerComponent(handleClickOpen)}
+        {open && <BootstrapDialog
         fullWidth
         maxWidth={"xs"}
         onClose={handleClose}
@@ -83,7 +86,7 @@ export default function ConfirmationDialog({open, setOpen, title, message, btnDi
             <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-            {message()}
+            {message}
         </DialogContent>
         <DialogActions>
             {callback ? (
@@ -103,7 +106,7 @@ export default function ConfirmationDialog({open, setOpen, title, message, btnDi
             )}
 
         </DialogActions>
-        </BootstrapDialog>
+        </BootstrapDialog>}
     </div>
     );
 }

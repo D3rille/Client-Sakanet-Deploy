@@ -131,46 +131,51 @@ query GetSuggestedProducts($category: String, $itemId: String, $filter: productF
 
 
 export const GET_PRODUCT = gql`
-query GetProduct($productId: String) {
-  getProduct(productId: $productId) {
-    _id
-    category
-    product_description
-    photo
-    seller {
-      id
-      name
-      profile_pic
-      rating
-      address {
-        street
-        barangay
-        cityOrMunicipality
-        province
-        region
+  query GetProduct($productId: String) {
+    getProduct(productId: $productId) {
+      seller {
+        id
+        name
+        profile_pic
+        rating
+        address {
+          street
+          barangay
+          cityOrMunicipality
+          province
+          region
+        }
+        reviewerCount
+      }
+      product {
+        _id
+        category
+        product_description
+        photo
+        seller {
+          id
+          name
+        }
+        item {
+          id
+          englishName
+          tagalogName
+          photo
+          product_type
+        }
+        unit
+        price
+        stocks
+        minimum_order
+        until
+        dateOfHarvest
+        area_limit
+        modeOfDelivery
+        pickup_location
+        status
       }
     }
-    item {
-      id
-      englishName
-      tagalogName
-      photo
-      product_type
-    }
-    unit
-    price
-    stocks
-    minimum_order
-    until
-    dateOfHarvest
-    area_limit
-    modeOfDelivery
-    pickup_location
-    deletable
-    status
-    createdAt
   }
-}
 `;
 
 export const SEARCH_ALL_PRODUCT = gql`

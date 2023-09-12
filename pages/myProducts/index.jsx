@@ -38,7 +38,7 @@ import CircularLoading from "../../components/circularLoading";
 import {shortDate, timePassed} from "../../util/dateUtils";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {useRouter} from "next/router";
-import ConfirmationDialog from "../../components/popups/confirmationDialog";
+import TriggeredDialog from "../../components/popups/confirmationDialog";
 
 const StyledIconButton = styled(IconButton)({
   background: "#2E603A",
@@ -71,16 +71,25 @@ const StyledIconButton = styled(IconButton)({
   },
 });
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  // marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
+// const ExpandMore = styled((props) => {
+//   const { expand, ...other } = props;
+//   return <IconButton {...other} />;
+// })(({ theme, expand }) => ({
+//   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+//   // marginLeft: 'auto',
+//   transition: theme.transitions.create('transform', {
+//     duration: theme.transitions.duration.shortest,
+//   }),
+// }));
+const triggerComponent = (handleClickOpen) => {
+  return (
+    <Button onClick={()=>{
+      handleClickOpen();
+    }}>
+      More Details
+    </Button>
+  );
+}
 
 function ProductCard({ product, openDetails, setOpenDetails }) {
   
@@ -252,13 +261,14 @@ function ProductCard({ product, openDetails, setOpenDetails }) {
       </CardContent>
       
       <CardActions disableSpacing sx={{display:"flex", justifyContent:"center", alignItems:"center"}}>
-        <Button onClick={()=>{
+        {/* <Button onClick={()=>{
           setOpenDetails(true);
         }}>
           More Details
-        </Button>
+        </Button> */}
+        <TriggeredDialog triggerComponent={triggerComponent} message={details()} title={"More Product Details"} btnDisplay={0}/>
       </CardActions>
-      <ConfirmationDialog open={openDetails} setOpen={setOpenDetails} message={details} title={"More Product Details"} btnDisplay={0}/>
+      
     </Card>
   );
 }

@@ -26,12 +26,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import CircularLoading from "../circularLoading";
 import { uploadImage } from "../../util/imageUtils";
-import { useRouter } from "next/router";
 import { useForm } from "../../util/hooks";
 
 
 export default function SellModal({ isOpen, onClose, data, loading, error, createProduct }) {
-  const router = useRouter();
 
   const {onChange, onSubmit, onClear, values} = useForm(executeCreateProduct,{
     area_limit: "",
@@ -83,7 +81,7 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
         "stocks": values.stocks? parseInt(values.stocks):0,
         "minimum_order": values.minimumOrder ? parseFloat(values.minimumOrder):0,
         "until":  selectedDate?.toISOString(),
-        "area_limit": values.areaLimit,
+        "area_limit": values.areaLimit ?? "",
         "pickup_location":values.pickUpLocation,
         "dateOfHarvest":dateOfHarvest,
         "modeOfDelivery": values.modeOfDelivery,
@@ -106,8 +104,7 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
 
     return true;
   }
-  // const allFieldsFilled = areaLimit && price && stocks  && selectedDate 
-  // && (category=="Pre-Sell" && dateOfHarvest) && (modeOfDelivery=="pick-up" && pickUpLocation) && unit;
+ 
 
   if(loading){
     return(
@@ -287,23 +284,6 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  {/* {data.units && (
-                    <select
-                    
-                    value={unit}
-                    // label="Unit"
-                    onChange={handleUnitChange}
-                  >
-                    {data.units.map(val=>{
-                      return(
-                        <React.Fragment key={val??"1"}>
-                          <option value={val}>{val}</option>
-                        </React.Fragment>
-                          
-                      );
-                    })}
-                  </select>
-                  )} */}
                   {data.units && (
                     <Select
                     name="unit"
@@ -400,27 +380,10 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
 
           </Grid>
   
-          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Set Time Limit"
-              sx={{
-                width: "100%",
-                "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#2E613B",
-                },
-                "&.Mui-focused & .MuiInputLabel-outlined": {
-                  color: "#2E613B",
-                },
-              }}
-              value={selectedDate}
-              onAccept={(newValue) => setSelectedDate(newValue.toISOString())}
-            />
-          </LocalizationProvider> */}
           {values.modeOfDelivery=="pick-up" && (
           <TextField
             name="pickUpLocation"
             value={values.pickUpLocation}
-            // onChange={(e) => setPickUpLocation(e.target.value)}
             onChange={onChange}
             fullWidth
             label="Pick-up Location"
@@ -440,7 +403,6 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
           <TextField
           name="description"
             value={values.description}
-            // onChange={(e) => setDescription(e.target.value)}
             onChange={onChange}
             fullWidth
             label="Description"
