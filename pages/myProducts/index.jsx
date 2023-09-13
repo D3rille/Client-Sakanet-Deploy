@@ -96,6 +96,9 @@ function ProductCard({ product, openDetails, setOpenDetails }) {
   const details =()=>{
     return(
       <>
+        <Typography align="left" >
+          Product Id: {product._id}
+        </Typography>
         {product.product_description && (
           <Typography align="left" paragraph>
             Product Description:

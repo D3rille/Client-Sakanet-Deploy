@@ -480,7 +480,10 @@ const markAllAsRead = () => {
               transformOrigin={{ horizontal: "right", vertical: "top" }}
               anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-              <MenuItem onClick={handleClose}>
+              <MenuItem onClick={()=>{
+                handleClose();
+                router.push("/Orders");
+                }}>
                 <ListItemIcon>
                   <OrderIcon fontSize="small" />
                 </ListItemIcon>

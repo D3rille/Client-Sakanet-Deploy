@@ -32,7 +32,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import { GET_PRODUCT,GET_AVAILABLE_PRODUCTS  } from "../../../graphql/queries/productQueries";
 import { PLACE_ORDER } from "../../../graphql/mutations/orderMutations";
 import { formatWideAddress } from "../../../util/addresssUtils";
-import {timePassed} from "../../../util/dateUtils";
+import {shortDate, timePassed} from "../../../util/dateUtils";
 import toast from 'react-hot-toast';
 import TriggeredDialog from "../../../components/popups/confirmationDialog";
 import CircularLoading from "../../../components/circularLoading";
@@ -207,7 +207,7 @@ export default function ProductOverview() {
                     border: "20px solid #FEFEFF",
                   }}
                   className={styles.mobileCardMedia}
-                  image={product.photo ?? product.item.photo}
+                  image={product.photo ? product.photo : product.item.photo}
                   alt={product.item.tagalogName ?? product.item.englishName}
                 />
                 <Box
@@ -401,8 +401,48 @@ export default function ProductOverview() {
                     </TableHead>
                     <TableBody>
                         <TableRow className={styles.alternateRow}>
+                          <TableCell>Product Id</TableCell>
+                          <TableCell>{product._id}</TableCell>
+                        </TableRow>
+                        <TableRow className={styles.alternateRow}>
+                          <TableCell>Category: </TableCell>
+                          <TableCell>
+                          {product.category == "Pre-Sell" ?(<Box
+                            sx={{
+                              backgroundColor: "#FE8C47",
+                              borderRadius: "8px",
+                              width: "fit-content",
+                              padding: "2px 8px",
+                              fontSize: "0.7rem",
+                              
+                              color: "white",
+                            }}
+                          >
+                            PRE-ORDER
+                          </Box>):(
+                          <Box
+                            sx={{
+                              backgroundColor: "#2F613A",
+                              borderRadius: "8px",
+                              width: "fit-content",
+                              padding: "2px 8px",
+                              fontSize: "0.7rem",
+                              
+                              color: "white",
+                            }}
+                          >
+                            Order
+                          </Box>
+                          )}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className={styles.alternateRow}>
                           <TableCell>Stocks</TableCell>
                           <TableCell>{product.stocks}</TableCell>
+                        </TableRow>
+                        <TableRow className={styles.alternateRow}>
+                          <TableCell>Minimum Order</TableCell>
+                          <TableCell>{product.minimum_order}</TableCell>
                         </TableRow>
                         <TableRow className={styles.alternateRow}>
                           <TableCell>Seller Address</TableCell>
@@ -412,6 +452,10 @@ export default function ProductOverview() {
                           <TableCell>Delivery Method</TableCell>
                           <TableCell>{product.modeOfDelivery}</TableCell>
                         </TableRow>
+                        {product.category=="Pre-Sell" && product.dateOfHarvest && (<TableRow className={styles.alternateRow}>
+                          <TableCell>Date of Harvest</TableCell>
+                          <TableCell>{shortDate(product.dateOfHarvest)}</TableCell>
+                        </TableRow>)}
                         {product.modeOfDelivery === "pick-up" ? ( //Check if delivery mode pick then display location
                           <TableRow className={styles.alternateRow}>
                             <TableCell>Pickup Location</TableCell>
