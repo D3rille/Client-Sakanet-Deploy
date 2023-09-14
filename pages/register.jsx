@@ -21,7 +21,7 @@ import { Radio, FormControl, FormLabel, RadioGroup, useForkRef } from '@mui/mate
 
 
 import {useState, useContext, forwardRef , useRef } from 'react';
-import { REGISTER_USER } from '../graphql/mutations/authMutations';//imported the mutation
+import { REGISTER_USER } from '../graphql/operations/auth';//imported the mutation
 import { useMutation } from '@apollo/client';
 import toast, { Toaster } from 'react-hot-toast';
 import CircularLoading from '../components/circularLoading';

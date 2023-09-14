@@ -13,7 +13,7 @@ import PaymentChannels from "../../components/settingsComponents/PaymentChannels
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { useQuery } from '@apollo/client';
-import { GET_MY_PROFILE } from '../../graphql/queries/userProfileQueries';
+import { GET_MY_PROFILE } from '../../graphql/operations/profile';
 
 const GridContainer = styled(Grid)({
     background: '#F4F4F4',

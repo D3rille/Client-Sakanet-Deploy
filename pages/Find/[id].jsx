@@ -18,14 +18,13 @@ import CheckIcon from '@mui/icons-material/Check';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import Head from 'next/head';
 import Image from "next/image";
-import { GO_TO_PROFILE } from '../../graphql/queries/searchQueries';
+import { GO_TO_PROFILE } from '../../graphql/operations/search';
 import { useQuery, useMutation } from '@apollo/client';
 import {formatWideAddress} from '../../util/addresssUtils.js';
 import { useRouter } from "next/router";
 import Rating from '@mui/material/Rating';
 import toast from 'react-hot-toast';
-import { REQUEST_CONNECTION, REMOVE_CONNECTION } from '../../graphql/mutations/MyNetworkMutations';
-// import { GET_SUGGESTED_USERS } from '../../graphql/queries/myNetworkQueries';
+import { REQUEST_CONNECTION, REMOVE_CONNECTION } from '../../graphql/operations/myNetwork';
 import OptionsMenu from '../../components/popups/OptionsMenu';
 
 const ButtonsDisplay = ({userId, connStatus, requestConnection, onMoreList}) =>{

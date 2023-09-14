@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Link from "next/link";
-import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT} from "../graphql/queries/productQueries";
+import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT} from "../graphql/operations/product";
 import { useQuery } from "@apollo/client";
 import { formatWideAddress } from "../util/addresssUtils";
 import CircularLoading from "./circularLoading";

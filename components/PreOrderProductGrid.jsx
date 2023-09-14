@@ -12,7 +12,7 @@ import {
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
-import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT } from "../graphql/queries/productQueries";
+import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT } from "../graphql/operations/product";
 import CircularLoading from "./circularLoading";
 import { formatWideAddress } from "../util/addresssUtils";
 

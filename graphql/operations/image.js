@@ -1,4 +1,5 @@
-import {gql} from '@apollo/client';
+import { gql } from '@apollo/client';
+
 
 export const UPLOAD_PROFILE_PIC = gql`
   mutation UploadProfilePic($profile_pic: String!) {
@@ -12,4 +13,3 @@ export const UPLOAD_COVER_PIC = gql`
     updateCoverPic(cover_photo: $cover_photo)
   }
 `;
-

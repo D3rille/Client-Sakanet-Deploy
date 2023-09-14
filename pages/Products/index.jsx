@@ -24,7 +24,7 @@ import {
   GET_AVAILABLE_MARKET_PRODUCTS, 
   SEARCH_ALL_PRODUCT,
   SEARCH_AVAILABLE_PRODUCT
-  } from "../../graphql/queries/productQueries";
+  } from "../../graphql/operations/product";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import ProductCategories from "../../components/ProductCategory";
 import CircularLoading from "../../components/circularLoading";

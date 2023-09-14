@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
-import { GET_NOTIFICATIONS, NOTIF_SUB } from '../graphql/subscriptions/notificationSub.js';
+import { GET_NOTIFICATIONS, NOTIF_SUB } from '../graphql/operations/notification';
 import { AuthContext } from './auth.js';
 
 const SubscriptionContext = createContext();

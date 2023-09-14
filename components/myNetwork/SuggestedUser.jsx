@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import Link from  '@mui/material/Link';
 import {useRouter} from "next/router";
 
-import { GET_SUGGESTED_USERS } from '../../graphql/queries/myNetworkQueries';
+import { GET_SUGGESTED_USERS } from '../../graphql/operations/myNetwork';
 import { formatWideAddress } from '../../util/addresssUtils';
 
 

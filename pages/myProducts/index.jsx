@@ -32,7 +32,7 @@ import FarmerSideToggleButton from "../../components/FarmerSide/FarmerSideToggle
 import {
   GET_MY_PRODUCTS,
   SEARCH_MY_PRODUCTS,
-} from "../../graphql/queries/productQueries";
+} from "../../graphql/operations/product";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import CircularLoading from "../../components/circularLoading";
 import {shortDate, timePassed} from "../../util/dateUtils";

@@ -19,7 +19,7 @@ import MuiAlert from "@mui/material/Alert";
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from "@mui/material/Slide";
-import { LOGIN_USER } from "../graphql/mutations/authMutations";
+import { LOGIN_USER } from "../graphql/operations/auth";
 import CircularLoading from '../components/circularLoading';
 import {useRouter} from 'next/router';
 import {useForm} from '../util/hooks';

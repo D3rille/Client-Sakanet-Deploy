@@ -63,4 +63,3 @@ query GoToProfile($userId: String) {
   }
 }
 `;
-

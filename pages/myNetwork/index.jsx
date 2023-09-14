@@ -12,8 +12,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import MyConnectionList from '../../components/myNetwork/MyConnectionList';
 import Requests from '../../components/myNetwork/Requests';
 import SuggestedUsers from '../../components/myNetwork/SuggestedUser';
-import { GET_CONNECTED_USERS, GET_CONNECTION_REQUESTS, GET_SUGGESTED_USERS } from '../../graphql/queries/myNetworkQueries';
-import { ACCEPT_CONNECTION, DECLINE_CONNECTION, REQUEST_CONNECTION } from '../../graphql/mutations/MyNetworkMutations';
+import { GET_CONNECTED_USERS, GET_CONNECTION_REQUESTS, GET_SUGGESTED_USERS } from '../../graphql/operations/myNetwork';
+import { ACCEPT_CONNECTION, DECLINE_CONNECTION, REQUEST_CONNECTION } from '../../graphql/operations/myNetwork';
 import default_profile from "../../public/images/default_profile.jpg";
 import { formatWideAddress } from '../../util/addresssUtils';
 // const myConnectionList = [

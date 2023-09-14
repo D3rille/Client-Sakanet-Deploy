@@ -1,5 +1,11 @@
-import {gql} from "@apollo/client";
+import { gql } from '@apollo/client';
 
+
+export const CREATE_PRODUCT = gql`
+  mutation CreateProduct($product: ProductInput) {
+    createProduct(product: $product)
+    }
+`;
 export const GET_ALL_MARKET_PRODUCTS = gql`
  query GetAllMarketProducts($type: String, $limit: Int, $page: Int) {
   getAllMarketProducts(type: $type, limit: $limit, page: $page) {
@@ -321,3 +327,4 @@ export const GET_MARKET_PRODUCT = gql`
     }
   }
 `;
+

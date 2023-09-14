@@ -11,10 +11,10 @@ import { styled } from "@mui/system";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { imageDelete, uploadCoverPhoto, uploadImage } from "../../util/imageUtils";
-import { UPLOAD_COVER_PIC, UPLOAD_PROFILE_PIC } from "../../graphql/mutations/imageMutations";
+import { UPLOAD_COVER_PIC, UPLOAD_PROFILE_PIC } from "../../graphql/operations/image";
 import { useMutation } from "@apollo/client";
-import { GET_MY_PROFILE } from "../../graphql/queries/userProfileQueries";
-import { UPDATE_DISPLAY_NAME } from "../../graphql/mutations/settingsMutations";
+import { GET_MY_PROFILE } from "../../graphql/operations/profile";
+import { UPDATE_DISPLAY_NAME } from "../../graphql/operations/settings";
 
 
 

@@ -16,7 +16,7 @@ import samplePost from '../../public/images/samplepost.jpg'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import Head from 'next/head';
 import Image from "next/image";
-import { GET_MY_PROFILE } from '../../graphql/queries/userProfileQueries';
+import { GET_MY_PROFILE } from '../../graphql/operations/profile';
 import { useQuery } from '@apollo/client';
 import {formatWideAddress} from '../../util/addresssUtils.js';
 export default function MyProfile(){

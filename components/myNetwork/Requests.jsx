@@ -7,7 +7,7 @@ import Link from  '@mui/material/Link';
 import {useRouter} from "next/router";
 
 
-import {GET_CONNECTION_REQUESTS} from '../../graphql/queries/myNetworkQueries';
+import {GET_CONNECTION_REQUESTS} from '../../graphql/operations/myNetwork';
 import { formatWideAddress } from '../../util/addresssUtils';
 
 function Requests({acceptConnection, declineConnection}){

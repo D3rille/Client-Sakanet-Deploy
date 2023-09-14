@@ -47,5 +47,10 @@ export const DECLINE_ORDER = gql`
         declineOrder(orderId: $orderId, reason: $reason)
     }
 `;
+export const PLACE_ORDER = gql`
+    mutation PlaceOrder($order: OrderInput) {
+        placeOrder(order: $order)
+    }
+`;
 
 

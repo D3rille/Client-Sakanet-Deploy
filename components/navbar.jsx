@@ -28,7 +28,7 @@ import styles from "../styles/Navbar.module.css";
 import { useRouter } from "next/router";
 import { AuthContext } from "@/context/auth";
 import Image from "next/image";
-import { GET_MY_PROFILE } from "../graphql/queries/userProfileQueries";
+import { GET_MY_PROFILE } from "../graphql/operations/profile";
 import { useQuery, useMutation } from "@apollo/client";
 import CartModal from "./CartModal";
 import Notifications from './Notifications';
@@ -41,11 +41,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import { useSubs } from "../context/SubscriptionProvider.js";
 import Popover from '@mui/material/Popover';
 import Badge from '@mui/material/Badge';
-import {READ_ALL_NOTIF} from "../graphql/mutations/noficationMutations";
-import { GET_NOTIFICATIONS } from "@/graphql/subscriptions/notificationSub";
-import { DELETE_NOTIFICATION, CLEAR_NOTIFICATIONS} from "../graphql/mutations/noficationMutations";
+import {READ_ALL_NOTIF} from "../graphql/operations/notification";
+import { GET_NOTIFICATIONS, DELETE_NOTIFICATION, CLEAR_NOTIFICATIONS } from "../graphql/operations/notification";
 import { useLazyQuery } from '@apollo/client';
-import { SEARCH_USERS } from '../graphql/queries/searchQueries';
+import { SEARCH_USERS } from '../graphql/operations/search';
 import SearchResult from "../components/search/searchResult";
 
 

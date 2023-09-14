@@ -29,8 +29,8 @@ import {
 import styles from "../../../styles/productOverview.module.css";
 import { useRouter } from "next/router";
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_PRODUCT,GET_AVAILABLE_PRODUCTS  } from "../../../graphql/queries/productQueries";
-import { PLACE_ORDER } from "../../../graphql/mutations/orderMutations";
+import { GET_PRODUCT,GET_AVAILABLE_PRODUCTS  } from "../../../graphql/operations/product";
+import { PLACE_ORDER } from "../../../graphql/operations/order";
 import { formatWideAddress } from "../../../util/addresssUtils";
 import {shortDate, timePassed} from "../../../util/dateUtils";
 import toast from 'react-hot-toast';

@@ -1,4 +1,4 @@
-import {gql} from '@apollo/client';
+import { gql } from '@apollo/client';
 
 
 //Just copy paste from apollo playground
@@ -23,7 +23,7 @@ export const REGISTER_USER = gql`
 }
  `;
 
- export const LOGIN_USER = gql`
+export const LOGIN_USER = gql`
   mutation Login($loginCred: String!, $password: String!) {
   login(login_cred: $loginCred, password: $password) {
     id
