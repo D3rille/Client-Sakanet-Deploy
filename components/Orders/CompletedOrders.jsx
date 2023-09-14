@@ -8,11 +8,16 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Button,
   Typography,
   Divider,
+  IconButton,
   Box,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import TriggeredDialog from "../popups/confirmationDialog";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {timePassed, shortDate} from "../../util/dateUtils";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -24,57 +29,61 @@ const StyledOrderIdCell = styled(StyledTableCell)({
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({}));
 
-export default function ForCompletionOrders() {
-  const [orders, setOrders] = useState([
-    {
-      orderId: "007",
-      product: "Oranges",
-      buyer: "John Cruz",
-      quantity: "50",
-      total: "1,500",
-      status: "Pending",
-    },
-    {
-      orderId: "007",
-      product: "Oranges",
-      buyer: "John Cruz",
-      quantity: "50",
-      total: "1,500",
-      status: "Pending",
-    },
-    {
-      orderId: "007",
-      product: "Oranges",
-      buyer: "John Cruz",
-      quantity: "50",
-      total: "1,500",
-      status: "Pending",
-    },
-    {
-      orderId: "007",
-      product: "Oranges",
-      buyer: "John Cruz",
-      quantity: "50",
-      total: "1,500",
-      status: "Pending",
-    },
-    {
-      orderId: "007",
-      product: "Oranges",
-      buyer: "John Cruz",
-      quantity: "50",
-      total: "1,500",
-      status: "Pending",
-    },
-    {
-      orderId: "007",
-      product: "Oranges",
-      buyer: "John Cruz",
-      quantity: "50",
-      total: "1,500",
-      status: "Pending",
-    },
-  ]);
+const More = (handleClickOpen) =>{
+  return(
+    <IconButton
+      onClick={()=>{
+        handleClickOpen();
+      }}
+    >
+      <MoreVertIcon/>
+    </IconButton>
+  );
+}
+
+export default function PendingOrders({...props}) {
+  const {ordersArr, role}=props;
+  const [orders, setOrders] = useState(ordersArr);
+
+  const handleAcceptOrder = (orderId) => {
+    const updatedOrders = orders.filter((order) => order.orderId !== orderId);
+    setOrders(updatedOrders);
+  };
+
+  const orderDetails=(order)=>{
+    
+    return(
+      <>
+        <Typography align="left">
+          {`Placed: ${timePassed(order?.createdAt)}`}
+        </Typography>
+        <Typography align="left">
+          {`Product Id: ${order?.productId}`}
+        </Typography>
+        {role=="FARMER"?(
+          <Typography align="left">
+            {`Buyer: ${order?.buyer.name}`}
+          </Typography>
+        ):(
+          <Typography align="left">
+            {`Seller: ${order?.seller.name}`}
+          </Typography>
+        )}
+        <Typography align="left">
+          {`Mode of Payment: ${order?.modeOfPayment}`}
+        </Typography>
+        <Typography align="left">
+          {`Type: ${order?.type}`}
+        </Typography>
+        {order?.accomplishedAt && (<Typography align="left">
+          {`Accomplished: ${shortDate(order?.accomplishedAt)}`}
+        </Typography>)}
+      </>
+
+
+      );
+         
+  }
 
   return (
     <TableContainer
@@ -87,30 +96,79 @@ export default function ForCompletionOrders() {
         marginRight: "auto",
         display: "flex",
         flexDirection: "column",
-        maxHeight: "55vh",
-        overflow: "auto",
+        maxHeight:'55vh',
+        overflow: "auto"
       }}
     >
       <Table>
         <TableHead>
           <TableRow>
-            <StyledOrderIdCell>Reference </StyledOrderIdCell>
+            <StyledOrderIdCell> Type </StyledOrderIdCell>
+            <StyledOrderIdCell>Order Id </StyledOrderIdCell>
             <StyledTableCell>Product</StyledTableCell>
-            <StyledTableCell>Buyer</StyledTableCell>
-            <StyledTableCell>Quantity (kg)</StyledTableCell>
+            {/* <StyledTableCell>{role=="FARMER"?"Buyer":"Seller"}</StyledTableCell> */}
+            <StyledTableCell>Quantity</StyledTableCell>
             <StyledTableCell>Total</StyledTableCell>
             <StyledTableCell>Status</StyledTableCell>
+            <StyledTableCell></StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {orders.map((order, index) => (
+            
             <StyledTableRow key={index}>
-              <TableCell>{order.orderId}</TableCell>
-              <TableCell>{order.product}</TableCell>
-              <TableCell>{order.buyer}</TableCell>
+              <TableCell>
+                {order.type == "Pre-Order"?(
+                  <Box
+                  sx={{
+                    backgroundColor: "#FE8C47",
+                    borderRadius: "8px",
+                    width: "fit-content",
+                    padding: "2px 8px",
+                    fontSize: "0.7rem",
+                    
+                    color: "white",
+                  }}
+                  >
+                    PRE-ORDER
+                  </Box>
+                ):(
+                  <Box
+                  sx={{
+                    backgroundColor: "#2F603B",
+                    borderRadius: "8px",
+                    width: "fit-content",
+                    padding: "2px 8px",
+                    fontSize: "0.7rem",
+                    
+                    color: "white",
+                  }}
+                  >
+                    ORDER
+                  </Box>
+                )}
+              </TableCell>
+              <TableCell>{order._id}</TableCell>
+              <TableCell>{order.marketProductName}</TableCell>
+              {/* <TableCell>{role=="FARMER"?order.buyer.name:order.seller.name}</TableCell> */}
               <TableCell>{order.quantity}</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>₱{order.total}</TableCell>
-              <TableCell>Completed</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>₱{order.totalPrice}</TableCell>
+              <TableCell>
+                <div>
+                  <Typography>
+                    Completed
+                  </Typography>
+                  
+                </div>
+              </TableCell>
+              <TableCell>
+                  <TriggeredDialog
+                  triggerComponent={More}
+                  title={"Order Details"}
+                  message={orderDetails(order)}
+                  btnDisplay={0}
+                  />
+              </TableCell>
             </StyledTableRow>
           ))}
         </TableBody>

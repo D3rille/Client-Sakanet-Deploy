@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
     Grid, Typography, Divider, Box, Tabs, Tab, Paper
 } from "@mui/material";
@@ -7,6 +7,11 @@ import PendingOrders from "../../components/Orders/PendingOrders";
 import AcceptedOrders from "../../components/Orders/AcceptedOrders";
 import ForCompletionOrders from "../../components/Orders/ForCompletionOrders";
 import CompletedOrders from "../../components/Orders/CompletedOrders";
+import { useQuery, useMutation} from "@apollo/client";
+import { GET_ORDERS, UPDATE_STATUS, CANCEL_ORDER, DECLINE_ORDER } from "../../graphql/operations/order";
+import { AuthContext } from '@/context/auth';
+import CircularLoading from  "../../components/circularLoading";
+import toast from 'react-hot-toast';
 
 const StyledGrid = styled(Grid)({
     background: '#F4F4F4',
@@ -28,7 +33,10 @@ const StyledPaper = styled(Paper)({
 });
 
 export default function Orders() {
+    const { user } = useContext(AuthContext);
     const [tabValue, setTabValue] = useState(0);
+
+    const tabEquivalents = ["Pending", "Accepted", "For Completion", "Completed"];
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -37,7 +45,33 @@ export default function Orders() {
     const handleAcceptOrder = () => {
         setTabValue(1);
     };
+    const {data, loading, error} = useQuery(GET_ORDERS,{
+        variables:{
+            "status":tabEquivalents[tabValue]
+        },
+        onError:(error)=>{
+            console.log(error);
+        }
+    });
 
+    const [updateStatus] = useMutation(UPDATE_STATUS, {
+        refetchQueries:[GET_ORDERS]
+    });
+
+    const [cancelOrder, {error:cancelOrderError}] = useMutation(CANCEL_ORDER, {
+        refetchQueries:[GET_ORDERS],
+        onError:(cancelOrderError)=>{
+            console.log(cancelOrderError);
+        }
+    });
+
+    const [declineOrder, {error:declineOrderError}] = useMutation(DECLINE_ORDER, {
+        refetchQueries:[GET_ORDERS],
+        onError:(cancelOrderError)=>{
+            console.log(cancelOrderError);
+        }
+    });
+    const ordersArr = data?.getOrders;
     return (
         <StyledGrid container>
             <Grid item xs={12}>
@@ -62,10 +96,18 @@ export default function Orders() {
                             <Tab label="Completed" sx={{ marginLeft:'8rem', color: tabValue === 3 ? '#2E613B' : "inherit" }} />
                         </Tabs>
                     </Box>
-                    {tabValue === 0 && <PendingOrders onAccept={handleAcceptOrder} />}
-                    {tabValue === 1 && <AcceptedOrders />}
-                    {tabValue === 2 && <ForCompletionOrders />}
-                    {tabValue === 3 && <CompletedOrders />}
+                    {loading && <CircularLoading/>}
+                    {data && tabValue === 0 && 
+                        <PendingOrders 
+                            role={user.role} 
+                            ordersArr={ordersArr} 
+                            updateStatus={updateStatus} 
+                            cancelOrder={cancelOrder}
+                            declineOrder={declineOrder}
+                            />}
+                    {data && tabValue === 1 && <AcceptedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
+                    {data && tabValue === 2 && <ForCompletionOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
+                    {data && tabValue === 3 && <CompletedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
                 </StyledPaper>
             </Grid>
         </StyledGrid>
