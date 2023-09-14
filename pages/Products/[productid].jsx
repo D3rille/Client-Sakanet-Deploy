@@ -30,7 +30,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import styles from "../../styles/availableProducts.module.css";
 import OrderProductGrid from "../../components/OrderProductGrid";
 import PreOrderProductGrid from "../../components/PreOrderProductGrid";
-
+import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT} from "../../graphql/operations/product";
+import { useQuery } from "@apollo/client";
+import CircularLoading from "../../components/circularLoading";
 import { DatePicker } from "@mui/x-date-pickers";
 import Pagination from "@mui/material/Pagination";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -54,7 +56,6 @@ export default function Products() {
   const [currentLocation, setCurrentLocation] = useState("");//Area Limit Filter
   const [selectedDate, setSelectedDate] = useState(null); //Date Filter
   const [currentPage, setCurrentPage] = useState(1); //Pagination
-  const [totalPages, setTotalPages] = useState(0);
 
   const productFilters = 
    {
@@ -91,7 +92,9 @@ export default function Products() {
   
    const handlePageChange = (event, page) => { //Pagination
     event.preventDefault();
-    setCurrentPage(page);
+    if (page !== currentPage) {
+      setCurrentPage(page);
+    }
   };
 
   const resetFilters = () => {
@@ -101,356 +104,394 @@ export default function Products() {
     setCurrentLocation("");
   };
 
-  const getTotalProduct = (totalProduct) => //Calculate Number of AvailableProduct 
-  {
-    setTotalPages(Math.ceil(totalProduct/ 10));
-  }
-
   
-
-
-  return (
-    
-    <Grid container className={styles.gridContainer}>
-      
-      <Grid item xs={12}>
-      
-        <Paper elevation={3} className={styles.paperContainer}>
-        <h1 style={{paddingTop:"1rem"}}>Seller Offers</h1>
-        <div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "1rem 2rem",
-  }}
->
-  <IconButton
-    onClick={goBack}
-    sx={{
-      color: "#2F613A",
-      backgroundColor: "transparent",
-      fontSize: "1rem",
-    }}
-  >
-    <ArrowBackIcon /> Go Back
-  </IconButton>
-
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-    }}
-  >
-    
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        borderRadius: "10px",
-        marginRight: "2rem",
-      }}
-    >
-      <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
-        Sort by:
-      </Typography>
-      <Select
-        value={productsSortBy}
-        onChange={handleProductsSortChange}
-        displayEmpty
-        style={{
-          height: "40px",
-          minWidth: "160px",
-          borderRadius: "10px",
-          backgroundColor: "#FEFEFF",
-        }}
-        IconComponent={ArrowDropDownIcon}
-        sx={{
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#2E603A',
-          },
-        }}
-      >
-        <MenuItem value={"available"}>Available Sellers</MenuItem>
-        <MenuItem value={"suggested"}>Suggested Sellers</MenuItem>
-      </Select>
-    </div>
-
-    <ToggleButtonGroup
-      sx={{
-        "& .Mui-selected": {
-          bgcolor: "#C2E7CB",
+  
+  // Use different queries based on the sortBy property
+  const { data, loading, error } = productsSortBy === 'available'
+    ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
+        variables: {
+          category: 'Sell',
+          itemId: productId,
+          filter: productFilters,
+          page: currentPage,
+          limit: 6,
         },
-      }}
-      color="primary"
-      value={productsType}
-      exclusive
-      onChange={handleProductTypeChange}
-      aria-label="Product Type"
-    >
-      <ToggleButton
-        value="order"
-        sx={{
-          color: "#2F613A",
-          "&.Mui-selected": {
-            color: "#2F613A",
-          },
-        }}
-      >
-        ORDER
-      </ToggleButton>
-      <ToggleButton
-        value="pre-order"
-        sx={{
-          color: "#2F613A",
-          "&.Mui-selected": {
-            color: "#2F613A",
-          },
-        }}
-      >
-        PRE-ORDER
-      </ToggleButton>
-    </ToggleButtonGroup>
-  </div>
-</div>
+      })
+    : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
+        variables: {
+          category: 'Sell',
+          itemId: productId,
+          filter: productFilters,
+          page: currentPage,
+          limit: 6,
+        },
+      });
 
+  if (loading) return (<CircularLoading/>); //TODO: Implement Loading and Error messaging
+  if (error) return <p>Error: {error.message}</p>;
+  
+  if(data){
+    let products;
+    let totalProduct;
 
-          {/* Content Section */}
+    if (productsSortBy === 'available') {
+      products = data.getAvailableProducts.product;
+      totalProduct = data.getAvailableProducts.totalProduct;
+    } else if (productsSortBy === 'suggested') {
+      products = data.getSuggestedProducts.product;
+      totalProduct = data.getSuggestedProducts.totalProduct;
+    }
+  
+     const totalPages = Math.ceil(totalProduct/ 10);
+
+    return (
+    
+      <Grid container className={styles.gridContainer}>
+        
+        <Grid item xs={12}>
+        
+          <Paper elevation={3} className={styles.paperContainer}>
+          <h1 style={{paddingTop:"1rem"}}>Seller Offers</h1>
           <div
             style={{
               display: "flex",
-              flexDirection: "row",
-              alignItems: "flex-start",
-              width: "100%",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1rem 2rem",
             }}
           >
-            <Paper
-              elevation={3}
-              className={styles.innerPaperLeft}
-              sx={{ borderRadius: "13px", padding: "1rem" }}
+            <IconButton
+              onClick={goBack}
+              sx={{
+                color: "#2F613A",
+                backgroundColor: "transparent",
+                fontSize: "1rem",
+              }}
             >
-              <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
-                Mode of Delivery
-              </Typography>
-              <RadioGroup
-                aria-label="mode-of-delivery"
-                name="mode-of-delivery"
-                value={deliveryFilter}
-                onChange={handleDeliveryFilter}
-                flexDirection="column"
-                sx={{ marginLeft: "1rem", marginBottom: "1rem" }}
-              >
-                <FormControlLabel
-                  value="pick-up"
-                  control={
-                    <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
-                  }
-                  label={
-                    <Typography sx={{ fontSize: "12px" }}>Pick Up</Typography>
-                  }
-                />
-                <FormControlLabel
-                  value="delivery"
-                  control={
-                    <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
-                  }
-                  label={
-                    <Typography sx={{ fontSize: "12px" }}>Delivery</Typography>
-                  }
-                />
-                <FormControlLabel
-                  value=""
-                  control={
-                    <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
-                  }
-                  label={<Typography sx={{ fontSize: "12px" }}>All</Typography>}
-                />
-              </RadioGroup>
-              <Divider sx={{ marginBottom: "1rem" }} />
-              <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
-                Price Range
-              </Typography>
-              <Slider
-                value={priceRange}
-                onChange={handleSliderChange}
-                valueLabelDisplay="auto"
-                min={0}
-                max={1000}
-                sx={{
-                  marginBottom: "1rem",
-                  "& .MuiSlider-track": {
-                    bgcolor: "#2F603B",
-                  },
-                  "& .MuiSlider-thumb": {
-                    color: "#2F603B",
-                  },
-                  "& .MuiSlider-rail": {
-                    bgcolor: "#ECEDEC",
-                  },
+              <ArrowBackIcon /> Go Back
+            </IconButton>
+          
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  borderRadius: "10px",
+                  marginRight: "2rem",
                 }}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Min"
-                  value={priceRange[0]}
-                  onChange={(e) => handleInputChange(0, e)}
-                  style={{ width: "45%" }}
+              >
+                <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
+                  Sort by:
+                </Typography>
+                <Select
+                  value={productsSortBy}
+                  onChange={handleProductsSortChange}
+                  displayEmpty
+                  style={{
+                    height: "40px",
+                    minWidth: "160px",
+                    borderRadius: "10px",
+                    backgroundColor: "#FEFEFF",
+                  }}
+                  IconComponent={ArrowDropDownIcon}
                   sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&:hover fieldset": { borderColor: "#2F603B" },
-                      "&.Mui-focused fieldset": { borderColor: "#2F603B" },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#2E603A',
                     },
                   }}
-                />
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Max"
-                  value={priceRange[1]}
-                  onChange={(e) => handleInputChange(1, e)}
-                  style={{ width: "45%" }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&:hover fieldset": { borderColor: "#2F603B" },
-                      "&.Mui-focused fieldset": { borderColor: "#2F603B" },
-                    },
-                  }}
-                />
+                >
+                  <MenuItem value={"available"}>Available Sellers</MenuItem>
+                  <MenuItem value={"suggested"}>Suggested Sellers</MenuItem>
+                </Select>
               </div>
-              <Divider sx={{ marginBottom: "1rem", marginTop: "1rem" }} />
-              <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
-                Area Limit
-              </Typography>
-
-              <TextField
-                  placeholder="Enter location: ex. Quezon"
-                  variant="outlined"
-                  size="small"
-                  style={{ borderColor: "#2E603A", width: "100%" }}
-                  value={currentLocation}
-                  onChange={(e) => setCurrentLocation(e.target.value)}
-                />
-
-              <Divider sx={{ marginTop: "1rem" }} />
-
-              <Typography
+          
+              <ToggleButtonGroup
                 sx={{
-                  fontSize: "14px",
-                  marginBottom: "1rem",
-                  marginTop: "1rem",
+                  "& .Mui-selected": {
+                    bgcolor: "#C2E7CB",
+                  },
                 }}
-              >
-                Time Limit
-              </Typography>
-
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Set Time Limit"
-                  sx={{
-                    width: "100%",
-                  }}
-                  value={selectedDate}
-                  onAccept={(newValue) => setSelectedDate(newValue.toISOString())} // This triggers after user selects a date                  
-                />
-              </LocalizationProvider>
-
-              <Button
-                variant="contained"
                 color="primary"
-                sx={{
-                  backgroundColor: "#2F603B",
-                  marginTop: "2rem",
-                  width: "100%",
-                }}
-                onClick={resetFilters}
+                value={productsType}
+                exclusive
+                onChange={handleProductTypeChange}
+                aria-label="Product Type"
               >
-                CLEAR FILTERS
-              </Button>
-            </Paper>
-            <div className={styles.parentContainer}>
-              <Paper elevation={3} className={styles.innerPaperRight}>
-                <div className={styles.logosearchbar}>
+                <ToggleButton
+                  value="order"
+                  sx={{
+                    color: "#2F613A",
+                    "&.Mui-selected": {
+                      color: "#2F613A",
+                    },
+                  }}
+                >
+                  ORDER
+                </ToggleButton>
+                <ToggleButton
+                  value="pre-order"
+                  sx={{
+                    color: "#2F613A",
+                    "&.Mui-selected": {
+                      color: "#2F613A",
+                    },
+                  }}
+                >
+                  PRE-ORDER
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </div>
+          </div>
+  
+  
+            {/* Content Section */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "flex-start",
+                width: "100%",
+              }}
+            >
+              <Paper
+                elevation={3}
+                className={styles.innerPaperLeft}
+                sx={{ borderRadius: "13px", padding: "1rem" }}
+              >
+                <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
+                  Mode of Delivery
+                </Typography>
+                <RadioGroup
+                  aria-label="mode-of-delivery"
+                  name="mode-of-delivery"
+                  value={deliveryFilter}
+                  onChange={handleDeliveryFilter}
+                  // flexDirection="column"
+                  sx={{ marginLeft: "1rem", marginBottom: "1rem" }}
+                >
+                  <FormControlLabel
+                    value="pick-up"
+                    control={
+                      <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
+                    }
+                    label={
+                      <Typography sx={{ fontSize: "12px" }}>Pick Up</Typography>
+                    }
+                  />
+                  <FormControlLabel
+                    value="delivery"
+                    control={
+                      <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
+                    }
+                    label={
+                      <Typography sx={{ fontSize: "12px" }}>Delivery</Typography>
+                    }
+                  />
+                  <FormControlLabel
+                    value=""
+                    control={
+                      <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
+                    }
+                    label={<Typography sx={{ fontSize: "12px" }}>All</Typography>}
+                  />
+                </RadioGroup>
+                <Divider sx={{ marginBottom: "1rem" }} />
+                <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
+                  Price Range
+                </Typography>
+                <Slider
+                  value={priceRange}
+                  onChange={handleSliderChange}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={1000}
+                  sx={{
+                    marginBottom: "1rem",
+                    "& .MuiSlider-track": {
+                      bgcolor: "#2F603B",
+                    },
+                    "& .MuiSlider-thumb": {
+                      color: "#2F603B",
+                    },
+                    "& .MuiSlider-rail": {
+                      bgcolor: "#ECEDEC",
+                    },
+                  }}
+                />
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <TextField
+                    variant="outlined"
                     size="small"
-                    type="text"
-                    fullWidth
-                    className={styles.searchicon}
+                    label="Min"
+                    value={priceRange[0]}
+                    onChange={(e) => handleInputChange(0, e)}
+                    style={{ width: "45%" }}
                     sx={{
-                      borderRadius: "30px",
-                      backgroundColor: "#FFFEFE",
-                      justifyItems: "right",
                       "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "transparent",
-                          borderRadius: "30px",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "transparent",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "transparent",
-                        },
-                        "& .MuiOutlinedInput-input": {
-                          padding: "10px 10px 10px 15px",
-                        },
+                        "&:hover fieldset": { borderColor: "#2F603B" },
+                        "&.Mui-focused fieldset": { borderColor: "#2F603B" },
                       },
                     }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <SearchIcon />
-                        </InputAdornment>
-                      ),
+                  />
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    label="Max"
+                    value={priceRange[1]}
+                    onChange={(e) => handleInputChange(1, e)}
+                    style={{ width: "45%" }}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&:hover fieldset": { borderColor: "#2F603B" },
+                        "&.Mui-focused fieldset": { borderColor: "#2F603B" },
+                      },
                     }}
-                    placeholder="Search"
                   />
                 </div>
+                <Divider sx={{ marginBottom: "1rem", marginTop: "1rem" }} />
+                <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
+                  Area Limit
+                </Typography>
+  
+                <TextField
+                    placeholder="Enter location: ex. Quezon"
+                    variant="outlined"
+                    size="small"
+                    style={{ borderColor: "#2E603A", width: "100%" }}
+                    value={currentLocation}
+                    onChange={(e) => setCurrentLocation(e.target.value)}
+                  />
+  
+                <Divider sx={{ marginTop: "1rem" }} />
+  
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    marginBottom: "1rem",
+                    marginTop: "1rem",
+                  }}
+                >
+                  Time Limit
+                </Typography>
+  
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Set Time Limit"
+                    sx={{
+                      width: "100%",
+                    }}
+                    value={selectedDate}
+                    onAccept={(newValue) => setSelectedDate(newValue.toISOString())} // This triggers after user selects a date                  
+                  />
+                </LocalizationProvider>
+  
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    backgroundColor: "#2F603B",
+                    marginTop: "2rem",
+                    width: "100%",
+                  }}
+                  onClick={resetFilters}
+                >
+                  CLEAR FILTERS
+                </Button>
               </Paper>
-              
-              <div className={styles.productGridContainer}>
-{productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}
-  getTotalProduct={getTotalProduct} currentPage={currentPage} /> : 
-<PreOrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}  
-  getTotalProduct={getTotalProduct} currentPage={currentPage} />}
-
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      marginTop: "1rem",
-      marginBottom: "2rem",
-    }}
-  >
-    <Pagination
-      count={totalPages}
-      page={currentPage}
-      onChange={handlePageChange}
-      variant="outlined"
-      sx={{
-        "& .MuiPaginationItem-root": {
-          color: "#2F603B",
-        },
-        "& .MuiPaginationItem-page.Mui-selected": {
-          backgroundColor: "#2F603B",
-          color: "#fff",
-          "&:hover": {
+              <div className={styles.parentContainer}>
+                <Paper elevation={3} className={styles.innerPaperRight}>
+                  <div className={styles.logosearchbar}>
+                    <TextField
+                      size="small"
+                      type="text"
+                      fullWidth
+                      className={styles.searchicon}
+                      sx={{
+                        borderRadius: "30px",
+                        backgroundColor: "#FFFEFE",
+                        justifyItems: "right",
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "transparent",
+                            borderRadius: "30px",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "transparent",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "transparent",
+                          },
+                          "& .MuiOutlinedInput-input": {
+                            padding: "10px 10px 10px 15px",
+                          },
+                        },
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                      }}
+                      placeholder="Search"
+                    />
+                  </div>
+                </Paper>
+                
+                <div className={styles.productGridContainer}>
+  {/* {productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}
+    getTotalProduct={getTotalProduct} currentPage={currentPage} /> : 
+  <PreOrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}  
+    getTotalProduct={getTotalProduct} currentPage={currentPage} />} */}
+    {productsType === "order" ? <OrderProductGrid products = {products}/> : 
+  <PreOrderProductGrid products={products}/>}
+  
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        marginTop: "1rem",
+        marginBottom: "2rem",
+      }}
+    >
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+        variant="outlined"
+        sx={{
+          "& .MuiPaginationItem-root": {
+            color: "#2F603B",
+          },
+          "& .MuiPaginationItem-page.Mui-selected": {
+            backgroundColor: "#2F603B",
+            color: "#fff",
+            "&:hover": {
+              backgroundColor: "#2F603B",
+            },
+          },
+          "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible": {
             backgroundColor: "#2F603B",
           },
-        },
-        "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible": {
-          backgroundColor: "#2F603B",
-        },
-      }}
-    />
+        }}
+      />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Paper>
+          </Paper>
+        </Grid>
       </Grid>
-    </Grid>
-  );
+    );
+  }
+
+  
+  
 }

@@ -167,7 +167,7 @@ const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}
     const regex = new RegExp(`^${filter}`, 'i');
 
     if (selectedProductType === "available") {
-      if(searchFocus && filter && searchData){
+      if(filter && searchData){
         productData=searchData.searchAvailableMarketProduct
         totalProduct = productData.length
       } else{
@@ -176,7 +176,7 @@ const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}
       }
 
     } else {
-      if(searchFocus && filter && searchData){
+      if(filter && searchData){
         productData = searchData.searchAllMarketProduct
         totalProduct = productData.length
       } else{

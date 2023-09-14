@@ -113,9 +113,14 @@ const markAllAsRead = () => {
 
   const router = useRouter();
 
-  const isActiveTab = (path) => {
-    return router.pathname === path;
-  };
+  // const isActiveTab = (path) => {
+  //   return router.pathname === path;
+  // };
+
+  const isActiveTab = (paths) =>{
+    const currentPath = router.pathname;
+    return paths.includes(currentPath);
+  }
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -309,7 +314,7 @@ const markAllAsRead = () => {
             <ul>
               <li
                 style={
-                  isActiveTab("/Products")
+                  isActiveTab(["/Products", "/myProducts"])
                     ? {
                         cursor: "pointer",
                         backgroundColor: "#2F613A",
@@ -331,7 +336,7 @@ const markAllAsRead = () => {
               </li>
               <li
                 style={
-                  isActiveTab("/")
+                  isActiveTab(["/"])
                     ? {
                         cursor: "pointer",
                         backgroundColor: "#2F613A",
@@ -345,7 +350,7 @@ const markAllAsRead = () => {
               </li>
               <li
                 style={
-                  isActiveTab("/myNetwork")
+                  isActiveTab(["/myNetwork"])
                     ? {
                         cursor: "pointer",
                         backgroundColor: "#2F613A",

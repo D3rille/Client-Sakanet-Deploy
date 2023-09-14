@@ -55,7 +55,8 @@ export default function Orders() {
     });
 
     const [updateStatus] = useMutation(UPDATE_STATUS, {
-        refetchQueries:[GET_ORDERS]
+        refetchQueries:[GET_ORDERS],
+        fetchPolicy: 'network-only',
     });
 
     const [cancelOrder, {error:cancelOrderError}] = useMutation(CANCEL_ORDER, {
@@ -66,7 +67,7 @@ export default function Orders() {
     });
 
     const [declineOrder, {error:declineOrderError}] = useMutation(DECLINE_ORDER, {
-        refetchQueries:[GET_ORDERS],
+        refetchQueries:[],
         onError:(cancelOrderError)=>{
             console.log(cancelOrderError);
         }

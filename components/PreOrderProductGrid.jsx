@@ -68,7 +68,7 @@ function PreOrderProductCard({ product }) {
                   sx={{ fontWeight: "bolder", marginLeft: 1 }}
                 >
                   {/* TO:DO fix ratings */}
-                  {`${product.seller.rating} (${product.ratingCount} ratings)`} 
+                  {`(${product.seller.rating})`} 
                 </Typography>
               </Box>
             </Box>
@@ -169,44 +169,8 @@ function PreOrderProductCard({ product }) {
     );
   }
 
-    const PreOrderProductGrid = ({ productId, sortBy, filter, currentPage, getTotalProduct }) => {
-      let product = [];
-      let totalProduct = 0;
-    
-      // Use different queries based on the sortBy property
-      const { data, loading, error } = sortBy === 'available'
-        ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
-            variables: {
-              category: 'Pre-Sell',
-              itemId: productId,
-              filter: filter,
-              page: currentPage,
-              limit: 6,
-            },
-          })
-      : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
-          variables: {
-            category: 'Pre-Sell',
-            itemId: productId,
-            filter: filter,
-            page: currentPage,
-            limit: 6,
-          },
-        });
-
-      if (loading) return CircularLoading; //TODO: Implement Loading and Error messaging
-      if (error) return <p>Error: {error.message}</p>;
-
-      if (sortBy === 'available') {
-        product = data.getAvailableProducts.product;
-        totalProduct = data.getAvailableProducts.totalProduct
-      } else if (sortBy === 'suggested') {
-          product = data.getSuggestedProducts.product;
-          totalProduct = data.getSuggestedProducts.totalProduct;
-      }
-
-      getTotalProduct(totalProduct);
-
+    const PreOrderProductGrid = ({ ...props}) => {
+      const {products} = props;
         return (
           <div
             style={{
@@ -216,8 +180,8 @@ function PreOrderProductCard({ product }) {
               marginTop: "20px",
             }}
           >
-            {product.map((product) => (
-              <PreOrderProductCard key={product.id} product={product} />
+            {products.map((product) => (
+              <PreOrderProductCard key={product._id} product={product} />
             ))}
           </div>
         );

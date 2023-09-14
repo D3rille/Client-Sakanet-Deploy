@@ -26,6 +26,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import {useRouter} from "next/router";
 import {timePassed} from "../../util/dateUtils";
+import { GET_ORDERS } from "../../graphql/operations/order";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -302,7 +303,7 @@ export default function PendingOrders({...props}) {
                         fontSize: "0.6rem",
                       }}
                       onClick={() => {
-                        updateStatus({
+                      updateStatus({
                           variables:{
                             "orderId":order._id
                           }

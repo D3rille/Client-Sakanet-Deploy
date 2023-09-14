@@ -61,7 +61,7 @@ function ProductCard({ product }) {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Rating
                 name="user-rating"
-                value={product.rating}
+                value={product.seller.rating}
                 readOnly
                 sx={{ color: "#2E603A", fontSize: "smaller" }}
               />
@@ -70,7 +70,7 @@ function ProductCard({ product }) {
                 sx={{ fontWeight: "bolder", marginLeft: 1 }}
               >
                 {/* TO:DO FIX RATINGS */}
-                {`${product.seller.rating} (${product.seller.rating} ratings)`} 
+                {`(${product.seller.rating})`} 
               </Typography>
             </Box>
           </Box>
@@ -150,44 +150,8 @@ function ProductCard({ product }) {
 }
 
 
-const OrderProductGrid = ({ productId, sortBy, filter, currentPage, getTotalProduct }) => {
-  let products = [];
-  let totalProduct = 0;
-  
-  // Use different queries based on the sortBy property
-  const { data, loading, error } = sortBy === 'available'
-    ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
-        variables: {
-          category: 'Sell',
-          itemId: productId,
-          filter: filter,
-          page: currentPage,
-          limit: 6,
-        },
-      })
-    : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
-        variables: {
-          category: 'Sell',
-          itemId: productId,
-          filter: filter,
-          page: currentPage,
-          limit: 6,
-        },
-      });
-
-  if (loading) return CircularLoading; //TODO: Implement Loading and Error messaging
-  if (error) return <p>Error: {error.message}</p>;
-
-  if (sortBy === 'available') {
-    products = data.getAvailableProducts.product;
-    totalProduct = data.getAvailableProducts.totalProduct;
-  } else if (sortBy === 'suggested') {
-    products = data.getSuggestedProducts.product;
-    totalProduct = data.getSuggestedProducts.totalProduct;
-  }
-
-  getTotalProduct(totalProduct);
-
+const OrderProductGrid = ({ ...props }) => {
+  const {products} = props;
   return (
     <div
       style={{

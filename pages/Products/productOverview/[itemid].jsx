@@ -60,7 +60,7 @@ export default function ProductOverview() {
     },
   });
 
-  const [placeOrder, {loading:placeOrderLoading, error:placeOrderError}] = useMutation(PLACE_ORDER,{
+  const [placeOrder, {data:placeOrderData, loading:placeOrderLoading, error:placeOrderError}] = useMutation(PLACE_ORDER,{
     //TODO: Refetch Orders
     onCompleted:()=>{
       toast.success("successfully placed an order");
@@ -82,7 +82,7 @@ export default function ProductOverview() {
     const product = data.getProduct.product;
     const seller = data.getProduct.seller;
 
-    if(onSuccessOrder){
+    if(onSuccessOrder && placeOrderData){
       router.push(`/Products/${product.item.id}`);
     }
 
@@ -151,7 +151,8 @@ export default function ProductOverview() {
               flex: 2,
             }}
           >
-            BUY NOW
+            {placeOrderLoading ? (<CircularLoading/>):"BUY NOW"}
+           
           </Button>
           
           <Button
