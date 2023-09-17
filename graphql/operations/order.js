@@ -21,6 +21,7 @@ export const GET_ORDERS = gql`
         status
         buyerResponse
         modeOfPayment
+        modeOfDelivery
         deliveryAddress
         phoneNumber
         sellerResponse
@@ -28,6 +29,7 @@ export const GET_ORDERS = gql`
         price
         totalPrice
         accomplishedAt
+        photo
     }
     }
  `;

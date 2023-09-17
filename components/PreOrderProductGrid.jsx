@@ -10,13 +10,10 @@ import {
   Rating,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import Link from "next/link";
-import { useQuery } from "@apollo/client";
-import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT } from "../graphql/operations/product";
-import CircularLoading from "./circularLoading";
 import { formatWideAddress } from "../util/addresssUtils";
 
-function PreOrderProductCard({ product }) {
+function PreOrderProductCard({ ...props }) {
+  const {product, setPurchaseModal} = props;
     return (
       <Card
         sx={{
@@ -34,7 +31,7 @@ function PreOrderProductCard({ product }) {
         <Box sx={{ paddingLeft: 2, paddingTop: 2, paddingBottom: 1 }}>
           <Box sx={{ display: "flex", alignItems: 'center'}}>
             <Avatar
-              src={product.photo}
+              src={product.seller.profile_pic}
               sx={{ width: 48, height: 48 }}
             />
             <Box
@@ -86,7 +83,7 @@ function PreOrderProductCard({ product }) {
           component="img"
           alt={product.item.tagalogName}
           height="200"
-          image={product.item.photo}
+          image={product.photo ? product.photo:product.item.photo}
         />
   
         {/* Product details */}
@@ -142,8 +139,10 @@ function PreOrderProductCard({ product }) {
               margin: 0,
               borderRadius: 0,
             }}
-            component={Link}
-            href={`/Products/productOverview/${product._id}`}
+            onClick={()=>{
+              setPurchaseModal([true, product._id]);
+            }}
+
           >
             Buy Now
           </Button>
@@ -159,8 +158,6 @@ function PreOrderProductCard({ product }) {
               margin: 0,
               borderRadius: 0,
             }}
-            component={Link}
-            href={`/Products/productOverview?productId=${product.id}`}
           >
             Add to Cart
           </Button>
@@ -169,22 +166,22 @@ function PreOrderProductCard({ product }) {
     );
   }
 
-    const PreOrderProductGrid = ({ ...props}) => {
-      const {products} = props;
-        return (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: "16px",
-              marginTop: "20px",
-            }}
-          >
-            {products.map((product) => (
-              <PreOrderProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        );
-      };
-      
+  const PreOrderProductGrid = ({ ...props}) => {
+    const {products,  setPurchaseModal} = props;
+    return (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: "16px",
+          marginTop: "20px",
+        }}
+      >
+        {products.map((product) => (
+          <PreOrderProductCard key={product._id} product={product}  setPurchaseModal={setPurchaseModal} />
+        ))}
+      </div>
+    );
+  };
+  
       export default PreOrderProductGrid;

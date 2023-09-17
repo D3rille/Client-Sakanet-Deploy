@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
     Grid, Typography, Divider, Box, Tabs, Tab, Paper
 } from "@mui/material";
@@ -38,13 +38,6 @@ export default function Orders() {
 
     const tabEquivalents = ["Pending", "Accepted", "For Completion", "Completed"];
 
-    const handleTabChange = (event, newValue) => {
-        setTabValue(newValue);
-    };
-
-    const handleAcceptOrder = () => {
-        setTabValue(1);
-    };
     const {data, loading, error} = useQuery(GET_ORDERS,{
         variables:{
             "status":tabEquivalents[tabValue]
@@ -54,26 +47,46 @@ export default function Orders() {
         }
     });
 
+
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
+
+    const handleAcceptOrder = () => {
+        setTabValue(1);
+    };
+
+
     const [updateStatus] = useMutation(UPDATE_STATUS, {
         refetchQueries:[GET_ORDERS],
-        fetchPolicy: 'network-only',
+        onError:(error)=>{
+            toast.error(error.message);
+            console.log(error);
+        }
     });
 
     const [cancelOrder, {error:cancelOrderError}] = useMutation(CANCEL_ORDER, {
         refetchQueries:[GET_ORDERS],
+        onCompleted:()=>{
+            toast
+        },
         onError:(cancelOrderError)=>{
             console.log(cancelOrderError);
         }
     });
 
     const [declineOrder, {error:declineOrderError}] = useMutation(DECLINE_ORDER, {
-        refetchQueries:[],
+        refetchQueries:[GET_ORDERS],
         onError:(cancelOrderError)=>{
             console.log(cancelOrderError);
         }
     });
-    const ordersArr = data?.getOrders;
-    return (
+    // const ordersArr = data?.getOrders;
+    // console.log(ordersArr);
+    if(loading){return(<CircularLoading/>)};
+    if(data){
+        const ordersArr = data?.getOrders;
+        return (
         <StyledGrid container>
             <Grid item xs={12}>
                 <StyledPaper elevation={3}>
@@ -98,19 +111,14 @@ export default function Orders() {
                         </Tabs>
                     </Box>
                     {loading && <CircularLoading/>}
-                    {data && tabValue === 0 && 
-                        <PendingOrders 
-                            role={user.role} 
-                            ordersArr={ordersArr} 
-                            updateStatus={updateStatus} 
-                            cancelOrder={cancelOrder}
-                            declineOrder={declineOrder}
-                            />}
-                    {data && tabValue === 1 && <AcceptedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
-                    {data && tabValue === 2 && <ForCompletionOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
-                    {data && tabValue === 3 && <CompletedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
+                    {tabValue===0 && <PendingOrders role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} cancelOrder={cancelOrder}declineOrder={declineOrder}/>}
+                    {tabValue === 1 && <AcceptedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
+                    {tabValue === 2 && <ForCompletionOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
+                    {tabValue === 3 && <CompletedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
                 </StyledPaper>
             </Grid>
         </StyledGrid>
     );
+    }
+    
 }

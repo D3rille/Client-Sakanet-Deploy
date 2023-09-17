@@ -30,17 +30,20 @@ import SearchIcon from "@mui/icons-material/Search";
 import styles from "../../styles/availableProducts.module.css";
 import OrderProductGrid from "../../components/OrderProductGrid";
 import PreOrderProductGrid from "../../components/PreOrderProductGrid";
-import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT} from "../../graphql/operations/product";
-import { useQuery } from "@apollo/client";
+import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT, GET_PRODUCT} from "../../graphql/operations/product";
+import { PLACE_ORDER } from "../../graphql/operations/order";
+import { ADD_TO_CART} from "../../graphql/operations/cart";
+import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import CircularLoading from "../../components/circularLoading";
 import { DatePicker } from "@mui/x-date-pickers";
 import Pagination from "@mui/material/Pagination";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-
+// import AddIcon from "@mui/icons-material/Add";
+// import RemoveIcon from "@mui/icons-material/Remove";
+import PurchaseDialog from "../../components/BuyerSide/PurchaseDialog";
+import toast from 'react-hot-toast';
 
 export default function Products() {
   const router = useRouter();
@@ -49,23 +52,33 @@ export default function Products() {
     router.push("/Products");
   };
 
-  const [productsType, setProductsType] = React.useState("order"); //Order or Preorder 
+  const [productsType, setProductsType] = React.useState("Sell"); //Order or Preorder 
   const [productsSortBy, setProductsSortBy] = React.useState("available"); //Available or Suggested Products
   const [deliveryFilter, setDeliveryFilter] = React.useState(""); //Delivery Filter
   const [priceRange, setPriceRange] = useState([0, 1000]); //Price Range Filter
   const [currentLocation, setCurrentLocation] = useState("");//Area Limit Filter
   const [selectedDate, setSelectedDate] = useState(null); //Date Filter
   const [currentPage, setCurrentPage] = useState(1); //Pagination
+  const [filters, setFilters] = useState({
+    modeOfDelivery: "",      
+    area_limit: "",
+    maxPrice: 1000,
+    minPrice: 0,
+    until: null,
+  });
 
-  const productFilters = 
-   {
+  const [purchaseModal, setPurchaseModal] = useState([false, ""]);
+
+  const productFilters = ()=>{
+    setFilters({
       modeOfDelivery: deliveryFilter,      
       area_limit: currentLocation,
       maxPrice: priceRange[1],
       minPrice: priceRange[0],
       until: selectedDate,
-      
-    }
+    });
+
+  } 
   ;
 
   const handleProductTypeChange = (event, newType) => {
@@ -97,12 +110,12 @@ export default function Products() {
     }
   };
 
-  const resetFilters = () => {
-    setDeliveryFilter("");
-    setPriceRange([0, 1000]);
-    setSelectedDate(null);
-    setCurrentLocation("");
-  };
+  // const resetFilters = () => {
+  //   setDeliveryFilter("");
+  //   setPriceRange([0, 1000]);
+  //   setSelectedDate(null);
+  //   setCurrentLocation("");
+  // };
 
   
   
@@ -110,22 +123,44 @@ export default function Products() {
   const { data, loading, error } = productsSortBy === 'available'
     ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
         variables: {
-          category: 'Sell',
+          category: productsType,
           itemId: productId,
-          filter: productFilters,
+          filter: filters,
           page: currentPage,
           limit: 6,
         },
       })
     : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
         variables: {
-          category: 'Sell',
+          category: productsType,
           itemId: productId,
-          filter: productFilters,
+          filter: filters,
           page: currentPage,
           limit: 6,
         },
       });
+
+
+  const [placeOrder, placeOrderResults] = useMutation(PLACE_ORDER,{
+    //TODO: Refetch Orders
+    onCompleted:()=>{
+      toast.success("successfully placed an order");
+
+    },
+    onError:(error)=>{
+      console.log(error.message);
+      toast.error(error.message);
+    },
+
+  });
+
+  const [addToCart, addToCartResults] = useMutation(ADD_TO_CART, {
+    onCompleted:()=>{
+      toast.success("Order Added to Cart.");
+    }
+  })
+
+
 
   if (loading) return (<CircularLoading/>); //TODO: Implement Loading and Error messaging
   if (error) return <p>Error: {error.message}</p>;
@@ -225,7 +260,7 @@ export default function Products() {
                 aria-label="Product Type"
               >
                 <ToggleButton
-                  value="order"
+                  value="Sell"
                   sx={{
                     color: "#2F613A",
                     "&.Mui-selected": {
@@ -236,7 +271,7 @@ export default function Products() {
                   ORDER
                 </ToggleButton>
                 <ToggleButton
-                  value="pre-order"
+                  value="Pre-Sell"
                   sx={{
                     color: "#2F613A",
                     "&.Mui-selected": {
@@ -400,9 +435,10 @@ export default function Products() {
                     marginTop: "2rem",
                     width: "100%",
                   }}
-                  onClick={resetFilters}
+                  // onClick={resetFilters}
+                  onClick={productFilters}
                 >
-                  CLEAR FILTERS
+                  SEARCH
                 </Button>
               </Paper>
               <div className={styles.parentContainer}>
@@ -446,12 +482,8 @@ export default function Products() {
                 </Paper>
                 
                 <div className={styles.productGridContainer}>
-  {/* {productsType === "order" ? <OrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}
-    getTotalProduct={getTotalProduct} currentPage={currentPage} /> : 
-  <PreOrderProductGrid productId={productId} sortBy={productsSortBy} filter={productFilters}  
-    getTotalProduct={getTotalProduct} currentPage={currentPage} />} */}
-    {productsType === "order" ? <OrderProductGrid products = {products}/> : 
-  <PreOrderProductGrid products={products}/>}
+    {productsType === "Sell" ? <OrderProductGrid products = {products}  setPurchaseModal={setPurchaseModal}/> : 
+  <PreOrderProductGrid products = {products}  setPurchaseModal={setPurchaseModal} />}
   
     <div
       style={{
@@ -487,6 +519,17 @@ export default function Products() {
               </div>
             </div>
           </Paper>
+          <PurchaseDialog
+          placeOrderResults = {placeOrderResults}
+          purchaseModal = {purchaseModal}
+          closePurchaseModal = {()=>{
+            let id = purchaseModal[1];
+            setPurchaseModal([false, id])
+          }} 
+          placeOrder={placeOrder} 
+          addToCart={addToCart}
+          addToCartResults={addToCartResults}
+          />
         </Grid>
       </Grid>
     );

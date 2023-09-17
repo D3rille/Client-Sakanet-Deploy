@@ -18,7 +18,6 @@ import { styled } from "@mui/system";
 import TriggeredDialog from "../popups/confirmationDialog";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {timePassed} from "../../util/dateUtils";
-import {useRouter} from "next/router";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -43,15 +42,21 @@ const More = (handleClickOpen) =>{
 }
 
 export default function ForCompletionOrders({...props}) {
-  const router = useRouter();
   const {ordersArr, role, updateStatus}=props;
   const [orders, setOrders] = useState(ordersArr);
+  const [openDialog, setOpenDialog] = useState(false);
 
-  const handleAcceptOrder = (orderId) => {
-    const updatedOrders = orders.filter((order) => order.orderId !== orderId);
+  const handleOpenDialog = () =>{
+    setOpenDialog(true);
+  }
+
+  const handleRemoveOrder = (index) => {
+    const updatedOrders = [...orders];
+    updatedOrders.splice(index, 1);
     setOrders(updatedOrders);
   };
 
+  //Details of the Order upon clicking More icon
   const orderDetails=(order)=>{
     
     return(
@@ -78,113 +83,9 @@ export default function ForCompletionOrders({...props}) {
           {`Type: ${order?.type}`}
         </Typography>
       </>
-
-
       );
          
   }
-  const forCompletionBtn = (order) =>{
-    if(role=="FARMER"){
-      if(order.sellerResponse=="completed"){
-        return(
-          <Typography>
-            Waiting...
-          </Typography>
-        )
-      } else{
-        return (<Button
-          variant="contained"
-          size="small"
-          sx={{
-            borderRadius: "20px",
-            backgroundColor: "#2E603A",
-            color: "#FFF",
-            mr: 1,
-            alignItems: "center",
-            "&:hover": {
-              backgroundColor: "#FE8C47",
-            },
-            width: "75px",
-            height: "20px",
-            fontSize: "0.6rem",
-          }}
-          onClick={() =>{
-            updateStatus({
-              variables:{
-                "orderId":order._id
-              }
-            });
-            router.reload()
-          }}
-        >
-          Completed
-        </Button>)
-      }
-    } else{
-      if(order.buyerResponse=="completed"){
-        return(
-          <Typography>
-            Waiting...
-          </Typography>
-        )
-      } else{
-        return(
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              borderRadius: "20px",
-              backgroundColor: "#2E603A",
-              color: "#FFF",
-              mr: 1,
-              alignItems: "center",
-              "&:hover": {
-                backgroundColor: "#FE8C47",
-              },
-              width: "auto",
-              height: "20px",
-              fontSize: "0.6rem",
-            }}
-            onClick={() => {
-              updateStatus({
-                variables:{
-                  "orderId":order._id
-                }
-              });
-              router.reload()
-            }}
-          >
-            Order Received
-          </Button>
-        );
-      }
-    }
-    // {role =="FARMER"? (<Button
-    //   variant="contained"
-    //   size="small"
-    //   sx={{
-    //     borderRadius: "20px",
-    //     backgroundColor: "#2E603A",
-    //     color: "#FFF",
-    //     mr: 1,
-    //     alignItems: "center",
-    //     "&:hover": {
-    //       backgroundColor: "#FE8C47",
-    //     },
-    //     width: "75px",
-    //     height: "20px",
-    //     fontSize: "0.6rem",
-    //   }}
-    //   onClick={() => handleAcceptOrder(order._id)}
-    // >
-    //   Accept
-    // </Button>):(
-    //   <Typography>
-    //     Pending...
-    //   </Typography>
-    // )}
-  }
-
   return (
     <TableContainer
       component={Paper}
@@ -200,6 +101,7 @@ export default function ForCompletionOrders({...props}) {
         overflow: "auto"
       }}
     >
+      
       <Table>
         <TableHead>
           <TableRow>
@@ -253,7 +155,40 @@ export default function ForCompletionOrders({...props}) {
               <TableCell>{order.quantity}</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>₱{order.totalPrice}</TableCell>
               <TableCell>
-                  {forCompletionBtn(order)}
+                {((role=="FARMER" && order.sellerResponse == "completed") || (role == "BUYER" && order.buyerResponse=="completed")) ? (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        borderRadius: "20px",
+                        backgroundColor: "#2E603A",
+                        color: "#FFF",
+                        mr: 1,
+                        alignItems: "center",
+                        "&:hover": {
+                          backgroundColor: "#FE8C47",
+                        },
+                        width: "auto",
+                        height: "20px",
+                        fontSize: "0.6rem",
+                      }}
+                      onClick={()=>{
+                        updateStatus({
+                          variables:{
+                            "orderId":order._id
+                          }
+                        });
+                        handleRemoveOrder(index)
+                      }}
+                    >
+                      {role=="FARMERS" ? "Completed": "Received Order"}
+                    </Button>
+                  ):(
+                    <Typography sx ={{fontSize:"0.8rem"}}>
+                      Waiting...
+                    </Typography> 
+                  )
+                }
               </TableCell>
               <TableCell>
                   <TriggeredDialog

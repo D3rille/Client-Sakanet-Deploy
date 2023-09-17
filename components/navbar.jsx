@@ -29,8 +29,8 @@ import { useRouter } from "next/router";
 import { AuthContext } from "@/context/auth";
 import Image from "next/image";
 import { GET_MY_PROFILE } from "../graphql/operations/profile";
-import { useQuery, useMutation } from "@apollo/client";
-import CartModal from "./CartModal";
+import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import CartModal from "./Cart/CartModal";
 import Notifications from './Notifications';
 import client from "@/graphql/apollo-client";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -43,7 +43,7 @@ import Popover from '@mui/material/Popover';
 import Badge from '@mui/material/Badge';
 import {READ_ALL_NOTIF} from "../graphql/operations/notification";
 import { GET_NOTIFICATIONS, DELETE_NOTIFICATION, CLEAR_NOTIFICATIONS } from "../graphql/operations/notification";
-import { useLazyQuery } from '@apollo/client';
+import { GET_CART_ITEMS } from "@/graphql/operations/cart";
 import { SEARCH_USERS } from '../graphql/operations/search';
 import SearchResult from "../components/search/searchResult";
 
@@ -57,7 +57,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const Navbar = () => {
-  const {newNotifCount} = useSubs();
+  const {newNotifCount, profile} = useSubs();
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
   const drawerWidth = 240;
@@ -72,6 +72,7 @@ const Navbar = () => {
   const [focus, setFocus] = useState(true);
   const [getSuggestions, {loading:searchLoading, data:searchData}] = useLazyQuery(SEARCH_USERS);
 
+  const profile_pic = profile?.profile_pic;
   const handleQueryChange=(event)=>{
     const newQuery = event.target.value;
     setQuery(newQuery);
@@ -186,8 +187,7 @@ const markAllAsRead = () => {
   };
 
   const cardStyle = getResponsiveCardStyle();
-
-  const { loading, error, data } = useQuery(GET_MY_PROFILE);
+  // const { loading, error, data } = useQuery(GET_MY_PROFILE);
   const [deleteNotif]= useMutation(DELETE_NOTIFICATION, {
     refetchQueries:[GET_NOTIFICATIONS]
   });
@@ -195,10 +195,12 @@ const markAllAsRead = () => {
     refetchQueries:[GET_NOTIFICATIONS]
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  const {data:getCartItemsData, loading:getCartItemsLoading} = useQuery(GET_CART_ITEMS);
 
-  const { profile_pic } = data.getMyProfile;
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error.message}</p>;
+
+  // const { profile_pic } = data.getMyProfile;
 
 
   return (
@@ -493,12 +495,12 @@ const markAllAsRead = () => {
                 </ListItemIcon>
                 Orders
               </MenuItem>
-              <MenuItem onClick={handleCartModalOpen}>
+              {user.role == "BUYER" && (<MenuItem onClick={handleCartModalOpen}>
                 <ListItemIcon>
                   <ShoppingCartIcon fontSize="small" />
                 </ListItemIcon>
                 Cart
-              </MenuItem>
+              </MenuItem>)}
               <MenuItem onClick={() => {
                 setAnchorEl(null);
                 router.push("/Settings");
@@ -524,10 +526,12 @@ const markAllAsRead = () => {
 
               {notificationOpen && <Notifications markAsRead={markAllAsRead} />}
             </div>
-            <CartModal
+            {getCartItemsData && (<CartModal
               open={cartModalOpen}
               handleClose={handleCartModalClose}
-            />
+              getCartItemsData = {getCartItemsData}
+              getCartItemsLoading = {getCartItemsLoading}
+            />)}
           </div>
         </div>
       </div>

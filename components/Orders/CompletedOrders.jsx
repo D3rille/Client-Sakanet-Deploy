@@ -17,7 +17,7 @@ import {
 import { styled } from "@mui/system";
 import TriggeredDialog from "../popups/confirmationDialog";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import {timePassed, shortDate} from "../../util/dateUtils";
+import {timePassed, shortDate, shortDateAndTime} from "../../util/dateUtils";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -45,11 +45,6 @@ export default function PendingOrders({...props}) {
   const {ordersArr, role}=props;
   const [orders, setOrders] = useState(ordersArr);
 
-  const handleAcceptOrder = (orderId) => {
-    const updatedOrders = orders.filter((order) => order.orderId !== orderId);
-    setOrders(updatedOrders);
-  };
-
   const orderDetails=(order)=>{
     
     return(
@@ -76,7 +71,7 @@ export default function PendingOrders({...props}) {
           {`Type: ${order?.type}`}
         </Typography>
         {order?.accomplishedAt && (<Typography align="left">
-          {`Accomplished: ${shortDate(order?.accomplishedAt)}`}
+          {`Accomplished: ${shortDateAndTime(order?.accomplishedAt)}`}
         </Typography>)}
       </>
 

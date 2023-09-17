@@ -10,13 +10,17 @@ import {
   Rating,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import Link from "next/link";
-import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT} from "../graphql/operations/product";
-import { useQuery } from "@apollo/client";
 import { formatWideAddress } from "../util/addresssUtils";
-import CircularLoading from "./circularLoading";
 
-function ProductCard({ product }) {
+
+
+function ProductCard({ ...props }) {
+  const {product, setPurchaseModal} = props;
+  const buttonStyles = {
+    '&:hover': {
+      backgroundColor: 'red', // Change to your desired hover color
+    },
+  };
   return (
     <Card
       sx={{
@@ -33,7 +37,7 @@ function ProductCard({ product }) {
       <Box sx={{ paddingLeft: 2, paddingTop: 2, paddingBottom: 1 }}>
         <Box sx={{ display: "flex", alignItems: 'center' }}>
           <Avatar
-            src={product.photo}
+            src={product.seller.profile_pic}
             sx={{
               width: 48,
               height: 48,
@@ -88,7 +92,7 @@ function ProductCard({ product }) {
         component="img"
         alt={product.title}
         height="200"
-        image={product.item.photo}
+        image={product.photo ? product.photo : product.item.photo}
       />
 
       {/* Product details */}
@@ -117,17 +121,22 @@ function ProductCard({ product }) {
             backgroundColor: "#ECEDEC",
             color: "#2C2D2D",
             flex: 1,
-            fontSize: "0.7rem",
+            fontSize: "1rem",
             borderBottomLeftRadius: "12px",
             margin: 0,
             borderRadius: 0,
+            '&:hover': {
+              backgroundColor: 'red', // Change to your desired hover color
+            },
           }}
-          component={Link}
-          href={`/Products/productOverview/${product._id}`}
+          onClick ={()=>{
+            setPurchaseModal([true, product._id]);
+            // getProductInfo();
+          }}
         >
           Buy Now
         </Button>
-        <Button
+        {/* <Button
           variant="contained"
           endIcon={<AddShoppingCartIcon style={{ color: "#C9D5CA" }} />}
           style={{
@@ -139,11 +148,9 @@ function ProductCard({ product }) {
             margin: 0,
             borderRadius: 0,
           }}
-          component={Link}
-          href={`/Products/productOverview/${product._id}`}
         >
           Add to Cart
-        </Button>
+        </Button> */}
       </Box>
     </Card>
   );
@@ -151,7 +158,7 @@ function ProductCard({ product }) {
 
 
 const OrderProductGrid = ({ ...props }) => {
-  const {products} = props;
+  const {products,  setPurchaseModal} = props;
   return (
     <div
       style={{
@@ -162,7 +169,7 @@ const OrderProductGrid = ({ ...props }) => {
       }}
     >
       {products.map((product) => (
-        <ProductCard key={product._id} product={product} />
+        <ProductCard key={product._id} product={product}  setPurchaseModal={setPurchaseModal} />
       ))}
     </div>
   );

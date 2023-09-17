@@ -19,6 +19,7 @@ import TriggeredDialog from "../popups/confirmationDialog";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {timePassed} from "../../util/dateUtils";
 import {useRouter} from "next/router";
+import CustomDialog from "../popups/customDialog";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -46,11 +47,14 @@ export default function AcceptedOrders({...props}) {
   const router = useRouter();
   const {ordersArr, role, updateStatus}=props;
   const [orders, setOrders] = useState(ordersArr);
+  const [openDialog, setOpenDialog] = useState(false);
 
-  const handleAcceptOrder = (orderId) => {
-    const updatedOrders = orders.filter((order) => order.orderId !== orderId);
+  const handleRemoveOrder = (index) => {
+    const updatedOrders = [...orders];
+    updatedOrders.splice(index, 1);
     setOrders(updatedOrders);
   };
+
 
   const orderDetails=(order)=>{
     
@@ -169,49 +173,33 @@ export default function AcceptedOrders({...props}) {
                       height: "20px",
                       fontSize: "0.6rem",
                     }}
-                    onClick={() => {
+                    onClick={()=>{
+                      setOpenDialog(true);
+                    }}
+                  >
+                    Complete
+                  </Button>):(
+                  
+                  <Typography sx={{color:"green"}}>
+                    Preparing Order
+                  </Typography>
+                  )}
+                  </div>
+                  <CustomDialog
+                    openDialog={openDialog}
+                    setOpenDialog={setOpenDialog}
+                    title={"Complete Order"}
+                    message={"Mark this order as complete?"}
+                    btnDisplay={0}
+                    callback={() => {
                       updateStatus({
                         variables:{
                           "orderId": order._id
                         }
                       });
-                      router.reload()
+                      handleRemoveOrder(index);
                     }}
-                  >
-                    Complete
-                  </Button>):(
-                  //   <Button
-                  //   variant="contained"
-                  //   size="medium"
-                  //   sx={{
-                  //     borderRadius: "20px",
-                  //     backgroundColor: "#2E603A",
-                  //     color: "#FFF",
-                  //     mr: 1,
-                  //     alignItems: "center",
-                  //     "&:hover": {
-                  //       backgroundColor: "#FE8C47",
-                  //     },
-                  //     width: "75px",
-                  //     height: "20px",
-                  //     fontSize: "0.6rem",
-                  //   }}
-                  //   onClick={() => {
-                  //     updateStatus({
-                  //       variables:{
-                  //         "orderId": order._id
-                  //       }
-                  //     });
-                  //     router.reload();
-                  //   }}
-                  // >
-                  //   Received
-                  // </Button>
-                  <Typography sx={{color:"green"}}>
-                    Preparing Order
-                  </Typography>
-                  )}
-                </div>
+                  />
               </TableCell>
               <TableCell>
                   <TriggeredDialog

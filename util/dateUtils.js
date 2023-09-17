@@ -33,3 +33,10 @@ export function numberOnlyDate(date){
 
     return formattedDate;
 }
+
+export function shortDateAndTime(date){
+    dayjs.extend(LocalizedFormat)
+    const formattedDate = dayjs(date).format('llll');
+
+    return formattedDate;
+}

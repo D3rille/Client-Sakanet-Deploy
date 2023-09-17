@@ -24,9 +24,8 @@ import { styled } from "@mui/system";
 import TriggeredDialog from "../popups/confirmationDialog";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
-import {useRouter} from "next/router";
 import {timePassed} from "../../util/dateUtils";
-import { GET_ORDERS } from "../../graphql/operations/order";
+import CustomDialog from "../popups/customDialog";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -51,12 +50,13 @@ const More = (handleClickOpen) =>{
 }
 
 export default function PendingOrders({...props}) {
-  const router = useRouter();
   const {ordersArr, role, updateStatus, cancelOrder, declineOrder}=props;
   const [orders, setOrders] = useState(ordersArr);
-
-  const handleAcceptOrder = (orderId) => {
-    const updatedOrders = orders.filter((order) => order.orderId !== orderId);
+  const [openDialog, setOpenDialog] = useState(false);
+ 
+  const handleRemoveOrder = (index) => {
+    const updatedOrders = [...orders];
+    updatedOrders.splice(index, 1);
     setOrders(updatedOrders);
   };
 
@@ -80,6 +80,9 @@ export default function PendingOrders({...props}) {
           </Typography>
         )}
         <Typography align="left">
+          {`Mode of Delivery: ${order?.modeOfDelivery}`}
+        </Typography>
+        <Typography align="left">
           {`Mode of Payment: ${order?.modeOfPayment}`}
         </Typography>
         <Typography align="left">
@@ -100,7 +103,8 @@ export default function PendingOrders({...props}) {
         </Typography>
         <IconButton
           onClick={()=>{
-            handleClickOpen()
+            handleClickOpen();
+            // handleRemoveOrder()
         }}
         sx={{fontSize:"1rem", color:"red"}}
         >
@@ -120,7 +124,7 @@ export default function PendingOrders({...props}) {
    
   }
 
-  const DeclineDialog=({orderId})=>{
+  const DeclineDialog=({orderId, keyIndex, handleRemoveOrder})=>{
 
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState("Problem with the Product.");
@@ -201,13 +205,14 @@ export default function PendingOrders({...props}) {
                 "reason":reason
               }
             });
-            router.reload();
+            handleRemoveOrder(keyIndex);
+            // router.reload();
           }} variant="contained" color="error">
               Decline
           </Button>
-          <Button autoFocus onClick={handleClose} variant="outlined" color="error">
+          {/* <Button autoFocus onClick={handleClose} variant="outlined" color="error">
               Cancel
-          </Button>
+          </Button> */}
         </DialogActions>
         </Dialog>}
     </div>
@@ -247,7 +252,7 @@ export default function PendingOrders({...props}) {
           {orders.map((order, index) => (
             <StyledTableRow key={index}>
               <TableCell>
-                {order.type == "Pre-Order"?(
+                {order.type === "Pre-Order"?(
                   <Box
                   sx={{
                     backgroundColor: "#FE8C47",
@@ -302,18 +307,28 @@ export default function PendingOrders({...props}) {
                         height: "20px",
                         fontSize: "0.6rem",
                       }}
-                      onClick={() => {
-                      updateStatus({
-                          variables:{
-                            "orderId":order._id
-                          }
-                        });
-                        router.reload();
+                      onClick={()=>{
+                        setOpenDialog(true);
                       }}
                     >
                       Accept
                     </Button>
-                    <DeclineDialog orderId={order._id}/>
+                    <CustomDialog
+                      openDialog={openDialog}
+                      setOpenDialog={setOpenDialog}
+                      title={"Accept Order"}
+                      message={"Are you sure you want to accept this order?"}
+                      btnDisplay={0}
+                      callback={() => {
+                        updateStatus({
+                            variables:{
+                              "orderId":order._id
+                            }
+                          });
+                          handleRemoveOrder(index);
+                        }}
+                    />
+                    <DeclineDialog orderId={order._id} keyIndex={index} handleRemoveOrder={handleRemoveOrder}/>
                     {/* <Button
                       variant="contained"
                       size="small"
@@ -348,7 +363,8 @@ export default function PendingOrders({...props}) {
                             "orderId":order._id
                           }
                         });
-                        router.reload();
+                        // router.reload();
+                        handleRemoveOrder(index)
                       }}
                       />
                     </>
