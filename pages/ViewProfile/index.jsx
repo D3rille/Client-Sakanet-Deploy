@@ -19,8 +19,11 @@ import Image from "next/image";
 import { GET_MY_PROFILE } from "../../graphql/operations/profile";
 import { useQuery } from "@apollo/client";
 import { formatWideAddress } from "../../util/addresssUtils.js";
+import chaticonsIcon from "../../public/icons/chaticon.png";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import RateAndReviewModal from "../../components/RateAndReviewModal";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const initialReviews = [
   {
@@ -31,7 +34,7 @@ const initialReviews = [
   { id: 1, name: "Jhan Unlayao", review: "Successful transaction" },
 ];
 
-export default function MyProfile() {
+export default function ViewProfile() {
   const [reviews, setReviews] = useState(initialReviews);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
@@ -47,7 +50,23 @@ export default function MyProfile() {
     }
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const { name, review } = reviews[currentReviewIndex];
+
+  const [isPending, setPending] = useState(false);
+
+  const handleConnectClick = () => {
+    setPending(true);
+  };
 
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -131,25 +150,92 @@ export default function MyProfile() {
             role="presentation"
             className={styles.numConnections}
           >
-            <Typography
-              variant="h4"
-              component="span"
-              style={{ fontWeight: "bolder", color: "#057a59" }}
-            >
-              {data.getMyProfile.connections}
-            </Typography>
-            <Typography
-              variant="h6"
-              component="span"
+            <div
               style={{
-                fontWeight: "normal",
-                color: "black",
-                marginInline: "4px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              Connections
-            </Typography>
+              <div>
+                <Typography
+                  variant="h4"
+                  component="span"
+                  style={{
+                    fontWeight: "bolder",
+                    color: "#057a59",
+                    marginRight: "7px",
+                  }}
+                >
+                  {data.getMyProfile.connections}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  component="span"
+                  style={{
+                    fontWeight: "normal",
+                    color: "black",
+                    marginInline: "4px",
+                    marginRight: "1.5rem",
+                  }}
+                >
+                  Connections
+                </Typography>
+              </div>
+              <div
+                style={{
+                  marginTop: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    style={{
+                      backgroundColor: isPending ? "#F8F9F8" : "#32816B",
+                      width: "100%",
+                      marginBottom: "10px",
+                      borderRadius: "7px",
+                      boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={handleConnectClick}
+                    disabled={isPending}
+                  >
+                    {isPending ? "Pending" : "Connect"}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{
+                      backgroundColor: "#FBF9F7",
+                      width: "100%",
+                      color: "#1D1E22",
+                      borderRadius: "7px",
+                      boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Image
+                      src={chaticonsIcon}
+                      alt="Chat Icon"
+                      width={20}
+                      height={20}
+                      style={{ marginRight: "5px" }}
+                    />
+                    Message
+                  </Button>
+                </div>
+              </div>
+            </div>
           </Divider>
+
           <div className={styles.bottomPortion}>
             <div className={styles.rightSide}>
               <div key="element3" className={styles.content1}>
@@ -345,6 +431,23 @@ export default function MyProfile() {
                   >
                     <ArrowForward />
                   </IconButton>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={handleOpenModal}
+                  >
+                    <span>Rate and Review</span>
+                    <ChevronRightIcon />
+                  </div>
+
+                  <RateAndReviewModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                  />
                 </Card>
               </div>
             </div>
