@@ -25,8 +25,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import CircularLoading from "../circularLoading";
-import { uploadImage } from "../../util/imageUtils";
+import {  uploadUserProductPhoto } from "../../util/imageUtils";
 import { useForm } from "../../util/hooks";
+import { useDropzone } from 'react-dropzone';
+
 
 
 export default function SellModal({ isOpen, onClose, data, loading, error, createProduct }) {
@@ -44,11 +46,11 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
   });
 
   const [selectedDate, setSelectedDate] = useState(null);
-  const [file, setFile] = useState(undefined);
+  const [file, setFile] = useState(null); //Product Picture
   const [dateOfHarvest, setDateOfHarvest] = useState(null);
 
-  const handleDrop = (event) => {
-    setFile(event.target.files[0]);
+  const handleDrop = (acceptedFiles) => {
+    setFile(acceptedFiles[0]);
   };
 
   const handleClose = () => {
@@ -59,18 +61,45 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
     onClose();
   }
 
+  //Dropzone Restrictions
+   const addProductProps = useDropzone({
+    onDrop: handleDrop,
+    accept:  {'image/jpeg': ['.jpeg', '.png']},
+    maxFiles:1,
+  });
+
+
   function setMinDate(){
     var today = dayjs(new Date);
     const nextDay = today.add(1, 'day');
     return nextDay;
   }
 
+  async function executeCreateProduct() {
 
-  function executeCreateProduct(){
-    var photoLink ="";
-    if(file){
-      photoLink=uploadImage(file);
-    }
+    var photoLink = data.photo;
+    if (file) {
+      try {
+        photoLink = await uploadUserProductPhoto(file);
+
+        if (photoLink) {
+          try {
+            await uploadUserProductPhoto({
+              variables: {
+                profile_pic: photoLink,
+              },
+            });
+            console.log('Image uploaded and URL stored in MongoDB.');
+          } catch (error) {
+            console.error('Error uploading image and storing URL:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+     }
+
+
     createProduct({variables:{
       "product": {
         "category": values.category,
@@ -421,28 +450,44 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
               },
             }}
           />
-  
-
+          {/* Image Dropzone */}
           <Box
-            component="label"
             sx={{
-              marginTop: "1rem",
-              width: "100%",
-              height: 100,
-              border: "2px dashed #2E613B",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: "#e6f4ea",
-              },
+              height: '170px',
+              marginBottom: '5px',
+              border: '2px dashed #ccc',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
+            {...addProductProps.getRootProps()}
           >
-            Upload Image
-            <input type="file" accept="image/*" hidden onChange={handleDrop} />
+            {file ? (
+              <>
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt="Product"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '120px',
+                    borderRadius: '4px',
+                  }}
+                />
+                <Typography variant="caption" style={{ marginTop: '8px' }}>
+                  Max size 10mb
+                </Typography>
+              </>
+            ) : (
+              <Typography variant="caption" textAlign="center">
+                Upload Product Photo
+              </Typography>
+            )}
           </Box>
-  
+
+
           <Box
             sx={{
               marginTop: "1rem",

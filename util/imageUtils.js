@@ -45,6 +45,29 @@ export async function uploadCoverPhoto(imageFile) {
 }
 
 
+//User Product Upload to cloudinary
+export async function uploadUserProductPhoto(imageFile) {
+  const data = new FormData();
+  data.append('file', imageFile);
+  data.append('folder', 'user_product')
+  data.append('upload_preset', 'sakanet');
+  data.append('cloud_name', 'sakanet');
+
+  try {
+    const response = await fetch('https://api.cloudinary.com/v1_1/sakanet/image/upload', {
+      method: 'post',
+      body: data,
+    });
+
+    const cloudinaryData = await response.json();
+    return cloudinaryData.secure_url;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+};
+
+
 
 //Image Delete to Cloudinary
 export async function imageDelete(imageUrl) {

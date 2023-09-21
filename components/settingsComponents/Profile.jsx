@@ -314,8 +314,8 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
     <div
       {...coverPhotoDropzone.getRootProps()}
       style={{
-        width: "200px", // Retain the width
-        height: "120px", // Retain the height
+        width: "200px", 
+        height: "120px", 
         marginBottom: "5px",
         border: "2px dashed #ccc",
         borderRadius: "4px",
