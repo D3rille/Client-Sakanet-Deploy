@@ -26,6 +26,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloseIcon from '@mui/icons-material/Close';
 import {timePassed} from "../../util/dateUtils";
 import CustomDialog from "../popups/customDialog";
+import { GET_ORDERS } from "../../graphql/operations/order";
+import toast from "react-hot-toast";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -47,19 +49,19 @@ const More = (handleClickOpen) =>{
       <MoreVertIcon/>
     </IconButton>
   );
-}
+} 
 
 export default function PendingOrders({...props}) {
-  const {ordersArr, role, updateStatus, cancelOrder, declineOrder}=props;
-  const [orders, setOrders] = useState(ordersArr);
+  const {orders, role, handleUpdateStatus, handleCancelOrder, handleDeclineOrder}=props;
+  // const [orders, setOrders] = useState(ordersArr);
   const [openDialog, setOpenDialog] = useState(false);
  
-  const handleRemoveOrder = (index) => {
-    const updatedOrders = [...orders];
-    updatedOrders.splice(index, 1);
-    setOrders(updatedOrders);
-  };
-
+  // const handleRemoveOrder = (index) => {
+  //   const updatedOrders = [...orders];
+  //   updatedOrders.splice(index, 1);
+  //   setOrders(updatedOrders);
+  // };
+  
   const orderDetails=(order)=>{
     
     return(
@@ -124,7 +126,7 @@ export default function PendingOrders({...props}) {
    
   }
 
-  const DeclineDialog=({orderId, keyIndex, handleRemoveOrder})=>{
+  const DeclineDialog=({orderId})=>{
 
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState("Problem with the Product.");
@@ -199,14 +201,7 @@ export default function PendingOrders({...props}) {
         </DialogContent>
         <DialogActions>     
           <Button autoFocus onClick={()=>{
-            declineOrder({
-              variables:{
-                "orderId":orderId,
-                "reason":reason
-              }
-            });
-            handleRemoveOrder(keyIndex);
-            // router.reload();
+            handleDeclineOrder(orderId);
           }} variant="contained" color="error">
               Decline
           </Button>
@@ -249,7 +244,7 @@ export default function PendingOrders({...props}) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {orders.map((order, index) => (
+          {orders?.map((order, index) => (
             <StyledTableRow key={index}>
               <TableCell>
                 {order.type === "Pre-Order"?(
@@ -320,15 +315,11 @@ export default function PendingOrders({...props}) {
                       message={"Are you sure you want to accept this order?"}
                       btnDisplay={0}
                       callback={() => {
-                        updateStatus({
-                            variables:{
-                              "orderId":order._id
-                            }
-                          });
-                          handleRemoveOrder(index);
+                        handleUpdateStatus(order._id, "Pending", "Accepted");
+                          // handleRemoveOrder(index);
                         }}
                     />
-                    <DeclineDialog orderId={order._id} keyIndex={index} handleRemoveOrder={handleRemoveOrder}/>
+                    <DeclineDialog orderId={order._id} keyIndex={index}/>
                     {/* <Button
                       variant="contained"
                       size="small"
@@ -358,13 +349,14 @@ export default function PendingOrders({...props}) {
                       message={cancelPrompt()}
                       btnDisplay={0}
                       callback={()=>{
-                        cancelOrder({
-                          variables:{
-                            "orderId":order._id
-                          }
-                        });
+                        handleCancelOrder(order._id);
+                        // cancelOrder({
+                        //   variables:{
+                        //     "orderId":order._id
+                        //   }
+                        // });
                         // router.reload();
-                        handleRemoveOrder(index)
+                        // handleRemoveOrder(index)
                       }}
                       />
                     </>

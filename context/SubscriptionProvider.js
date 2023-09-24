@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
 import { GET_NOTIFICATIONS, NOTIF_SUB } from '../graphql/operations/notification';
-import { GET_MY_PROFILE } from '@/graphql/operations/profile';
+import { GET_MY_PROFILE } from '../graphql/operations/profile';
 import { AuthContext } from './auth.js';
 
 const SubscriptionContext = createContext();
@@ -9,16 +9,10 @@ const SubscriptionContext = createContext();
 export const SubscriptionProvider = ({ children }) => {
   const { user } = useContext(AuthContext); 
   const { subscribeToMore, data } = useQuery(GET_NOTIFICATIONS);
-  const {data:profileInfo} = useQuery(GET_MY_PROFILE);
+  const {data:profileInfo, loading:myProfileLoading} = useQuery(GET_MY_PROFILE);
   const [newNotifCount, setNewNotifCount] = useState(0);
-
-  var profile;
-  useEffect(()=>{
-    if(profileInfo){
-      profile = profileInfo.getMyProfile;
-    }
-  },[profileInfo]);
-
+  
+  const profile = profileInfo?.getMyProfile;
   useEffect(()=>{
     subscribeToMore({
       document:NOTIF_SUB,

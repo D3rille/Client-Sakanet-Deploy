@@ -1,8 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Box, styled, TextField, InputAdornment, IconButton, Tooltip } from '@mui/material';
+import React, { useRef, useEffect, useState, useContext } from 'react';
+import { Box, styled, TextField, InputAdornment, IconButton, Tooltip, Typography, Avatar } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MessageBubble from './MessageBubble';
 import { format } from 'date-fns';
+import CircularLoading from "../circularLoading";
+import {useSubs} from "../../context/SubscriptionProvider";
+import { AuthContext } from '../../context/auth';
 
 const StyledChatExchange = styled(Box)({
     flex: 2,
@@ -36,6 +39,16 @@ const StyledHeader = styled(Box)({
     color: '#4A5154',
 });
 
+// const StyledChatBody = styled(Box)(({ inputHeight }) => ({
+//     backgroundColor: '#F9FAFC',
+//     flex: 1,
+//     overflowY: 'auto',
+//     display: 'flex',
+//     flexDirection: 'column',
+//     margin: 0,
+//     paddingBottom: `calc(${inputHeight} + 10vh)`,
+// }));
+
 const StyledChatBody = styled(Box)(({ inputHeight }) => ({
     backgroundColor: '#F9FAFC',
     flex: 1,
@@ -43,7 +56,8 @@ const StyledChatBody = styled(Box)(({ inputHeight }) => ({
     display: 'flex',
     flexDirection: 'column',
     margin: 0,
-    paddingBottom: `calc(${inputHeight} + 16px)`,
+    paddingBottom: "10vh",
+    height: `calc(100% - ${inputHeight})`, // Use height instead of passing inputHeight as a prop
 }));
 
 const MessageInputContainer = styled(Box)({
@@ -92,23 +106,22 @@ const StyledSendIcon = styled(IconButton)(({ theme }) => ({
     },
 }));
 
-const ChatExchange = () => {
+const ChatExchange = ({...props}) => {
+    const { profile } = useSubs();
+    const {user} = useContext(AuthContext);
+    const {getMessagesData, getMessagesLoading, getMessagesError, handleSendMessage, conversationId} = props;
     const [inputHeight, setInputHeight] = useState('24px');
     const [messageInput, setMessageInput] = useState('');
-    const [messages, setMessages] = useState([
-        { message: "hoy", sender: false, avatar: "", time: "09:15" },
-        { message: "bente na ba bigas", sender: true, avatar: "", time: "09:16" },
-        { message: "nope", sender: false, avatar: "", time: "09:18" },
-        { message: "ge", sender: true, avatar: "", time: "09:20" }
-    ]);
 
+    const recipient = getMessagesData?.getMessages;
+   
     const chatBodyRef = useRef(null);
 
     useEffect(() => {
         if (chatBodyRef.current) {
             chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [recipient?.messages]);
 
     const handleInputChange = (event) => {
         const targetValue = event.target.value;
@@ -119,42 +132,42 @@ const ChatExchange = () => {
         setInputHeight(`${targetHeight}px`);
     };
 
-    const handleSendMessage = () => {
-        if (messageInput.trim() !== '') {
-            const currentTime = format(new Date(), 'HH:mm');
-            setMessages([...messages, { message: messageInput, sender: true, avatar: "", time: currentTime }]);
-            setMessageInput('');
-        }
-    };
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
-            handleSendMessage();
+            handleSendMessage(conversationId, messageInput);
+            setMessageInput("");
         }
     };
-
-    return (
+   return (
         <StyledChatExchange>
             <StyledContainer>
                 <StyledHeader>
-                    Bongbong Marcos Jr.
+                    {recipient && (<Avatar 
+                        // src={"https://res.cloudinary.com/sakanet/image/upload/v1692345062/palay_yoqze9.jpg"} 
+                        src={recipient.recipientPic ?? ""}
+                        alt={recipient.recipientUsername ?? ""}
+                        sx={{
+                            marginInline:"1rem"
+                        }}
+                    />)}
+                    {recipient?.recipientUsername ? recipient.recipientUsername :"Message"}
                 </StyledHeader>
-                <StyledChatBody ref={chatBodyRef} inputHeight={inputHeight}>
-                {messages.map((msg, index) => (
-                    <Tooltip key={index} title={msg.time} placement="left" arrow>
-                        <MessageBubble
-                            message={msg.message}
-                            sender={msg.sender}
-                            avatar={msg.avatar}
-                            time={msg.time}
-                        />
-                    </Tooltip>
+                <StyledChatBody ref={chatBodyRef}>
+                {getMessagesLoading && (<CircularLoading/>)}
+                {!recipient?.messages && (<Typography sx={{display:"flex", margin:"auto"}}> Select a Conversation</Typography>)}
+                {recipient?.messages?.map((msg, index) => (
+                    <div key={index}>
+                        <MessageBubble msg = {msg} currentUser = {user.id} isGroup={recipient?.isGroup}/>
+                    </div>
+                
                 ))}
                 </StyledChatBody>
             </StyledContainer>
             <MessageInputContainer>
                 <MessageInput
+                     {...(!recipient ? { disabled: true } : {})}
                     multiline
                     value={messageInput}
                     placeholder="Enter your message here"
@@ -169,9 +182,12 @@ const ChatExchange = () => {
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
-                                <StyledSendIcon onClick={handleSendMessage}>
+                                {recipient && messageInput && (<StyledSendIcon onClick={()=>{
+                                    handleSendMessage(conversationId, messageInput);
+                                    setMessageInput("");
+                                }}>
                                     <SendIcon />
-                                </StyledSendIcon>
+                                </StyledSendIcon>)}
                             </InputAdornment>
                         ),
                     }}

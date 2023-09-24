@@ -42,19 +42,7 @@ const More = (handleClickOpen) =>{
 }
 
 export default function ForCompletionOrders({...props}) {
-  const {ordersArr, role, updateStatus}=props;
-  const [orders, setOrders] = useState(ordersArr);
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const handleOpenDialog = () =>{
-    setOpenDialog(true);
-  }
-
-  const handleRemoveOrder = (index) => {
-    const updatedOrders = [...orders];
-    updatedOrders.splice(index, 1);
-    setOrders(updatedOrders);
-  };
+  const {orders, role, handleUpdateStatus}=props;
 
   //Details of the Order upon clicking More icon
   const orderDetails=(order)=>{
@@ -173,12 +161,7 @@ export default function ForCompletionOrders({...props}) {
                         fontSize: "0.6rem",
                       }}
                       onClick={()=>{
-                        updateStatus({
-                          variables:{
-                            "orderId":order._id
-                          }
-                        });
-                        handleRemoveOrder(index)
+                        handleUpdateStatus(order._id, "For Completion", "Completed")
                       }}
                     >
                       {role=="FARMERS" ? "Completed": "Received Order"}

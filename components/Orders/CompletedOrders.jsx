@@ -42,8 +42,7 @@ const More = (handleClickOpen) =>{
 }
 
 export default function PendingOrders({...props}) {
-  const {ordersArr, role}=props;
-  const [orders, setOrders] = useState(ordersArr);
+  const {orders, role}=props;
 
   const orderDetails=(order)=>{
     

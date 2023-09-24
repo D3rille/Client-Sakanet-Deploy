@@ -389,40 +389,39 @@ const markAllAsRead = () => {
               )}
             </div>
             <div className={styles.icons}>
-              <Avatar
-                sx={{
-                  cursor: "pointer",
-                  bgcolor: "transparent",
-                  "& img": { width: "auto", height: "auto" },
-                }}
-                alt="Messaging"
-              >
-                <Image
-                  src={message}
-                  alt="Travis Howard"
-                  width={30}
-                  height={30}
-                />
-              </Avatar>
-              <Badge badgeContent={newNotifCount} color="primary">
-                <Image 
-                sx={{
-                  cursor: "pointer",
-                  bgcolor: "transparent",
-                  "& img": { width: "auto", height: "auto" },
-                }}
-                onClick={handleNotifClick} src={notif} alt="Notifications" width={30} height={30} />
-                {/* <Avatar onClick={handleNotifClick}
+             
+                <IconButton
+                  onClick={()=>{
+                    router.push("/Chats")
+                  }}
+                >
+                  <Badge badgeContent={0} color="primary">
+                  <Image 
                   sx={{
                     cursor: "pointer",
                     bgcolor: "transparent",
                     "& img": { width: "auto", height: "auto" },
                   }}
-                  alt="Notifications"
-                >
-                  
-                </Avatar> */}
-              </Badge>
+                   src={message} alt="Messaging" width={30} height={30} />
+                   </Badge>
+                </IconButton>
+                
+              
+             
+                <IconButton
+                    onClick={handleNotifClick}
+                  >
+                  <Badge badgeContent={newNotifCount} color="primary">
+                  <Image 
+                  sx={{
+                    cursor: "pointer",
+                    bgcolor: "transparent",
+                    "& img": { width: "auto", height: "auto" },
+                  }}
+                  src={notif} alt="Notifications" width={30} height={30} />
+                   </Badge>
+                </IconButton>
+             
               <Popover
                   open={Boolean(notifAnchorEl)}
                   anchorEl={notifAnchorEl}

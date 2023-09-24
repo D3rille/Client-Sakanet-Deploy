@@ -1,4 +1,7 @@
 export function formatWideAddress(address){
+    if(!address){
+        return "";
+    }
     const { street, barangay, cityOrMunicipality, province } = address;
     var formattedAddress = "";
     

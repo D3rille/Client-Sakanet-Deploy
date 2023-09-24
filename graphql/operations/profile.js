@@ -38,6 +38,7 @@ export const GET_MY_PROFILE = gql`
         joined_group
         managed_group
         displayName
+        lastOpenedConvo
         description
         date_joined
       }

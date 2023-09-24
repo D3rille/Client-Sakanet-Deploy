@@ -47,42 +47,107 @@ export default function Orders() {
         }
     });
 
-
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
 
-    const handleAcceptOrder = () => {
-        setTabValue(1);
-    };
-
-
     const [updateStatus] = useMutation(UPDATE_STATUS, {
-        refetchQueries:[GET_ORDERS],
         onError:(error)=>{
             toast.error(error.message);
             console.log(error);
         }
     });
 
+    const handleUpdateStatus = async (orderId, currentStatus, nextStatus) => {
+        try {
+          await updateStatus({
+            variables: {orderId},
+            refetchQueries:[{query:GET_ORDERS, variables:{status:currentStatus}}, {query:GET_ORDERS, variables:{status:nextStatus}}],
+          });
+        } catch (error) {
+          console.error('Error updating status:', error);
+        }
+      };
+    
     const [cancelOrder, {error:cancelOrderError}] = useMutation(CANCEL_ORDER, {
-        refetchQueries:[GET_ORDERS],
-        onCompleted:()=>{
-            toast
-        },
         onError:(cancelOrderError)=>{
             console.log(cancelOrderError);
         }
     });
 
+    const handleCancelOrder = async (orderId) => {
+        try {
+          await cancelOrder({
+            variables: { orderId },
+            update: (cache) => {
+              // Check if the query result exists in the cache
+              const existingData = cache.readQuery({ query: GET_ORDERS, variables:{status:"Pending"} });
+              if (!existingData || !existingData.getOrders) {
+                return;
+              }
+      
+              // Fetch the existing data from the cache
+              const { getOrders } = existingData;
+      
+              // Remove the canceled order from the cache
+              const updatedOrders = getOrders.filter((order) => order._id !== orderId);
+      
+              // Write the updated data back to the cache
+              cache.writeQuery({
+                query: GET_ORDERS,
+                variables:{status:"Pending"},
+                data: {
+                  getOrders: updatedOrders,
+                },
+              });
+            },
+          });
+        } catch (error) {
+          // Handle any errors
+          console.log(error);
+        }
+    };
+
     const [declineOrder, {error:declineOrderError}] = useMutation(DECLINE_ORDER, {
         refetchQueries:[GET_ORDERS],
-        onError:(cancelOrderError)=>{
+        onError:(declineOrderError)=>{
             console.log(cancelOrderError);
         }
     });
-    // const ordersArr = data?.getOrders;
-    // console.log(ordersArr);
+
+    const handleDeclineOrder = async (orderId) => {
+        try {
+          await declineOrder({
+            variables: { orderId },
+            update: (cache) => {
+              // Check if the query result exists in the cache
+              const existingData = cache.readQuery({ query: GET_ORDERS, variables:{status:"Pending"} });
+              if (!existingData || !existingData.getOrders) {
+                return;
+              }
+      
+              // Fetch the existing data from the cache
+              const { getOrders } = existingData;
+      
+              // Remove the canceled order from the cache
+              const updatedOrders = getOrders.filter((order) => order._id !== orderId);
+      
+              // Write the updated data back to the cache
+              cache.writeQuery({
+                query: GET_ORDERS,
+                variables:{status:"Pending"},
+                data: {
+                  getOrders: updatedOrders,
+                },
+              });
+            },
+          });
+        } catch (error) {
+          // Handle any errors
+          console.log(error);
+        }
+    };
+    
     if(loading){return(<CircularLoading/>)};
     if(data){
         const ordersArr = data?.getOrders;
@@ -111,10 +176,10 @@ export default function Orders() {
                         </Tabs>
                     </Box>
                     {loading && <CircularLoading/>}
-                    {tabValue===0 && <PendingOrders role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} cancelOrder={cancelOrder}declineOrder={declineOrder}/>}
-                    {tabValue === 1 && <AcceptedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
-                    {tabValue === 2 && <ForCompletionOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
-                    {tabValue === 3 && <CompletedOrders  role={user.role} ordersArr={ordersArr} updateStatus={updateStatus} />}
+                    {tabValue===0 && <PendingOrders role={user.role} orders={ordersArr} handleUpdateStatus={handleUpdateStatus} handleCancelOrder={handleCancelOrder} handleDeclineOrder={handleDeclineOrder}/>}
+                    {tabValue === 1 && <AcceptedOrders  role={user.role} orders={ordersArr} handleUpdateStatus={handleUpdateStatus} />}
+                    {tabValue === 2 && <ForCompletionOrders  role={user.role} orders={ordersArr} handleUpdateStatus={handleUpdateStatus} />}
+                    {tabValue === 3 && <CompletedOrders  role={user.role} orders={ordersArr} updateStatus={updateStatus} />}
                 </StyledPaper>
             </Grid>
         </StyledGrid>

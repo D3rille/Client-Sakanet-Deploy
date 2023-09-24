@@ -44,16 +44,8 @@ const More = (handleClickOpen) =>{
 }
 
 export default function AcceptedOrders({...props}) {
-  const router = useRouter();
-  const {ordersArr, role, updateStatus}=props;
-  const [orders, setOrders] = useState(ordersArr);
+  const {orders, role, handleUpdateStatus}=props;
   const [openDialog, setOpenDialog] = useState(false);
-
-  const handleRemoveOrder = (index) => {
-    const updatedOrders = [...orders];
-    updatedOrders.splice(index, 1);
-    setOrders(updatedOrders);
-  };
 
 
   const orderDetails=(order)=>{
@@ -192,12 +184,7 @@ export default function AcceptedOrders({...props}) {
                     message={"Mark this order as complete?"}
                     btnDisplay={0}
                     callback={() => {
-                      updateStatus({
-                        variables:{
-                          "orderId": order._id
-                        }
-                      });
-                      handleRemoveOrder(index);
+                      handleUpdateStatus(order._id, "Accepted", "For Completion");
                     }}
                   />
               </TableCell>
