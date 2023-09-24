@@ -39,7 +39,7 @@ import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { GET_PRODUCT,GET_AVAILABLE_PRODUCTS  } from "../../graphql/operations/product";
 import { PLACE_ORDER } from "../../graphql/operations/order";
 import { formatWideAddress } from "../../util/addresssUtils";
-import {shortDate, timePassed} from "../../util/dateUtils";
+import {formatDate, timePassed} from "../../util/dateUtils";
 import TriggeredDialog from "../../components/popups/confirmationDialog";
 import CircularLoading from "../../components/circularLoading";
 import { GET_CART_ITEMS } from "../../graphql/operations/cart";
@@ -548,7 +548,7 @@ export default function PurchaseDialog({...props}) {
                         </TableRow>
                         {product.category=="Pre-Sell" && product.dateOfHarvest && (<TableRow className={styles.alternateRow}>
                             <TableCell>Date of Harvest</TableCell>
-                            <TableCell>{shortDate(product.dateOfHarvest)}</TableCell>
+                            <TableCell>{formatDate(product.dateOfHarvest, 'll')}</TableCell>
                         </TableRow>)}
                         {product.modeOfDelivery === "pick-up" ? ( //Check if delivery mode pick then display location
                             <TableRow className={styles.alternateRow}>

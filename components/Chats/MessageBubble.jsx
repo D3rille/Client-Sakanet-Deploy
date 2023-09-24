@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Avatar, styled, Typography } from '@mui/material';
-import { timePassed } from '../../util/dateUtils';
+import { formatDate } from '../../util/dateUtils';
 
 
 const StyledMessageBubble = styled(Box)(({ sender }) => ({
@@ -80,7 +80,7 @@ const MessageBubble = ({ msg, currentUser, isGroup }) => {
                     </Box>
                     <Box sx={{textAlign:Boolean(myMessage) ? "end":"start"}}>
                         <StyledTime sender={myMessage}>
-                            {timePassed(createdAt)}
+                            {formatDate(createdAt, "lll")}
                         </StyledTime>
                     </Box>
                 </Box>

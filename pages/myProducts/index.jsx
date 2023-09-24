@@ -35,7 +35,7 @@ import {
 } from "../../graphql/operations/product";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import CircularLoading from "../../components/circularLoading";
-import {shortDate, timePassed} from "../../util/dateUtils";
+import {formatDate, timePassed} from "../../util/dateUtils";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {useRouter} from "next/router";
 import TriggeredDialog from "../../components/popups/confirmationDialog";
@@ -165,7 +165,7 @@ function ProductCard({ product, openDetails, setOpenDetails }) {
               variant="body2"
               sx={{ fontWeight: "bolder", fontSize:'0.8rem' }}
             >
-              Until: {shortDate(product.until)}
+              Until: {formatDate(product.until, "ll")}
             </Typography>
           </Box>
           <Box 
@@ -256,7 +256,7 @@ function ProductCard({ product, openDetails, setOpenDetails }) {
         {product.category == "Pre-Sell" && (
           <>
             <Typography align="left" >
-              Harvest Date: {shortDate(product?.dateOfHarvest)}
+              Harvest Date: {formatDate(product?.dateOfHarvest, "ll")}
             </Typography>
           </>
         )}

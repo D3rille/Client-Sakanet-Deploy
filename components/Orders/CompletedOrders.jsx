@@ -17,7 +17,7 @@ import {
 import { styled } from "@mui/system";
 import TriggeredDialog from "../popups/confirmationDialog";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import {timePassed, shortDate, shortDateAndTime} from "../../util/dateUtils";
+import {timePassed, formatDate} from "../../util/dateUtils";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -70,7 +70,7 @@ export default function PendingOrders({...props}) {
           {`Type: ${order?.type}`}
         </Typography>
         {order?.accomplishedAt && (<Typography align="left">
-          {`Accomplished: ${shortDateAndTime(order?.accomplishedAt)}`}
+          {`Accomplished: ${formatDate(order?.accomplishedAt, "llll")}`}
         </Typography>)}
       </>
 
