@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
 import { GET_NOTIFICATIONS, NOTIF_SUB } from '../graphql/operations/notification';
+import {UPDATE_CONVO_COUNT, GET_UNREAD_CONVO} from "../graphql/operations/chat";
 import { GET_MY_PROFILE } from '../graphql/operations/profile';
 import { AuthContext } from './auth.js';
 
@@ -10,8 +11,15 @@ export const SubscriptionProvider = ({ children }) => {
   const { user } = useContext(AuthContext); 
   const { subscribeToMore, data } = useQuery(GET_NOTIFICATIONS);
   const {data:profileInfo, loading:myProfileLoading} = useQuery(GET_MY_PROFILE);
+  const {data:unreadConvoData, loading:unreadConvoLoading, subscribeToMore:subscribeToNewConvo} = useQuery(GET_UNREAD_CONVO);
+  // const {data:convoUpdateData, loading:convoUpdateLoading} = useSubscription(UPDATE_CONVO_COUNT, {
+  //   variables:{
+  //     receiverId:user?.id
+  //   }
+  // });
   const [newNotifCount, setNewNotifCount] = useState(0);
-  
+  const [newConvoCount, setNewConvoCount] = useState(0);
+
   const profile = profileInfo?.getMyProfile;
   useEffect(()=>{
     subscribeToMore({
@@ -26,6 +34,31 @@ export const SubscriptionProvider = ({ children }) => {
       }
     });
   }, []);
+
+  useEffect(()=>{
+    subscribeToNewConvo({
+      document:UPDATE_CONVO_COUNT,
+      variables:{receiverId:user?.id ?? ""},
+      updateQuery:(prev, {subscriptionData})=>{
+        if(!subscriptionData.data) return prev;
+        const newConvo = subscriptionData.data.updateConversationCount;
+        if(prev.getUnreadConversations.includes(newConvo.convoId)){
+          return prev
+        } else{
+          return Object.assign({}, prev, {
+            getUnreadConversations: [...prev.getUnreadConversations, newConvo.convoId]
+          });
+        } 
+      }
+    });
+  }, []);
+
+useEffect(()=>{
+  if(unreadConvoData){
+    var count = unreadConvoData.getUnreadConversations.length;
+    setNewConvoCount(count);
+  }
+}, [unreadConvoData, unreadConvoLoading, subscribeToNewConvo])
 
 if(data){
   var notifData = {
@@ -47,7 +80,7 @@ useEffect(()=>{
 }, [notifData]);
   
   return (
-    <SubscriptionContext.Provider value={{notifData, newNotifCount, profile}}>
+    <SubscriptionContext.Provider value={{notifData, newNotifCount,newConvoCount, profile}}>
       {children}
     </SubscriptionContext.Provider>
   );

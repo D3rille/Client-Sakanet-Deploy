@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Typography,
   Divider,
@@ -22,9 +22,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import ChatItems from "./ChatItems";
 import { useLazyQuery, useQuery, useMutation } from "@apollo/client";
 // import {SEARCH_USERS} from "../../graphql/operations/search";
-import { FIND_USER_TO_CHAT, GET_CONVERSATIONS } from "../../graphql/operations/chat";
+import { FIND_USER_TO_CHAT, GET_CONVERSATIONS, GET_UNREAD_CONVO, UPDATE_CONVOS} from "../../graphql/operations/chat";
 import FindUserToConvoResult from "./FindUserToConvoResult";
 import CircularLoading from "../circularLoading";
+import { AuthContext } from "../../context/auth";
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -143,6 +144,7 @@ const SuggestedContainer = styled(Box)({
 });
 
 const RecentChatsList = ({...props}) => {
+  const {user} = useContext(AuthContext);
   const {newConvo, handleStartNewConvo, handleCreateConvo, setCurrentConvoId, currentConvoId, readConvo} = props;
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -157,8 +159,19 @@ const RecentChatsList = ({...props}) => {
   },[currentConvoId]);
 
   
-  const {data:getConvosData, loading:getConvosLoading} = useQuery(GET_CONVERSATIONS);
+  const {data:getConvosData, loading:getConvosLoading, subscribeToMore:subscribeToMoreConvos, refetch:refetchConvos} = useQuery(GET_CONVERSATIONS);
   const [findUser, {data:findUserData, loading:findUserLoading}] = useLazyQuery(FIND_USER_TO_CHAT);
+
+  useEffect(()=>{
+    subscribeToMoreConvos({
+      document:UPDATE_CONVOS,
+      variables:{receiverId:user?.id ?? ""},
+      updateQuery:(prev, {subscriptionData})=>{
+        if(!subscriptionData.data) return prev;
+        refetchConvos();
+      }
+    });
+  }, []);
 
   const handleChatClick = (chatId) => {
     setSelectedChatId(chatId);
@@ -171,7 +184,7 @@ const RecentChatsList = ({...props}) => {
         variables:{
           conversationId
         },
-        refetchQueries:[GET_CONVERSATIONS]
+        refetchQueries:[GET_CONVERSATIONS, GET_UNREAD_CONVO]
       });
     } catch (error) {
       console.log(error);

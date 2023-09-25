@@ -47,23 +47,18 @@ function FindUserToConvoResult({...props}){
                         <ListItemAvatar>
                             <Avatar src={user.profile_pic}/>
                         </ListItemAvatar>
-                        <ListItemText 
-                        primary={
+                        <div style={{flexDirection:"column"}}>
                             <Link className={styles.searchLink} >
-                                <h3>{user.username}</h3>
+                                    <h3>{user.username}</h3>
                             </Link>
-                        } 
-                        secondary={
-                            <>
-                                <Typography sx={{fontSize:"0.7rem"}}>
-                                    {formatWideAddress(user.address)}
-                                </Typography>
-                                <Typography sx={{fontSize:"0.7rem"}}>
-                                    {user.role=="FARMER" ? "Farmer": user.role== "BUYER" ? "Buyer" :"Group"}
-                                </Typography>
-                            </>
-                            
-                            } />
+
+                            <Typography sx={{fontSize:"0.7rem"}}>
+                                {formatWideAddress(user.address)}
+                            </Typography>
+                            <Typography sx={{fontSize:"0.7rem"}}>
+                                {user.role=="FARMER" ? "Farmer": user.role== "BUYER" ? "Buyer" :"Group"}
+                            </Typography>
+                        </div>
                     </ListItem>
                     </React.Fragment>
                 ))}

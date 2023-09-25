@@ -43,15 +43,14 @@ const StyledHeader = styled(Box)({
     color: '#4A5154',
 });
 
-const StyledChatBody = styled(Box)(({ inputHeight }) => ({
+const StyledChatBody = styled(Box)({
     backgroundColor: '#F9FAFC',
     flex: 1,
     overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
     margin: 0,
-    paddingBottom: `calc(${inputHeight} + 16px)`,
-}));
+});
 
 const MessageInputContainer = styled(Box)({
     position: 'absolute',
@@ -105,16 +104,13 @@ const SearchPanel = styled(Box)({
     backgroundColor: "#F9FAFC",
     borderRadius: "5px",
     margin:"1em",
-    // marginLeft: "1.5rem",
-    // marginRight: "1.5rem",
-    // marginBottom: "0.5rem",
     border: "1px solid #DBE4EC",
   });
 
 const CreateConvo = ({...props}) => {
   
     const {handleSendMessage,setCurrentConvoId, handleStartNewConvo} = props;
-    const [inputHeight, setInputHeight] = useState('24px');
+    // const [inputHeight, setInputHeight] = useState('24px');
     const [messageInput, setMessageInput] = useState('');
 
     const [query, setQuery] = useState("");
@@ -188,13 +184,13 @@ const CreateConvo = ({...props}) => {
         setInputHeight(`${targetHeight}px`);
     };
 
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            handleSendMessage(conversationId, messageInput);
-            setMessageInput("");
-        }
-    };
+    // const handleKeyDown = (event) => {
+    //     if (event.key === 'Enter' && !event.shiftKey) {
+    //         event.preventDefault();
+    //         handleSendMessage(conversationId, messageInput);
+    //         setMessageInput("");
+    //     }
+    // };
  
     const handleAddRecipients = (user) =>{
         let newRecipients = recipients;
@@ -277,7 +273,7 @@ const CreateConvo = ({...props}) => {
                     
                 </StyledHeader>
                
-                <StyledChatBody ref={chatBodyRef} inputHeight={inputHeight}>
+                <StyledChatBody ref={chatBodyRef}>
                     {recipients.length>=2 && (<Box
                         sx={{
                             display:"flex",
@@ -340,10 +336,6 @@ const CreateConvo = ({...props}) => {
                     size="small"
                     fullWidth
                     onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                    inputProps={{
-                        style: { height: inputHeight },
-                    }}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -360,9 +352,7 @@ const CreateConvo = ({...props}) => {
                                             
                                         } 
                                         
-                                    }
- 
-                                    
+                                    }                                   
                                     }}>
                                     <SendIcon />
                                 </StyledSendIcon>)}

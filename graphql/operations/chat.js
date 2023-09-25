@@ -75,6 +75,12 @@ export const GET_CONVERSATIONS = gql`
     }
 `;
 
+export const GET_UNREAD_CONVO = gql`
+    query Query {
+        getUnreadConversations
+    }
+`;
+
 export const GET_GROUP_MEMBERS = gql`
     query GetGroupMembers($conversationId: String) {
         getGroupMembers(conversationId: $conversationId) {
@@ -141,6 +147,12 @@ export const LEAVE_GROUPCHAT = gql`
     }
 `;
 
+export const RENAME_GROUP_CHAT = gql`
+    mutation RenameGroupChat($groupChatId: String, $newName: String) {
+        renameGroupChat(groupChatId: $groupChatId, newName: $newName)
+    }
+`;
+
 export const NEW_MESSAGE = gql`
     subscription NewMessage($conversationId: String) {
     newMessage(conversationId: $conversationId) {
@@ -153,6 +165,32 @@ export const NEW_MESSAGE = gql`
     }
     }
 
+`;
+
+export const UPDATE_CONVO_COUNT = gql`
+    subscription UpdateConversationCount($receiverId: String) {
+        updateConversationCount(receiverId: $receiverId) {
+            recipients
+            convoId
+        }
+    }
+`;
+
+export const UPDATE_CONVOS = gql`
+subscription NewConversation($receiverId: String) {
+  newConversation(receiverId: $receiverId) {
+    _id
+    name
+    profile_pic
+    hasSeenLastMessage
+    participants
+    lastMessage {
+      from
+      message
+      createdAt
+    }
+  }
+}
 `;
 
 

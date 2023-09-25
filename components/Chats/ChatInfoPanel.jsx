@@ -31,8 +31,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CloseIcon from "@mui/icons-material/Close";
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 // import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useLazyQuery, useQuery } from '@apollo/client';
-import { GET_CONVERSATIONS, GET_GROUP_MEMBERS, GET_MESSAGES } from '../../graphql/operations/chat';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { GET_CONVERSATIONS, GET_GROUP_MEMBERS, GET_MESSAGES, RENAME_GROUP_CHAT } from '../../graphql/operations/chat';
 import CircularLoading from '../circularLoading';
 import {useRouter} from "next/router";
 import { handleError } from '@apollo/client/link/http/parseAndCheckHttpResponse';
@@ -107,6 +107,28 @@ const ChatInfoPanel = ({...props}) => {
     const recipient = getMessagesData?.getMessages;
     // const {data:getGroupMembers, loading, error} = useQuery(GET_GROUP_MEMBERS);
     const [findGroupMembers, {data:findGroupMembersData, loading:findGroupMembersLoading}] = useLazyQuery(GET_GROUP_MEMBERS);
+    const [renameGroupChat] = useMutation(RENAME_GROUP_CHAT);
+
+    const handleRenameGroupChat = async(groupChatId, newName) =>{
+        try {
+            await renameGroupChat({
+                variables:{
+                    groupChatId,
+                    newName
+                },
+                refetchQueries:[GET_MESSAGES],
+                onCompleted:(data)=>{
+                    toast.success(`Successfully renamed group chat to ${data?.renameGroupChat}`);
+                },
+                onError:(error)=>{
+                    toast.error(error.message);
+                }
+            })
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message);
+        }
+    }
 
 
     //get members, return list
@@ -336,6 +358,11 @@ const ChatInfoPanel = ({...props}) => {
                     <Button 
                         color="primary" 
                         disabled={!isChanged} 
+                        onClick={()=>{
+                            handleRenameGroupChat(recipient?._id, chatNameInput).then(()=>{
+                                setDialogOpen(false);
+                            });
+                        }}
                         style={{ backgroundColor: isChanged ? '#2E613B' : undefined, borderRadius:'10px', color:'#FFFEFE' }}>
                         Save
                     </Button>

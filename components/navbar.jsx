@@ -57,7 +57,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const Navbar = () => {
-  const {newNotifCount, profile} = useSubs();
+  const {newNotifCount, profile, newConvoCount} = useSubs();
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
   const drawerWidth = 240;
@@ -395,7 +395,7 @@ const markAllAsRead = () => {
                     router.push("/Chats")
                   }}
                 >
-                  <Badge badgeContent={0} color="primary">
+                  <Badge badgeContent={newConvoCount} color="primary">
                   <Image 
                   sx={{
                     cursor: "pointer",
