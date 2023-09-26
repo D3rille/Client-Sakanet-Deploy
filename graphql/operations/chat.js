@@ -153,6 +153,14 @@ export const RENAME_GROUP_CHAT = gql`
     }
 `;
 
+export const UPDATE_GROUP_PROFILE_PIC = gql`
+    mutation UpdateGroupProfilePic($groupChatId: String, $newGroupProfilePic: String) {
+        updateGroupProfilePic(groupChatId: $groupChatId, newGroupProfilePic: $newGroupProfilePic)
+}
+`;
+
+
+
 export const NEW_MESSAGE = gql`
     subscription NewMessage($conversationId: String) {
     newMessage(conversationId: $conversationId) {

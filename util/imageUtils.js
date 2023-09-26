@@ -1,10 +1,9 @@
 import crypto from 'crypto';
 
-//Profile Pic Upload to cloudinary
-export async function uploadImage(imageFile) {
+async function uploadToCloudinary(imageFile, folderName){
   const data = new FormData();
   data.append('file', imageFile);
-  data.append('folder', 'profile_pic')
+  data.append('folder', folderName)
   data.append('upload_preset', 'sakanet');
   data.append('cloud_name', 'sakanet');
 
@@ -22,51 +21,27 @@ export async function uploadImage(imageFile) {
   }
 }
 
+//Profile Pic Upload to cloudinary
+export async function uploadImage(imageFile) {
+  return uploadToCloudinary(imageFile, 'profile_pic')
+}
+
 //Cover Photo Upload to cloudinary
 export async function uploadCoverPhoto(imageFile) {
-  const data = new FormData();
-  data.append('file', imageFile);
-  data.append('folder', 'cover_photo')
-  data.append('upload_preset', 'sakanet');
-  data.append('cloud_name', 'sakanet');
-
-  try {
-    const response = await fetch('https://api.cloudinary.com/v1_1/sakanet/image/upload', {
-      method: 'post',
-      body: data,
-    });
-
-    const cloudinaryData = await response.json();
-    return cloudinaryData.secure_url;
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
+  return uploadToCloudinary(imageFile, 'cover_photo')
 }
 
 
 //User Product Upload to cloudinary
 export async function uploadUserProductPhoto(imageFile) {
-  const data = new FormData();
-  data.append('file', imageFile);
-  data.append('folder', 'user_product')
-  data.append('upload_preset', 'sakanet');
-  data.append('cloud_name', 'sakanet');
+  return uploadToCloudinary(imageFile, 'user_product')
+}
 
-  try {
-    const response = await fetch('https://api.cloudinary.com/v1_1/sakanet/image/upload', {
-      method: 'post',
-      body: data,
-    });
 
-    const cloudinaryData = await response.json();
-    return cloudinaryData.secure_url;
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
-};
-
+//Chat Group Photo Upload
+export async function uploadGroupChatPhoto(imageFile){
+  return uploadToCloudinary(imageFile, 'groupChat_photo')
+}
 
 
 //Image Delete to Cloudinary
