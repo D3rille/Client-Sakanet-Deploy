@@ -17,23 +17,48 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import Head from "next/head";
 import Image from "next/image";
 import { GET_MY_PROFILE } from "../../graphql/operations/profile";
+import { GET_ALL_REVIEWS } from "../../graphql/operations/review";
+import CircularLoading from "../../components/circularLoading";
+import {AuthContext} from "../../context/auth";
 import { useQuery } from "@apollo/client";
 import { formatWideAddress } from "../../util/addresssUtils.js";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import toast from "react-hot-toast";
 
-const initialReviews = [
-  {
-    id: 1,
-    name: "Jhan Derille Unlayao",
-    review: "Successful transaction, communicable.",
-  },
-  { id: 1, name: "Jhan Unlayao", review: "Successful transaction" },
-];
+
+// const initialReviews = [
+//   {
+//     id: 1,
+//     name: "Jhan Derille Unlayao",
+//     review: "Successful transaction, communicable.",
+//   },
+//   { id: 1, name: "Jhan Unlayao", review: "Successful transaction" },
+// ];
 
 export default function MyProfile() {
-  const [reviews, setReviews] = useState(initialReviews);
+  const {user} = useContext(AuthContext);
+  const [reviews, setReviews] = useState([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+
+  try {
+    var { loading, error, data } = useQuery(GET_MY_PROFILE);
+    var {data:getReviewsData, loading:getReviewsLoading, error:getReviewsError} = useQuery(GET_ALL_REVIEWS, {
+      variables:{
+        subjectedUser:user.id
+      }
+    });
+    
+  } catch (error) {
+    toast.error("Cannot connect to server, Check your internet Connection");
+    console.log(error);
+  }
+
+  useEffect(()=>{
+    if(getReviewsData){
+      setReviews(getReviewsData?.getAllReviews);
+    }
+  },[getReviewsData, getReviewsLoading])
 
   const handleNextReview = () => {
     if (currentReviewIndex < reviews.length - 1) {
@@ -47,7 +72,14 @@ export default function MyProfile() {
     }
   };
 
-  const { name, review } = reviews[currentReviewIndex];
+  // const {
+  //   _id:reviewId, 
+  //   username:reviewerUsername, 
+  //   profile_pic:reviewerProfile_Pic, 
+  //   rate:reviewerRate,
+  //   comment:reviewerComment,
+
+  // } = ;
 
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -71,10 +103,16 @@ export default function MyProfile() {
     };
   }, []);
 
-  const { loading, error, data } = useQuery(GET_MY_PROFILE);
 
-  if (loading) return <p>Loading...</p>;
+ 
+  if (loading) return(
+    <div style={{display:"flex", margin:"auto"}}>
+      <CircularLoading/>
+    </div>
+  
+  );
   if (error) return <p>Error: {error.message}</p>;
+
 
   const {
     profile_pic,
@@ -246,7 +284,18 @@ export default function MyProfile() {
                 </Card>
 
                 {/* REVIEW CARDS*/}
-                <Card
+                {getReviewsLoading && (
+                  <div style={{display:"flex", margin:"auto"}}>
+                    <CircularLoading/>
+                  </div>
+                )}
+                {!getReviewsData && (
+                  <div style={{display:"flex", margin:"auto"}}>
+                    <p>No Reviews</p>
+                  </div>
+                )}
+                
+                {getReviewsData && (<Card
                   className={styles.reviewCard}
                   sx={{
                     width: "100%",
@@ -273,10 +322,9 @@ export default function MyProfile() {
                       zIndex: 2,
                     }}
                   />
-
                   <div style={{ marginTop: "20px", zIndex: 1 }}>
                     <Avatar
-                      src={profile_pic}
+                      src={reviews[currentReviewIndex]?.profile_pic ?? ""}
                       sx={{
                         border: "4px solid #32806A",
                         width: "70px",
@@ -292,7 +340,7 @@ export default function MyProfile() {
                       marginTop: "10px",
                     }}
                   >
-                    {name}
+                    {reviews[currentReviewIndex]?.username ?? ""}
                   </Typography>
 
                   <Typography
@@ -304,7 +352,7 @@ export default function MyProfile() {
                       fontWeight: "bold",
                     }}
                   >
-                    {review}
+                    {reviews[currentReviewIndex]?.comment ?? ""}
                   </Typography>
 
                   <FormatQuoteIcon
@@ -345,7 +393,8 @@ export default function MyProfile() {
                   >
                     <ArrowForward />
                   </IconButton>
-                </Card>
+                </Card>)}
+                {/*  */}
               </div>
             </div>
             <div className={styles.leftSide}>
