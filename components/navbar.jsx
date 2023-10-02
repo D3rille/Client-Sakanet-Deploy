@@ -201,7 +201,7 @@ const markAllAsRead = () => {
   // if (error) return <p>Error: {error.message}</p>;
 
   // const { profile_pic } = data.getMyProfile;
-
+  if (user.role=="ADMIN") return;
 
   return (
     <>
@@ -368,25 +368,14 @@ const markAllAsRead = () => {
           </div>
           <div className={styles.components}>
             <div className={styles.username}>
-              {router.pathname == "/myProfile" ? (
-                <Chip
+              <Chip
                 avatar={<Avatar src={profile_pic} />}
                 onClick={() => {
                   router.push("/myProfile");
                 }}
                 label={user?.username ?? "user"}
-                color = "success"
+                color = {router.pathname == "/myProfile" ? "success":"default"}
               />
-              ):(
-                <Chip
-                avatar={<Avatar src={profile_pic} />}
-                onClick={() => {
-                  router.push("/myProfile");
-                }}
-                label={user?.username ?? "user"}
-                variant="outlined"
-              />
-              )}
             </div>
             <div className={styles.icons}>
              

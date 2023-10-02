@@ -30,7 +30,7 @@ export const useForm = (callback, initialState = {}) => {
 };
 
 export const useAuthorizeRoute = (authorizedRoles=[]) =>{
-  const router = useRouter();
+  // const router = useRouter();
   const {user}  =useContext(AuthContext);
 
   var userAuthorized = false;
@@ -41,9 +41,11 @@ export const useAuthorizeRoute = (authorizedRoles=[]) =>{
       break;
     }
   }
-  if(!userAuthorized){
-    router.replace('/');
-  }
+
+  return userAuthorized;
+  // if(!userAuthorized){
+  //   router.replace('/');
+  // }
 
   /*
   Example use:

@@ -4,7 +4,7 @@ import styles from '../../styles/Profile.module.css';
 import coverPhoto from '../../public/images/coverphoto.jpg';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { TextField,Card, Button,Link,  Box, Stack} from '@mui/material';
+import { TextField,Card, Button,Link,  Box, Stack, CardHeader, CardContent} from '@mui/material';
 import locationIcon from '../../public/icons/location.svg';
 import contactIcon from '../../public/icons/contact.svg';
 import emailIcon from '../../public/icons/email.svg';
@@ -16,17 +16,25 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import SmsIcon from '@mui/icons-material/Sms';
 import CheckIcon from '@mui/icons-material/Check';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Head from 'next/head';
 import Image from "next/image";
 import { GO_TO_PROFILE } from '../../graphql/operations/search';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/client';
 import {formatWideAddress} from '../../util/addresssUtils.js';
 import { useRouter } from "next/router";
 import Rating from '@mui/material/Rating';
 import toast from 'react-hot-toast';
 import { REQUEST_CONNECTION, REMOVE_CONNECTION } from '../../graphql/operations/myNetwork';
+import { GET_ALL_REVIEWS, CHECK_PERMISSION, WRITE_REVIEW, GET_MY_REVIEW, EDIT_REVIEW } from '../../graphql/operations/review';
 import OptionsMenu from '../../components/popups/OptionsMenu';
 import CircularLoading from '../../components/circularLoading';
+import { AuthContext } from '../../context/auth'; 
+import RateAndReviewModal from "../../components/Review/RateAndReviewModal";
+import EditReviewModal from '../../components/Review/EditReviewModal';
 
 const ButtonsDisplay = ({userId, connStatus, requestConnection, onMoreList}) =>{
     const DynamicBtn = () =>{
@@ -72,12 +80,17 @@ const ButtonsDisplay = ({userId, connStatus, requestConnection, onMoreList}) =>{
 }
 
 export default function FindUser(){
+    const {user} = useContext(AuthContext);
     const router = useRouter();
     const id = router.query.id;
-    
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [UserPostDescrip, setUserPostDescrip ] = useState("");
+    const [isFocused, setIsFocused] = useState(false);
+
+    const [reviews, setReviews] = useState([]);
+    const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Request Connection
     const [requestConnection, {data:requestConnectionData}] = useMutation(REQUEST_CONNECTION,{
@@ -93,10 +106,58 @@ export default function FindUser(){
     const handleButtonClick=(e)=>{
         e.preventDefault();
     }
+    // Get profile information
+    const { loading, error, data } = useQuery(GO_TO_PROFILE,{
+        variables:{
+            userId:id
+        }, 
+        onError:(error)=>{
+            toast.error(error.message);
+            console.error(error);
+        }
+    });
 
-    const [isFocused, setIsFocused] = useState(false);
+    const [getAllReviews, {data:getReviewsData, loading:getReviewsLoading, error:getReviewsError}] = useLazyQuery(GET_ALL_REVIEWS, {
+        variables:{
+            subjectedUser:id
+        }, 
+        onError:(error)=>{
+            toast.error(error.message);
+            console.error(error);
+        }
+    });
 
+    const [checkPermission, {data:getPermissionToReviewData, loading:getPermissionToReviewLoading}] = useLazyQuery(CHECK_PERMISSION, {
+        onError:(error)=>{
+            toast.error(error.message);
+            console.error(error);
+        }
+    });
 
+    const [getMyReview, {data:getMyReviewData, loading:getMyReviewLoading}] = useLazyQuery(GET_MY_REVIEW, {
+        variables:{
+            "subjectedUser":id
+        },
+        onError:(error)=>{
+            toast.error(error.message);
+            console.error(error);
+        }
+    });
+
+    const [writeReview] = useMutation(WRITE_REVIEW);
+    const [editReview] = useMutation(EDIT_REVIEW);
+
+    // Remove Connection
+    const [removeConnection] = useMutation(REMOVE_CONNECTION,{
+        refetchQueries:[GO_TO_PROFILE],
+        onError:(err)=>{
+            toast.error(err.graphQLErrors[0].message);
+        },
+        onCompleted:(removeConnectionData)=>{
+            toast.success(removeConnectionData.removeConnection.message);
+        }
+    });
+    
     useEffect(() => {
         const handleResize = () => {
           setScreenWidth(window.innerWidth);
@@ -109,22 +170,123 @@ export default function FindUser(){
         };
       }, []);
 
-    const { loading, error, data } = useQuery(GO_TO_PROFILE,{
-        variables:{
-            userId:id
+      useEffect(()=>{
+        if(data && !loading){
+            getAllReviews();
+            checkPermission();
         }
-    });
-    // Remove Connection
-    const [removeConnection, {data:removeConnectionData}] = useMutation(REMOVE_CONNECTION,{
-        refetchQueries:[GO_TO_PROFILE],
-        onError:(err)=>{
-            toast.error(err.graphQLErrors[0].message);
-        },
-        onCompleted:(removeConnectionData)=>{
-            toast.success(removeConnectionData.removeConnection.message);
-        }
-        });
+      },[data, loading]);
 
+    useEffect(()=>{
+        if(getReviewsData){
+          setReviews(getReviewsData?.getAllReviews);
+        }
+      },[getReviewsData, getReviewsLoading]);
+
+    useEffect(()=>{
+    if(getPermissionToReviewData?.checkPermissionToReview){
+        getMyReview();
+    }
+
+    }, [getPermissionToReviewData, getPermissionToReviewLoading])
+
+      const handleWriteReview = async(rate, comment) => {
+        try {
+            await writeReview({
+                variables:{
+                    "reviewInput": {
+                      "rate": rate,
+                      "comment": comment,
+                      "subjectedUser": id
+                    }
+                  },
+                  refetchQueries:[{
+                    query:GET_MY_REVIEW,
+                    variables:{
+                        "subjectedUser":id
+                    },
+                  }],
+                  update:(cache, {data})=>{
+                    const existingData = cache.readQuery({
+                        query:GET_ALL_REVIEWS,
+                        variables:{
+                            subjectedUser:id
+                        }
+                    });
+
+                    cache.writeQuery({
+                        query:GET_ALL_REVIEWS,
+                        variables:{
+                            subjectedUser:id
+                        },
+                        data:{
+                            getAllReviews:[data.writeReview, ...existingData.getAllReviews]
+                        }
+                    })
+                  },
+                  onCompleted:()=>{
+                    toast.success("Successfully written Review");
+                  },
+                  onError:(error)=>{
+                    toast.error(error.message);
+                  }
+            })
+        } catch (error) {
+            toast.error(error?.message);
+            console.error(error);
+        }
+      };
+
+      const handleEditReview = async(reviewId, rate, comment) => {
+        try {
+            await editReview({
+                variables:{
+                    "reviewId": reviewId,
+                    "rate": rate,
+                    "comment": comment
+                  },
+                  refetchQueries:[{
+                    query:GET_MY_REVIEW,
+                    variables:{
+                        subjectedUser:id
+                    },
+                  }, {
+                    query:GET_ALL_REVIEWS,
+                    variables:{
+                        subjectedUser:id
+                    },
+                  }],
+                  onCompleted:()=>{
+                    toast.success("Successfully edited Review");
+                  },
+                  onError:(error)=>{
+                    toast.error(error.message);
+                  }
+            })
+        } catch (error) {
+            toast.error(error?.message);
+            console.error(error);
+        }
+      };
+
+      
+    const handleOpenModal = () =>{
+        setIsModalOpen(true);
+    }
+    const handleCloseModal = () =>{
+        setIsModalOpen(false);
+    }
+    const handleNextReview = () => {
+    if (currentReviewIndex < reviews.length - 1) {
+        setCurrentReviewIndex(currentReviewIndex + 1);
+    }
+    };
+
+    const handlePreviousReview = () => {
+    if (currentReviewIndex > 0) {
+        setCurrentReviewIndex(currentReviewIndex - 1);
+    }
+    };
 
     if (loading) return (
         <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center"}}>
@@ -259,7 +421,272 @@ export default function FindUser(){
                                 </div>
                             </Card>
 
-                            <Card className={styles.aboutCard} sx={{width:'100%',
+                            {/* REVIEW CARDS*/}
+                    {!getMyReviewData?.getMyReview && (<Card
+                    className={styles.reviewCard}
+                    sx={{
+                        width: "100%",
+                        height: "max-content",
+                        borderRadius: "10px",
+                        padding: "1em",
+                        backgroundColor: "#FCFCFF",
+                        boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                        cursor: "pointer",
+                        position: "relative",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        justifyContent: "center",
+                        marginBlock:"1em"
+                    }}
+                    > 
+                        {getPermissionToReviewLoading && (<div style={{display:"flex", margin:"auto"}}>
+                            <CircularLoading/>
+                        </div>)}
+
+                        {getPermissionToReviewData && !getPermissionToReviewData?.checkPermissionToReview &&(
+                            <Typography>Verify account to review</Typography>
+                        )}
+
+                        { getPermissionToReviewData?.checkPermissionToReview && !getMyReviewData?.getMyReview
+                        && (
+                            <Button
+                                endIcon={<ChevronRightIcon/>}
+                                onClick={()=>{
+                                    handleOpenModal();
+                                }}
+                            >
+                                Rate and Review
+                            </Button>
+                        )}
+                    </Card>)}
+                            {getPermissionToReviewData?.checkPermissionToReview && getMyReviewData?.getMyReview && (
+                                 <Card
+                                 className={styles.reviewCard}
+                                 sx={{
+                                     width: "100%",
+                                     height: "max-content",
+                                     borderRadius: "10px",
+                                     padding: "1em",
+                                     backgroundColor: "#FCFCFF",
+                                     boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                                     cursor: "pointer",
+                                     marginBlock:"1em"
+                                 }}
+                                 > 
+                                   <CardHeader
+                                        
+                                        action={
+                                            <Button 
+                                            onClick={()=>{
+                                                handleOpenModal();
+                                            }}
+                                            size="small"
+                                            >
+                                                Edit
+                                            </Button>
+                                        }
+                                        title={"Your Review"}
+                                    />
+                                    <CardContent>
+                                        <div style={{display:"flex"}}>
+                                            <div >
+                                                <Rating name="rate" 
+                                                value={getMyReviewData?.getMyReview?.rate ?? 0} 
+                                                readOnly />
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {getMyReviewData?.getMyReview.comment ?? ""}
+                                                </Typography>
+                                            </div>
+                                        </div>
+
+                                    </CardContent>
+                                 </Card>
+                                )}
+
+                            {getReviewsLoading && (
+                            <div style={{display:"flex", margin:"auto"}}>
+                                <CircularLoading/>
+                            </div>
+                            )}
+                            
+                            {getReviewsData && (
+                            <Card
+                            className={styles.reviewCard}
+                            sx={{
+                                width: "100%",
+                                height: "max-content",
+                                borderRadius: "10px",
+                                padding: "2em 5em",
+                                backgroundColor: "#FCFCFF",
+                                boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                                cursor: "pointer",
+                                position: "relative",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                            >
+                            
+                            {getReviewsData.getAllReviews.length == 0 ? (<div style={{display:"flex", margin:"auto"}}>
+                                <p>No Reviews</p>
+                            </div>):(
+                                <>
+                                <FormatQuoteIcon
+                                    sx={{
+                                    position: "absolute",
+                                    left: "10px",
+                                    top: "10px",
+                                    fontSize: "70px",
+                                    color: "#F7F7F9",
+                                    zIndex: 2,
+                                    }}
+                                />
+
+                                {/* <div style={{display:"flex"}}>
+                                    <div style={{flex:1, flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+                                    <Avatar
+                                    src={reviews[currentReviewIndex]?.profile_pic ?? ""}
+                                    sx={{
+                                        border: "4px solid #32806A",
+                                        width: 50,
+                                        height: 50,
+                                    }}
+                                    />
+                                    <Typography
+                                        sx={{
+                                        fontSize: "1rem",
+                                        marginTop: "10px",
+                                        fontWeight: "bold",
+                                        }}
+                                    >
+                                        {reviews[currentReviewIndex]?.username ?? ""}
+                                    </Typography>
+
+                                    </div>
+                                    <div style={{flex:2}}>
+                                    <Rating name="rate" 
+                                    value={reviews[currentReviewIndex]?.rate ?? 0} 
+                                    sx={{fontSize:"0.8rem"}}
+                                    readOnly />
+
+                                    <Typography
+                                        sx={{
+                                        fontSize: "0.8rem",
+                                        // textAlign: "center",
+                                        marginBottom: "1.5rem",
+                                        marginTop: "10px",
+                                        
+                                        }}
+                                    >
+                                        {reviews[currentReviewIndex]?.comment ?? ""}
+                                    </Typography>
+                                    </div>
+                                </div> */}
+                                <div style={{ marginTop: "20px", zIndex: 1 }}>
+                                    <Avatar
+                                    src={reviews[currentReviewIndex]?.profile_pic ?? ""}
+                                    sx={{
+                                        border: "4px solid #32806A",
+                                        width: "70px",
+                                        height: "70px",
+                                    }}
+                                    />
+                                </div>
+
+                                <Typography
+                                    sx={{
+                                    fontSize: "1rem",
+                                    textAlign: "center",
+                                    marginTop: "10px",
+                                    fontWeight: "bold",
+                                    }}
+                                >
+                                    {reviews[currentReviewIndex]?.username ?? ""}
+                                </Typography>
+
+                                <Rating name="rate" 
+                                value={reviews[currentReviewIndex]?.rate ?? 0} 
+                                sx={{fontSize:"0.8rem"}}
+                                readOnly />
+
+                                <Typography
+                                    sx={{
+                                    fontSize: "0.8rem",
+                                    textAlign: "center",
+                                    marginBottom: "1.5rem",
+                                    marginTop: "10px",
+                                    
+                                    }}
+                                >
+                                    {reviews[currentReviewIndex]?.comment ?? ""}
+                                </Typography>
+
+                                <FormatQuoteIcon
+                                    sx={{
+                                    position: "absolute",
+                                    right: "10px",
+                                    bottom: "10px",
+                                    fontSize: "70px",
+                                    color: "#F7F7F9",
+                                    zIndex: 2,
+                                    }}
+                                />
+                               
+
+                                <IconButton
+                                    sx={{
+                                    position: "absolute",
+                                    left: "5px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    zIndex: 2,
+                                    }}
+                                    onClick={handlePreviousReview}
+                                    disabled={currentReviewIndex === 0}
+                                >
+                                    <ArrowBack />
+                                </IconButton>
+
+                                <IconButton
+                                    sx={{
+                                    position: "absolute",
+                                    right: "5px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    zIndex: 2,
+                                    }}
+                                    onClick={handleNextReview}
+                                    disabled={currentReviewIndex === reviews.length - 1}
+                                >
+                                    <ArrowForward />
+                                </IconButton>
+                                
+                                </>
+                            )}
+                            {/* getPermissionToReviewData?.checkPermissionToReview */}
+                            { !getMyReviewData?.getMyReview && isModalOpen && (
+                            <RateAndReviewModal
+                                isOpen={isModalOpen}
+                                onClose={handleCloseModal}
+                                handleWriteReview={handleWriteReview}
+                            />)}
+                            {getMyReviewData?.getMyReview && isModalOpen && (
+                                <EditReviewModal
+                                    isOpen={isModalOpen}
+                                    onClose={handleCloseModal}
+                                    handleEditReview={handleEditReview}
+                                    myReviewData={getMyReviewData?.getMyReview}
+                                />
+                            )}
+
+                            </Card>
+                            )
+                        } 
+                            
+                            {/* {getReviewsData.getAllReviews.length > 0 && ()} */}
+                            {/* <Card className={styles.aboutCard} sx={{width:'100%',
                             height:'max-Content',
                             borderRadius:'10px',
                             padding:'15px 0px 10px 20px',
@@ -272,7 +699,7 @@ export default function FindUser(){
                                         Ratings and Reviews
                                     </Typography>
                                 </div>
-                            </Card>
+                            </Card> */}
 
                         </div>
                         </div>

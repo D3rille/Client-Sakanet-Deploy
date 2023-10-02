@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Typography, Button, Rating, TextField } from "@mui/material";
 
-const RateAndReviewModal = ({ isOpen, onClose }) => {
+const RateAndReviewModal = ({ isOpen, onClose, handleWriteReview}) => {
   const [overallRating, setOverallRating] = useState(0);
   const [writtenReview, setWrittenReview] = useState("");
 
@@ -13,10 +13,15 @@ const RateAndReviewModal = ({ isOpen, onClose }) => {
     setWrittenReview(event.target.value);
   };
 
+  const handleResetValues = () =>{
+    setOverallRating(0);
+    setWrittenReview("");
+  }
+
   return (
     <Modal
       open={isOpen}
-      onClose={onClose}
+      onClose={()=>{handleResetValues();onClose();}}
       aria-labelledby="rate-and-review-modal"
       aria-describedby="rate-and-review-modal-description"
       style={{
@@ -84,11 +89,18 @@ const RateAndReviewModal = ({ isOpen, onClose }) => {
         />
 
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button onClick={onClose} style={{ color: "#2E613B" }}>
+          <Button onClick={()=>{handleResetValues();onClose();}} style={{ color: "#2E613B" }}>
             Cancel
           </Button>
 
           <Button
+            onClick = {()=>{
+              handleWriteReview(overallRating, writtenReview).then(()=>{
+                handleResetValues();
+                onClose();
+              })
+              
+            }}
             variant="contained"
             color="primary"
             style={{ backgroundColor: "#2E613B" }}

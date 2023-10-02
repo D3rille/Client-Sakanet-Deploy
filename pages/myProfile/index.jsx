@@ -20,42 +20,42 @@ import { GET_MY_PROFILE } from "../../graphql/operations/profile";
 import { GET_ALL_REVIEWS } from "../../graphql/operations/review";
 import CircularLoading from "../../components/circularLoading";
 import {AuthContext} from "../../context/auth";
-import { useQuery } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import { formatWideAddress } from "../../util/addresssUtils.js";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import toast from "react-hot-toast";
 
 
-// const initialReviews = [
-//   {
-//     id: 1,
-//     name: "Jhan Derille Unlayao",
-//     review: "Successful transaction, communicable.",
-//   },
-//   { id: 1, name: "Jhan Unlayao", review: "Successful transaction" },
-// ];
 
 export default function MyProfile() {
   const {user} = useContext(AuthContext);
   const [reviews, setReviews] = useState([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
-  try {
-    var { loading, error, data } = useQuery(GET_MY_PROFILE);
-    var {data:getReviewsData, loading:getReviewsLoading, error:getReviewsError} = useQuery(GET_ALL_REVIEWS, {
-      variables:{
-        subjectedUser:user.id
-      }
-    });
-    
-  } catch (error) {
-    toast.error("Cannot connect to server, Check your internet Connection");
-    console.log(error);
-  }
-
+  const { loading, error, data } = useQuery(GET_MY_PROFILE,{
+    onError:(error)=>{
+      toast.error(error.message);
+    }
+  });
+  const [getAllReviews, {data:getReviewsData, loading:getReviewsLoading}] = useLazyQuery(GET_ALL_REVIEWS, {
+    variables:{
+      subjectedUser:user.id
+    }, 
+    onError:(error)=>{
+      toast.error(error.message);
+      console.error(error);
+    }
+  });
+  
   useEffect(()=>{
-    if(getReviewsData){
+    if(data && !loading){
+      getAllReviews();
+    }
+  }, [data, loading])
+  
+  useEffect(()=>{
+    if(getReviewsData && !getReviewsLoading){
       setReviews(getReviewsData?.getAllReviews);
     }
   },[getReviewsData, getReviewsLoading])
@@ -312,87 +312,94 @@ export default function MyProfile() {
                     justifyContent: "center",
                   }}
                 >
-                  <FormatQuoteIcon
-                    sx={{
-                      position: "absolute",
-                      left: "10px",
-                      top: "10px",
-                      fontSize: "70px",
-                      color: "#F7F7F9",
-                      zIndex: 2,
-                    }}
-                  />
-                  <div style={{ marginTop: "20px", zIndex: 1 }}>
-                    <Avatar
-                      src={reviews[currentReviewIndex]?.profile_pic ?? ""}
-                      sx={{
-                        border: "4px solid #32806A",
-                        width: "70px",
-                        height: "70px",
-                      }}
-                    />
-                  </div>
+                  {getReviewsData.getAllReviews.length == 0 
+                  ? (<div style={{display:"flex", margin:"auto"}}>
+                      <p>No Reviews</p>
+                    </div>):(
+                      <>
+                      <FormatQuoteIcon
+                          sx={{
+                          position: "absolute",
+                          left: "10px",
+                          top: "10px",
+                          fontSize: "70px",
+                          color: "#F7F7F9",
+                          zIndex: 2,
+                          }}
+                      />
+                      <div style={{ marginTop: "20px", zIndex: 1 }}>
+                          <Avatar
+                          src={reviews[currentReviewIndex]?.profile_pic ?? ""}
+                          sx={{
+                              border: "4px solid #32806A",
+                              width: "70px",
+                              height: "70px",
+                          }}
+                          />
+                      </div>
 
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      textAlign: "center",
-                      marginTop: "10px",
-                    }}
-                  >
-                    {reviews[currentReviewIndex]?.username ?? ""}
-                  </Typography>
+                      <Typography
+                          sx={{
+                          fontSize: "14px",
+                          textAlign: "center",
+                          marginTop: "10px",
+                          }}
+                      >
+                          {reviews[currentReviewIndex]?.username ?? ""}
+                      </Typography>
 
-                  <Typography
-                    sx={{
-                      fontSize: "15px",
-                      textAlign: "center",
-                      marginBottom: "1.5rem",
-                      marginTop: "10px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {reviews[currentReviewIndex]?.comment ?? ""}
-                  </Typography>
+                      <Typography
+                          sx={{
+                          fontSize: "15px",
+                          textAlign: "center",
+                          marginBottom: "1.5rem",
+                          marginTop: "10px",
+                          fontWeight: "bold",
+                          }}
+                      >
+                          {reviews[currentReviewIndex]?.comment ?? ""}
+                      </Typography>
 
-                  <FormatQuoteIcon
-                    sx={{
-                      position: "absolute",
-                      right: "10px",
-                      bottom: "10px",
-                      fontSize: "70px",
-                      color: "#F7F7F9",
-                      zIndex: 2,
-                    }}
-                  />
+                      <FormatQuoteIcon
+                          sx={{
+                          position: "absolute",
+                          right: "10px",
+                          bottom: "10px",
+                          fontSize: "70px",
+                          color: "#F7F7F9",
+                          zIndex: 2,
+                          }}
+                      />
 
-                  <IconButton
-                    sx={{
-                      position: "absolute",
-                      left: "5px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 2,
-                    }}
-                    onClick={handlePreviousReview}
-                    disabled={currentReviewIndex === 0}
-                  >
-                    <ArrowBack />
-                  </IconButton>
+                      <IconButton
+                          sx={{
+                          position: "absolute",
+                          left: "5px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          zIndex: 2,
+                          }}
+                          onClick={handlePreviousReview}
+                          disabled={currentReviewIndex === 0}
+                      >
+                          <ArrowBack />
+                      </IconButton>
 
-                  <IconButton
-                    sx={{
-                      position: "absolute",
-                      right: "5px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 2,
-                    }}
-                    onClick={handleNextReview}
-                    disabled={currentReviewIndex === reviews.length - 1}
-                  >
-                    <ArrowForward />
-                  </IconButton>
+                      <IconButton
+                          sx={{
+                          position: "absolute",
+                          right: "5px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          zIndex: 2,
+                          }}
+                          onClick={handleNextReview}
+                          disabled={currentReviewIndex === reviews.length - 1}
+                      >
+                          <ArrowForward />
+                      </IconButton>
+                      
+                      </>)}
                 </Card>)}
                 {/*  */}
               </div>

@@ -22,7 +22,7 @@ import { formatWideAddress } from "../../util/addresssUtils.js";
 import chaticonsIcon from "../../public/icons/chaticon.png";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
-import RateAndReviewModal from "../../components/RateAndReviewModal";
+// import RateAndReviewModal from "../../components/RateAndReviewModal";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const initialReviews = [
@@ -444,10 +444,10 @@ export default function ViewProfile() {
                     <ChevronRightIcon />
                   </div>
 
-                  <RateAndReviewModal
+                  {/* <RateAndReviewModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
-                  />
+                  /> */}
                 </Card>
               </div>
             </div>

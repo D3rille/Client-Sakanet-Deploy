@@ -126,7 +126,11 @@ export default function Login() {
         },
         // display toast upon completion
         onCompleted:(data)=>{
-            router.push('/');
+          if(data.login.role == "ADMIN"){
+            router.replace('/Admin');
+          } else{
+            router.replace('/');
+          }
         },
         //variables to pass on mutation, copy paste from apollo playground then only change the value
         variables:{
