@@ -32,7 +32,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 // import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { GET_CONVERSATIONS, GET_GROUP_MEMBERS, GET_MESSAGES, RENAME_GROUP_CHAT } from '../../graphql/operations/chat';
+import { GET_CONVERSATIONS, GET_GROUP_MEMBERS, GET_MESSAGES, RENAME_GROUP_CHAT, UPDATE_GROUP_PROFILE_PIC } from '../../graphql/operations/chat';
 import CircularLoading from '../circularLoading';
 import {useRouter} from "next/router";
 import { handleError } from '@apollo/client/link/http/parseAndCheckHttpResponse';
@@ -40,6 +40,9 @@ import { AuthContext } from '../../context/auth';
 import ManageMembersDialog from './ManageMembersDialog';
 import CustomDialog from '../popups/customDialog';
 import toast from 'react-hot-toast';
+import { useDropzone } from 'react-dropzone';
+import { uploadGroupChatPhoto } from '../../util/imageUtils';
+
 
 const StyledChatInfoPanel = styled(Box)({
     flex: 1, 
@@ -103,8 +106,58 @@ const ChatInfoPanel = ({...props}) => {
     const [openAddGroupModal, setOpenAddGroupModal] = useState(false);
     const [addOrKick, setAddOrKick] = useState("");
     const [leaveDialog, setLeaveDialog] = useState(false);
-
+    const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+    const [groupPhotoIsChanged, setGroupPhotoIsChanged] = useState(false);
     const recipient = getMessagesData?.getMessages;
+
+    const [updateGroupProfilePic] = useMutation(UPDATE_GROUP_PROFILE_PIC); //Mutation for Changing Profile Picture
+
+    // Chat Group Image Upload
+    const handleDrop = (acceptedFiles) => {
+        setFile(acceptedFiles[0]);
+      };
+
+    const groupChatProps = useDropzone({
+        onDrop: handleDrop,
+        accept:  {'image/jpeg': ['.jpeg', '.png']},
+        maxFiles:1,
+      });
+
+    const [file,setFile] = useState(null);
+
+    async function handleGroupChatPicUpload(groupChatId) {
+
+        var photoLink = "";
+        if (file) {
+        try {
+            photoLink = await uploadGroupChatPhoto(file);
+            if(photoLink) {
+                await updateGroupProfilePic({
+                    variables:{
+                        groupChatId,
+                        newGroupProfilePic: photoLink,
+                    },
+                    refetchQueries:[GET_MESSAGES, GET_CONVERSATIONS],
+                    onCompleted:(data)=>{
+                    toast.success(`Successfully uploaded Group Chat Picture`);
+                    },
+                    onError:(error)=>{
+                    toast.error(error.message);
+                    }
+                });
+            }
+           
+
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            toast.error('Error uploading image:', error);
+
+        }
+        }
+    }
+    
+    
+
     // const {data:getGroupMembers, loading, error} = useQuery(GET_GROUP_MEMBERS);
     const [findGroupMembers, {data:findGroupMembersData, loading:findGroupMembersLoading}] = useLazyQuery(GET_GROUP_MEMBERS);
     const [renameGroupChat] = useMutation(RENAME_GROUP_CHAT);
@@ -232,6 +285,8 @@ const ChatInfoPanel = ({...props}) => {
     // if(findGroupMembersData){
     //     members = findGroupMembersData.getGroupMembers;
     // }
+
+
     return (
         <StyledChatInfoPanel>
             <StyledAvatar src={avatarSrc} />
@@ -257,7 +312,7 @@ const ChatInfoPanel = ({...props}) => {
                             <ListItemIcon><EditIcon /></ListItemIcon> 
                             <ListItemText primary="Chat Name" />
                         </ListItem>
-                        <ListItem button>
+                        <ListItem button onClick={() => setPhotoDialogOpen(true)}>
                             <ListItemIcon><ImageIcon /></ListItemIcon> 
                             <ListItemText primary="Chat Photo" />
                         </ListItem>
@@ -365,6 +420,70 @@ const ChatInfoPanel = ({...props}) => {
                         }}
                         style={{ backgroundColor: isChanged ? '#2E613B' : undefined, borderRadius:'10px', color:'#FFFEFE' }}>
                         Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Dialog for Changing Chat Photo */}
+            <Dialog open={photoDialogOpen} onClose={() => setPhotoDialogOpen(false)}>
+                <DialogTitle>Change Chat Photo</DialogTitle>
+                <DialogContent>
+                    <Typography variant="caption">
+                        Replace Current Group Chat Photo. Maximum should be 10 mb.
+                    </Typography>
+
+                    <Box
+                        sx={{
+                            height: '170px',
+                            margin: '5px',
+                            border: '2px dashed #ccc',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                        {...groupChatProps.getRootProps()} // Assuming you have the necessary props from `useDropzone`
+                    >
+                        {file ? ( 
+                            <>
+                                <img
+                                    src={URL.createObjectURL(file)} 
+                                    alt="Group Chat Photo"
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '120px',
+                                        borderRadius: '4px',
+                                    }}
+                                />
+                                <Typography variant="caption" style={{ marginTop: '8px' }}>
+                                    Max size 10mb
+                                </Typography>
+                            </>
+                        ) : (
+                            <Typography variant="caption" textAlign="center">
+                                Upload Group Chat Photo
+                            </Typography>
+                        )}
+                    </Box>
+
+
+                </DialogContent>
+                <DialogActions>
+                    <StyledCancelButton onClick={() => setPhotoDialogOpen(false)}>
+                        Cancel
+                    </StyledCancelButton>
+                    <Button 
+                        color="primary" 
+                        disabled={!file} 
+                        onClick={()=>{
+                            handleGroupChatPicUpload(recipient?._id).then(()=>{
+                                setPhotoDialogOpen(false);
+                            });
+                        }}
+                        style={{ backgroundColor: file ? '#2E613B' : undefined, borderRadius:'10px', color:'#FFFEFE' }}>
+                        Upload
                     </Button>
                 </DialogActions>
             </Dialog>
