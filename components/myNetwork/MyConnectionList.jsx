@@ -57,7 +57,11 @@ function MyConnectionList(){
             </div>
             </div>
             <div className={styles.messageactions}>
-              <Button className={styles.messageactionsBtn}>
+              <Button className={styles.messageactionsBtn}
+                onClick={()=>{
+                  router.push(`/Chats?userId=${user._id}`);
+                }}
+              >
                 <SmsIcon sx={{fontSize:'15px'}}/><p>Message</p>
               </Button>
             </div>

@@ -17,6 +17,7 @@ import {
 } from '../../graphql/operations/chat';
 import toast from "react-hot-toast";
 import {useSubs} from "../../context/SubscriptionProvider";
+import { useRouter } from 'next/router';
 
 const StyledGridContainer = styled(Grid)({
     minHeight: '100vh',
@@ -43,10 +44,13 @@ const StyledRecentChatsList = styled(RecentChatsList)({
 });
 
 const ChatsPage = () => {
+    const router = useRouter();
     const {profile} = useSubs();
     const [newConvo, setNewConvo] = useState(false);
-    const [currentConvoId, setCurrentConvoId] = useState(profile?.lastOpenedConvo ?? "");
-
+    // const [currentConvoId, setCurrentConvoId] = useState(profile?.lastOpenedConvo ?? "");
+    const userId = router.query?.userId;
+    const convoId = router.query?.convoId;
+    
     const [createConvo] = useMutation(CREATE_CONVO);//  this is used only on the search  on the left panel
     const [readConvo] = useMutation(READ_CONVO);
     const [sendMessage] = useMutation(SEND_MESSAGE);
@@ -61,7 +65,7 @@ const ChatsPage = () => {
             error:getMessagesError, 
             refetch:refetchMessages, 
             subscribeToMore:subscribeToNewMessage} = useQuery(GET_MESSAGES, {
-            variables:{conversationId:currentConvoId},
+            variables:{conversationId:convoId ?? ""},
         });
         
     } catch (error) {
@@ -71,7 +75,7 @@ const ChatsPage = () => {
     useEffect(() => {
         const unsubscribe = subscribeToNewMessage({
           document: NEW_MESSAGE,
-          variables: { conversationId: currentConvoId ?? "" },
+          variables: { conversationId: convoId ?? "" },
           updateQuery: (prev, { subscriptionData }) => {
             if (!subscriptionData.data) return prev;
             const newMessage = subscriptionData.data.newMessage;
@@ -98,11 +102,12 @@ const ChatsPage = () => {
           // Cleanup: Unsubscribe from the subscription when the component unmounts
           unsubscribe();
         };
-      }, [currentConvoId]);
+      }, [convoId]);
 
     useEffect(()=>{
         if(profile){
-            setCurrentConvoId(profile?.profile.lastOpenedConvo)
+            router.replace(`/Chats?convoId=${profile?.profile.lastOpenedConvo}`);
+            // setCurrentConvoId(profile?.profile.lastOpenedConvo)
         }
     },[profile]);
 
@@ -132,7 +137,8 @@ const ChatsPage = () => {
           await createConvo({
             variables:{chatPartnerId, isGroup},
             onCompleted:(data)=>{
-                setCurrentConvoId(data?.createConversation);
+                router.replace(`/Chats?convoId=${data?.createConversation}`)
+                // setCurrentConvoId(data?.createConversation);
             }
           });
 
@@ -140,6 +146,15 @@ const ChatsPage = () => {
           console.log(error);
         }
     };
+
+    useEffect(()=>{
+        if(userId){
+            // use to create convo or find existing
+            // when clicking to a message button outside 
+            // of the chat page
+            handleCreateConvo(userId, false);
+        }
+    },[])
 
 
     const handleStartNewConvo = () =>{
@@ -153,8 +168,8 @@ const ChatsPage = () => {
                         newConvo={newConvo} 
                         handleStartNewConvo={handleStartNewConvo} 
                         handleCreateConvo={handleCreateConvo}
-                        setCurrentConvoId={setCurrentConvoId}
-                        currentConvoId={currentConvoId}
+                        // setCurrentConvoId={setCurrentConvoId}
+                        currentConvoId={convoId}
                         readConvo={readConvo}
                     />
                     {newConvo && (<CreateConvo 
@@ -165,8 +180,8 @@ const ChatsPage = () => {
                     // createGroupChatData={createGroupChatData}
                     handleSendMessage={handleSendMessage}
                     handleStartNewConvo={handleStartNewConvo}
-                    setCurrentConvoId = {setCurrentConvoId}
-                    currentConvoId={currentConvoId}
+                    // setCurrentConvoId = {setCurrentConvoId}
+                    currentConvoId={convoId}
                     />)}
                     {!newConvo && (
                     <ChatExchange  
@@ -174,7 +189,7 @@ const ChatsPage = () => {
                         getMessagesLoading = {getMessagesLoading}
                         getMessagesError = {getMessagesError}
                         handleSendMessage={handleSendMessage}
-                        conversationId={currentConvoId}
+                        conversationId={convoId}
                     />
                     )}  
                     <ChatInfoPanel 
@@ -182,7 +197,7 @@ const ChatsPage = () => {
                         addParticipants={addParticipants} 
                         kickOut={kickOut}
                         leaveGroupChat={leaveGroupChat}
-                        currentConvoId={currentConvoId} 
+                        currentConvoId={convoId} 
                     /> 
                 </StyledPaperContainer>
             </Grid>

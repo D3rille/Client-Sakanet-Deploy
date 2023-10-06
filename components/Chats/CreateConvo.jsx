@@ -10,6 +10,7 @@ import { FIND_USERS, CREATE_NEW_CONVO, CREATE_GROUP_CHAT, GET_CONVERSATIONS } fr
 import FindUserResult from './FindUserResult';
 import SearchIcon from "@mui/icons-material/Search";
 import toast from 'react-hot-toast';
+import {useRouter} from "next/router";
 
 const StyledChatExchange = styled(Box)({
     flex: 2,
@@ -108,8 +109,8 @@ const SearchPanel = styled(Box)({
   });
 
 const CreateConvo = ({...props}) => {
-  
-    const {handleSendMessage,setCurrentConvoId, handleStartNewConvo} = props;
+    const router = useRouter();
+    const {handleSendMessage, handleStartNewConvo} = props;
     // const [inputHeight, setInputHeight] = useState('24px');
     const [messageInput, setMessageInput] = useState('');
 
@@ -134,7 +135,8 @@ const CreateConvo = ({...props}) => {
                     refetchQueries:[GET_CONVERSATIONS],
                     onCompleted:(data)=>{
                         handleSendMessage(data?.createNewConversation, messageInput).then(()=>{
-                            setCurrentConvoId(data?.createNewConversation);
+                            // setCurrentConvoId(data?.createNewConversation);
+                            router.replace(`/Chats?convoId=${data?.createNewConversation}`);
                             handleStartNewConvo();
                         })
                        
@@ -149,7 +151,8 @@ const CreateConvo = ({...props}) => {
                     variables:{participants, groupName},
                     onCompleted:(data)=>{
                         handleSendMessage(data?.createGroupChat, messageInput).then(()=>{
-                            setCurrentConvoId(data?.createGroupChat);
+                            // setCurrentConvoId(data?.createGroupChat);
+                            router.replace(`/Chats?convoId=${data?.createGroupChat}`);
                             handleStartNewConvo();
                         })
                         
@@ -179,9 +182,9 @@ const CreateConvo = ({...props}) => {
         const targetValue = event.target.value;
         setMessageInput(targetValue);
 
-        const targetValueLength = targetValue.length;
-        const targetHeight = targetValueLength > 30 ? Math.min(event.target.scrollHeight, 90) : 24;
-        setInputHeight(`${targetHeight}px`);
+        // const targetValueLength = targetValue.length;
+        // const targetHeight = targetValueLength > 30 ? Math.min(event.target.scrollHeight, 90) : 24;
+        // setInputHeight(`${targetHeight}px`);
     };
 
     // const handleKeyDown = (event) => {

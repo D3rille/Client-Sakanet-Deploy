@@ -24,6 +24,7 @@ import { useQuery, useLazyQuery } from "@apollo/client";
 import { formatWideAddress } from "../../util/addresssUtils.js";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import VerifiedIcon from '@mui/icons-material/Verified';
 import toast from "react-hot-toast";
 
 
@@ -160,7 +161,9 @@ export default function MyProfile() {
                 className={styles.profilephoto}
               />
             </div>
-            <div className={styles.username}>{username}</div>
+            <div className={styles.username}>
+              {username}{is_verified?<VerifiedIcon color='success'/>:""}
+            </div>
             <div className={styles.userJob}>{role}</div>
           </div>
           <Divider
@@ -273,7 +276,7 @@ export default function MyProfile() {
                         {reviewerNumber}
                       </Typography>
                       <Typography sx={{ fontSize: "5rem", fontWeight: "bold" }}>
-                        {rating}
+                        {rating.toFixed(1)}
                       </Typography>
                       <Rating name="read-only" value={rating} readOnly />
                     </div>
@@ -347,6 +350,12 @@ export default function MyProfile() {
                       >
                           {reviews[currentReviewIndex]?.username ?? ""}
                       </Typography>
+
+                      <Rating name="rate" 
+                        value={reviews[currentReviewIndex]?.rate ?? 0} 
+                        sx={{fontSize:"0.8rem"}}
+                        readOnly 
+                      />
 
                       <Typography
                           sx={{

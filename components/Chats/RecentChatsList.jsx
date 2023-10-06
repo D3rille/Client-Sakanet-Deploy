@@ -26,6 +26,7 @@ import { FIND_USER_TO_CHAT, GET_CONVERSATIONS, GET_UNREAD_CONVO, UPDATE_CONVOS} 
 import FindUserToConvoResult from "./FindUserToConvoResult";
 import CircularLoading from "../circularLoading";
 import { AuthContext } from "../../context/auth";
+import {useRouter} from "next/router";
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -144,8 +145,9 @@ const SuggestedContainer = styled(Box)({
 });
 
 const RecentChatsList = ({...props}) => {
+  const router = useRouter();
   const {user} = useContext(AuthContext);
-  const {newConvo, handleStartNewConvo, handleCreateConvo, setCurrentConvoId, currentConvoId, readConvo} = props;
+  const {newConvo, handleStartNewConvo, handleCreateConvo, currentConvoId, readConvo} = props;
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
  
@@ -153,7 +155,7 @@ const RecentChatsList = ({...props}) => {
   const [query, setQuery] = useState("");
 
   useEffect(()=>{
-    if(setCurrentConvoId){
+    if(currentConvoId){
       setSelectedChatId(currentConvoId);
     }
   },[currentConvoId]);
@@ -175,7 +177,8 @@ const RecentChatsList = ({...props}) => {
 
   const handleChatClick = (chatId) => {
     setSelectedChatId(chatId);
-    setCurrentConvoId(chatId);
+    router.replace(`/Chats?convoId=${chatId}`)
+    // setCurrentConvoId(chatId);
   };
 
   const handleReadConvo = (conversationId) =>{

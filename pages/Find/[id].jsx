@@ -35,46 +35,123 @@ import CircularLoading from '../../components/circularLoading';
 import { AuthContext } from '../../context/auth'; 
 import RateAndReviewModal from "../../components/Review/RateAndReviewModal";
 import EditReviewModal from '../../components/Review/EditReviewModal';
+import chaticonsIcon from "../../public/icons/chaticon.png";
+import CustomDialog from '../../components/popups/customDialog';
+import VerifiedIcon from '@mui/icons-material/Verified';
 
-const ButtonsDisplay = ({userId, connStatus, requestConnection, onMoreList}) =>{
+const ButtonsDisplay = ({userId, connStatus, requestConnection, disconnect, router}) =>{
+    const [openDialog, setOpenDialog] = useState("");
+
     const DynamicBtn = () =>{
         if(!connStatus || connStatus == "disconnected"){
-            return(<Button variant="contained" disableElevation color="success" onClick={()=>{
-                requestConnection({variables:{"connectTo":userId}})
-            }}>Connect</Button>)
+            return(
+                
+                <Button
+                    variant="contained"
+                    style={{
+                      backgroundColor:"#32816B",
+                      width: "100%",
+                      borderRadius: "7px",
+                      boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={()=>{
+                            requestConnection({variables:{"connectTo":userId}})
+                        }}
+                  > 
+                    Connect
+                  </Button>
+            )
         } else if(connStatus == "pending"){
-            return(<Button variant="contained" disableElevation color="success" disabled>Pending...</Button>)
+            return(
+                <Button
+                    variant="contained"
+                    style={{
+                    backgroundColor:  "#F8F9F8",
+                    width: "100%",
+                    borderRadius: "7px",
+                    boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                    }}
+                    disabled={true}
+                > 
+                    Pending...
+              </Button>
+            )
         } else if(connStatus=="connected"){
-            return(<Button variant="contained" disableElevation color="success" endIcon={<CheckIcon/>}>Connected</Button>)
+            return(
+                <Button
+                    variant="contained"
+                    startIcon={<CheckIcon/>}
+                    style={{
+                      backgroundColor:"#32816B",
+                      width: "100%",
+                      borderRadius: "7px",
+                      boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={()=>{
+                        setOpenDialog("disconnect");
+                    }}
+                  > 
+                    Connected
+                  </Button>
+            )
         }
     }
     
-    const triggerComponent=(handleClickOpen)=>{
-        return(
-            <>
-            <Button variant="outlined" color="success" onClick={handleClickOpen}>
-                <MoreHorizIcon/>
-            </Button>
-            </>
-        );
-    }
-
-    const DynamicMoreBtn = () =>{
-        if(connStatus=="connected"){
-            return( <OptionsMenu triggerComponent={triggerComponent} itemAndFunc={onMoreList}/>);
-        }
-    }
+    
+//         <IconButton 
+//         variant="outlined" 
+//         // color="success" 
+//         onClick={handleClickOpen}
+//         sx={{
+//             boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+//         }}
+//         >
+//             <MoreHorizIcon/>
+//         </IconButton>
 
     return(
     <>
     <Stack direction="row" spacing={2}>
-        {/* <Button variant="contained" disableElevation color="success" disabled>Connect</Button> */}
         <DynamicBtn/>
-        <Button variant="outlined" color="success" startIcon={<SmsIcon/>}>
+        <Button
+        variant="contained"
+        style={{
+            backgroundColor: "#FBF9F7",
+            width: "100%",
+            color: "#1D1E22",
+            borderRadius: "7px",
+            boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            alignItems: "center",
+        }}
+        onClick={()=>{
+            router.push(`/Chats?userId=${userId}`);
+        }}
+        >
+        <Image
+            src={chaticonsIcon}
+            alt="Chat Icon"
+            width={20}
+            height={20}
+            style={{ marginRight: "5px" }}
+        />
             Message
         </Button>
-        <DynamicMoreBtn/>
+
     </Stack>
+
+    {/* Disconnect Dialog */}
+    {openDialog == "disconnect" && (<CustomDialog
+        openDialog={Boolean(openDialog)}
+        setOpenDialog={setOpenDialog}
+        title = {"Disconnect"}
+        message={"Do you want to disconnect with this user?"}
+        btnDisplay={0}
+        callback={()=>{
+            disconnect();
+        }}
+    />)}
+
     </>)
 
 }
@@ -90,7 +167,7 @@ export default function FindUser(){
 
     const [reviews, setReviews] = useState([]);
     const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState("");
 
     // Request Connection
     const [requestConnection, {data:requestConnectionData}] = useMutation(REQUEST_CONNECTION,{
@@ -205,7 +282,12 @@ export default function FindUser(){
                     variables:{
                         "subjectedUser":id
                     },
-                  }],
+                  },{
+                    query:GO_TO_PROFILE,
+                    variables:{
+                        userId:id
+                    },
+                }],
                   update:(cache, {data})=>{
                     const existingData = cache.readQuery({
                         query:GET_ALL_REVIEWS,
@@ -255,7 +337,12 @@ export default function FindUser(){
                     variables:{
                         subjectedUser:id
                     },
-                  }],
+                  },{
+                    query:GO_TO_PROFILE,
+                    variables:{
+                        userId:id
+                    },
+                }],
                   onCompleted:()=>{
                     toast.success("Successfully edited Review");
                   },
@@ -270,11 +357,8 @@ export default function FindUser(){
       };
 
       
-    const handleOpenModal = () =>{
-        setIsModalOpen(true);
-    }
     const handleCloseModal = () =>{
-        setIsModalOpen(false);
+        setIsModalOpen("");
     }
     const handleNextReview = () => {
     if (currentReviewIndex < reviews.length - 1) {
@@ -316,12 +400,6 @@ export default function FindUser(){
 
         const connStatus = data.goToProfile.connectionStatus;
 
-            
-        //Name and callback functions of listItem upon clicking ... or more
-        var onMoreList = [
-            {name:"Disconnect", function:()=>{removeConnection({variables:{connectedUserId:_id}})}},
-        ]
-
         const activeProfilePic = profile_pic || "https://img.freepik.com/free-icon/user_318-159711.jpg"
         const reviewerNumber = `Rating Overview (${ratingStatistics.reviewerCount ?? 0})`;
         return (
@@ -335,8 +413,9 @@ export default function FindUser(){
                         <div className={styles.profileImg}>
                             <Avatar src={profile_pic ?? ""} alt="Profile"  className={styles.profilephoto}/>
                         </div>
+                        
                         <div className={styles.username}>
-                            {username}
+                            {username} {is_verified?<VerifiedIcon color='success'/>:""}
                         </div>
                         <div className={styles.userJob}>
                             {role}
@@ -344,7 +423,9 @@ export default function FindUser(){
                     </div>
 
                     <div style={{display:"flex", justifyContent:"flex-end", width:"90%", paddingTop:"1em"}}>
-                        <ButtonsDisplay userId={_id} connStatus={connStatus} requestConnection={requestConnection} onMoreList={onMoreList}/>
+                        <ButtonsDisplay userId={_id} connStatus={connStatus} requestConnection={requestConnection} disconnect={()=>{
+                            removeConnection({variables:{connectedUserId:_id}})
+                        }} router={router}/>
                     </div>
 
                     <Divider textAlign="right" component="div" role="presentation" className={styles.numConnections}>
@@ -411,7 +492,7 @@ export default function FindUser(){
                                                 {reviewerNumber}
                                         </Typography>
                                         <Typography sx ={{fontSize:"5rem", fontWeight:"bold"}}>
-                                            {rating}
+                                            {rating.toFixed(1)}
                                         </Typography>
                                         <Rating name="read-only" value={rating} readOnly />
                                     </div>
@@ -450,14 +531,18 @@ export default function FindUser(){
 
                         { getPermissionToReviewData?.checkPermissionToReview && !getMyReviewData?.getMyReview
                         && (
-                            <Button
-                                endIcon={<ChevronRightIcon/>}
-                                onClick={()=>{
-                                    handleOpenModal();
-                                }}
+                            <div
+                                style={{display:"flex", margin:"auto"}}
                             >
-                                Rate and Review
-                            </Button>
+                                <Button
+                                    endIcon={<ChevronRightIcon/>}
+                                    onClick={()=>{
+                                        setIsModalOpen("newReview");
+                                    }}
+                                >
+                                    Rate and Review
+                                </Button>
+                            </div>
                         )}
                     </Card>)}
                             {getPermissionToReviewData?.checkPermissionToReview && getMyReviewData?.getMyReview && (
@@ -479,7 +564,7 @@ export default function FindUser(){
                                         action={
                                             <Button 
                                             onClick={()=>{
-                                                handleOpenModal();
+                                                setIsModalOpen("editReview");
                                             }}
                                             size="small"
                                             >
@@ -666,15 +751,15 @@ export default function FindUser(){
                                 </>
                             )}
                             {/* getPermissionToReviewData?.checkPermissionToReview */}
-                            { !getMyReviewData?.getMyReview && isModalOpen && (
+                            { isModalOpen == "newReview" && (
                             <RateAndReviewModal
-                                isOpen={isModalOpen}
+                                isOpen={Boolean(isModalOpen)}
                                 onClose={handleCloseModal}
                                 handleWriteReview={handleWriteReview}
                             />)}
-                            {getMyReviewData?.getMyReview && isModalOpen && (
+                            {isModalOpen == "editReview" && (
                                 <EditReviewModal
-                                    isOpen={isModalOpen}
+                                    isOpen={Boolean(isModalOpen)}
                                     onClose={handleCloseModal}
                                     handleEditReview={handleEditReview}
                                     myReviewData={getMyReviewData?.getMyReview}
