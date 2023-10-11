@@ -164,7 +164,7 @@ export default function ForCompletionOrders({...props}) {
                         handleUpdateStatus(order._id, "For Completion", "Completed")
                       }}
                     >
-                      {role=="FARMERS" ? "Completed": "Received Order"}
+                      {role=="FARMER" ? "Completed": "Received Order"}
                     </Button>
                   ):(
                     <Typography sx ={{fontSize:"0.8rem"}}>
