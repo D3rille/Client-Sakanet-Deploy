@@ -7,9 +7,11 @@ import { styled } from '@mui/system';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import PaymentIcon from '@mui/icons-material/Payment';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import Profile from "../../components/settingsComponents/Profile";
 import EmailAndPassword from "../../components/settingsComponents/PasswordAndEmail";
 import PaymentChannels from "../../components/settingsComponents/PaymentChannels";
+import Verification from "../../components/settingsComponents/Verification";
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { useQuery } from '@apollo/client';
@@ -98,6 +100,8 @@ const Settings = () => {
     if (error) return <p>Error: {error.message}</p>;
 
     const { profile_pic, cover_photo } = data.getMyProfile.profile;
+
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -161,6 +165,17 @@ const Settings = () => {
                                     </div>
                                 } 
                             />
+                            <StyledTab 
+                                icon={<VerifiedIcon />} 
+                                label={
+                                    <div>
+                                        Account Verification
+                                        <div style={{ fontSize: '0.8em', color: 'grey' }}>
+                                            Check your Verification Update.
+                                        </div>
+                                    </div>
+                                } 
+                            />
                         </Tabs>
                     </InnerPaperLeft>
                     <ParentContainer>
@@ -168,6 +183,7 @@ const Settings = () => {
                             {value === 0 && <Profile currentProfilePic = {profile_pic} currentCoverPic = {cover_photo} />}
                             {value === 1 && <EmailAndPassword />}
                             {value === 2 && <PaymentChannels />}
+                            {value === 3 && <Verification />}
                         </InnerPaperRight>
                     </ParentContainer>
                 </StyledPaperContainer>

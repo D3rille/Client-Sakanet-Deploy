@@ -23,6 +23,8 @@ export const GET_MY_PROFILE = gql`
         emails
         mobile_nums
         is_verified
+        verification_photo
+        verification_status
         role
         rating
         ratingStatistics {

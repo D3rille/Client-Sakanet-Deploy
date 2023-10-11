@@ -43,6 +43,11 @@ export async function uploadGroupChatPhoto(imageFile){
   return uploadToCloudinary(imageFile, 'groupChat_photo')
 }
 
+//Verification ID Upload
+export async function uploadVerificationID(imageFile){
+  return uploadToCloudinary(imageFile, 'verification')
+}
+
 
 //Image Delete to Cloudinary
 export async function imageDelete(imageUrl) {
