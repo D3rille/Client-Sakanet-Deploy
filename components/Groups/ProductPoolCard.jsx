@@ -171,7 +171,7 @@ const ProductPoolCard = ({ productData }) => {
         </Button>
       </Box>
 
-      {/* Add Stock Modal */}
+      {/* Add Stock Modal, TODO: missing AddStock */}
       <Dialog open={isAddStockOpen} onClose={handleAddStockClose}>
         <DialogTitle>Add Stock</DialogTitle>
         <DialogContent>
@@ -179,7 +179,7 @@ const ProductPoolCard = ({ productData }) => {
         </DialogContent>
       </Dialog>
 
-      {/* Contributors List Modal */}
+      {/* Contributors List Modal,  */}
       <Dialog open={isContributorsOpen} onClose={handleContributorsClose}>
         <DialogTitle>Contributors</DialogTitle>
         <DialogContent>

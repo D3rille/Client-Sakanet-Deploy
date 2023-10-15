@@ -26,12 +26,9 @@ function Requests({acceptConnection, declineConnection}){
       }
       if(data?.getConnectionRequests?.length==0){
         return (
-          <>
-          <div sx={{textAlign:"center", width:"100%"}}>
+          <div sx={{display:"flex", margin:"auto", width:"100%"}}>
             <p >No Connection Requests</p>
           </div>
-          </>
-        
         )
       }
   
