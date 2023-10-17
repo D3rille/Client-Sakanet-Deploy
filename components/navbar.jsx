@@ -35,6 +35,7 @@ import Notifications from './Notifications';
 import client from "@/graphql/apollo-client";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import OrderIcon from "@mui/icons-material/Assignment";
+import InsertChartIcon from '@mui/icons-material/InsertChart';
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -483,6 +484,15 @@ const markAllAsRead = () => {
                 </ListItemIcon>
                 Orders
               </MenuItem>
+              {user.role == "FARMER" && (<MenuItem onClick={()=>{
+                handleClose();
+                router.push("/Statistics");
+                }}>
+                <ListItemIcon>
+                  <InsertChartIcon fontSize="small" />
+                </ListItemIcon>
+                  Statistics
+              </MenuItem>)}
               {user.role == "BUYER" && (<MenuItem onClick={handleCartModalOpen}>
                 <ListItemIcon>
                   <ShoppingCartIcon fontSize="small" />

@@ -1,6 +1,27 @@
-import { Paper, Typography, Avatar, Box } from "@mui/material";
+import { Paper, Typography, Avatar, Box, IconButton } from "@mui/material";
+import TuneIcon from '@mui/icons-material/Tune';
 
-const CommunityInfo = () => {
+import OptionsMenu from "../popups/OptionsMenu";
+
+const CommunityInfo = ({isAdmin, data, settingsItems}) => {
+
+  const settings = (handleClick) =>{
+    return (
+    <IconButton
+      
+      onClick={(event)=>{
+        handleClick(event);
+      }}
+    >
+        <TuneIcon/>
+    </IconButton>)
+  }
+
+  // const settingsItems=[
+  //   {name:"Configure", function:()=>{}},
+  //   {name:"Delete Group", function:()=>{}}
+  // ];
+
   return (
     <Paper
       elevation={3}
@@ -30,10 +51,12 @@ const CommunityInfo = () => {
           zIndex: 0,
         }}
       >
-        <Typography variant="subtitle1">JHAN DITO ANG COVER PHOTO</Typography>
-      </Box>
+        {data?.cover_photo && (<img src={data?.cover_photo ?? ""} style={{width:"100%", height:"100%", objectFit:"cover"}} />)}
 
+      </Box>
       <Avatar
+        src={data?.profile_pic}
+        alt={`${data?.groupName}`}
         sx={{
           position: "absolute",
           top: "70px",
@@ -45,34 +68,42 @@ const CommunityInfo = () => {
           border: "3px solid #5FBB84",
         }}
       />
-
+      {isAdmin ? (<div style={{display:"flex", justifyContent:"end", margin:0}}>
+        <OptionsMenu triggerComponent={settings} itemAndFunc={settingsItems}/>
+      </div>):(<br/>)}
       <Typography
         variant="subtitle1"
         sx={{
           fontWeight: "bold",
           color: "#1A1A1A",
-          mt: "4rem",
+          mt: "1em",
           wordWrap: "break-word",
           overflowWrap: "break-word",
           padding:1
         }}
       >
-        Quezon Farming Community
+        {data?.groupName}
       </Typography>
 
-      <Box sx={{ textAlign: "left", mb: "1rem",  ml:1, mr:1, mt:0.8}}>
+      <Box 
+      sx={{ 
+        textAlign: "left", 
+        mb: "1rem",  
+        ml:1, mr:1, mt:0.8, 
+        maxHeight:"6em", 
+        overflowY:"auto"}}>
         <Typography
           variant="caption"
           sx={{ color: "#777777", fontWeight: "bold", fontSize:'0.79em' }}
         >
           About:
         </Typography>
+        <br/>
         <Typography
           variant="caption"
           sx={{ color: "#1A1A1A", fontWeight: "bold", fontSize:'0.79em' }}
         >
-          <br />
-          This is a community of farmers and buyers across Quezon Province.
+          {data?.groupDescription}
         </Typography>
       </Box>
     </Paper>

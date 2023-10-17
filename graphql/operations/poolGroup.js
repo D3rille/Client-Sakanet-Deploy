@@ -33,6 +33,24 @@ export const GET_SUGGESTED_GROUPS = gql`
     }
 `;
 
+export const GET_POOL_GROUP_INFO = gql`
+    query GetPoolGroupInfo($poolGroupId: String) {
+        getPoolGroupInfo(poolGroupId: $poolGroupId) {
+            _id
+            groupName
+            groupDescription
+            applications
+            membersList
+            creator
+            admins
+            profile_pic
+            cover_photo
+            createdAt
+            membersCount
+        }
+    }
+`;
+
 export const CREATE_POOL_GROUP  = gql`
     mutation CreatePoolGroup($groupName: String, $groupDescription: String) {
         createPoolGroup(groupName: $groupName, groupDescription: $groupDescription)
@@ -42,6 +60,12 @@ export const CREATE_POOL_GROUP  = gql`
 export const JOIN_POOL_GROUP = gql`
     mutation JoinPoolGroup($poolGroupId: String) {
     joinPoolGroup(poolGroupId: $poolGroupId)
+    }
+`;
+
+export const CONFIG_POOL_GROUP_INFO = gql`
+    mutation ConfigPoolGroupInfo($poolGroupId: String, $poolGroupConfigInput: PoolGroupConfigInput) {
+        configPoolGroupInfo(poolGroupId: $poolGroupId, poolGroupConfigInput: $poolGroupConfigInput)
     }
 `;
 

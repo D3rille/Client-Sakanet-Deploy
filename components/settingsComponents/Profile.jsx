@@ -237,7 +237,7 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
 
       <StyledDivider />
  {/* PROFILE PIC UPLOAD */}
-         <div style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}>
         <div
           style={{
             marginRight: "1rem",
@@ -303,67 +303,67 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
       <StyledDivider />
 
       <div style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}>
-  <div
-    style={{
-      marginRight: "1rem",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-    }}
-  >
-    <div
-      {...coverPhotoDropzone.getRootProps()}
-      style={{
-        width: "200px", 
-        height: "120px", 
-        marginBottom: "5px",
-        border: "2px dashed #ccc",
-        borderRadius: "4px",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {coverPhoto ? (
-        <img
-          src={URL.createObjectURL(coverPhoto)}
-          alt="Cover"
-          style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: "4px" }}
-        />
-      ) : (
-        <Typography variant="caption" textAlign="center">Drop cover photo here</Typography>
-      )}
-    </div>
-    <Typography variant="caption">Max size 10mb</Typography>
-  </div>
+        <div
+          style={{
+            marginRight: "1rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <div
+            {...coverPhotoDropzone.getRootProps()}
+            style={{
+              width: "200px", 
+              height: "120px", 
+              marginBottom: "5px",
+              border: "2px dashed #ccc",
+              borderRadius: "4px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {coverPhoto ? (
+              <img
+                src={URL.createObjectURL(coverPhoto)}
+                alt="Cover"
+                style={{ maxWidth: "100%", maxHeight: "100%", borderRadius: "4px" }}
+              />
+            ) : (
+              <Typography variant="caption" textAlign="center">Drop cover photo here</Typography>
+            )}
+          </div>
+          <Typography variant="caption">Max size 10mb</Typography>
+        </div>
 
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      height: "100%",
-    }}
-  >
-    <h3>Cover Photo</h3>
-    <StyledButton
-      onClick={() => handleCoverPhotoUpload(coverPhoto)} // Cover Photo upload logic here
-      variant="contained"
-      style={{
-        width: "150px",
-        margin: "auto 0",
-        marginBottom: "5px",
-        marginTop: "7px",
-      }}
-    >
-      Upload New
-    </StyledButton>
-    <Typography variant="caption">
-      This setting will change your profile's cover photo.
-    </Typography>
-  </div>
-</div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
+          <h3>Cover Photo</h3>
+          <StyledButton
+            onClick={() => handleCoverPhotoUpload(coverPhoto)} // Cover Photo upload logic here
+            variant="contained"
+            style={{
+              width: "150px",
+              margin: "auto 0",
+              marginBottom: "5px",
+              marginTop: "7px",
+            }}
+          >
+            Upload New
+          </StyledButton>
+          <Typography variant="caption">
+            This setting will change your profile's cover photo.
+          </Typography>
+        </div>
+      </div>
 
 
       <StyledDivider />
