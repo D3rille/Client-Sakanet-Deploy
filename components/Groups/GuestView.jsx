@@ -1,10 +1,32 @@
 import {Grid, Box, Card, Avatar, Typography, Button, Divider} from "@mui/material";
+import {useMutation} from "@apollo/client";
+import toast from "react-hot-toast";
 // import Image from "next/image";
 
 import styles from "../../styles/Profile.module.css";
+import { JOIN_POOL_GROUP, GET_POOL_GROUP_INFO } from "../../graphql/operations/poolGroup";
 import {formatDate} from "../../util/dateUtils";
 
-const GuestView = ({isPending, data}) => {
+const GuestView = ({isPending, data, poolGroupId}) => {
+    const [joinPoolGroup] = useMutation(JOIN_POOL_GROUP);
+
+    const handleJoinPoolGroup = ()=>{
+        joinPoolGroup({
+            variables:{
+                poolGroupId
+            },
+            refetchQueries:[GET_POOL_GROUP_INFO], 
+            onCompleted:(data)=>{
+                toast.success(data?.joinPoolGroup);
+            },
+            onError:(error)=>{
+                toast.error(error.message);
+            }
+        }).catch((err)=>{
+            console.error(err);
+        })
+    }
+
     return(
         <Box sx={{margin:"auto", paddingInline:"10em", paddingBottom:"5em"}}>
             <Grid container sx={{position:"relative"}}>
@@ -66,8 +88,8 @@ const GuestView = ({isPending, data}) => {
                                 boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
                                 }}
                                 onClick={()=>{
-                                        
-                                    }}
+                                    handleJoinPoolGroup();
+                                }}
                             > 
                                 Join
                             </Button>)}

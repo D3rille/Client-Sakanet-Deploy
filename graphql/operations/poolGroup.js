@@ -51,6 +51,47 @@ export const GET_POOL_GROUP_INFO = gql`
     }
 `;
 
+export const GET_POOL_GROUP_APPLICATIONS = gql`
+    query GetPoolGroupApplications($poolGroupId: String) {
+        getPoolGroupApplications(poolGroupId: $poolGroupId) {
+            _id
+            username
+            profile_pic
+            address {
+            street
+            barangay
+            cityOrMunicipality
+            province
+            region
+            }
+            is_verified
+            rating
+            role
+        }
+    }
+`;
+
+export const GET_POOL_GROUP_MEMBERS = gql`
+    query GetPoolGroupMembers($poolGroupId: String, $cursor: String, $limit: Int) {
+        getPoolGroupMembers(poolGroupId: $poolGroupId, cursor: $cursor, limit: $limit) {
+            endCursor
+            hasNextPage
+            members {
+            _id
+            address {
+                province
+                barangay
+                cityOrMunicipality
+                region
+                street
+            }
+            profile_pic
+            username
+            }
+        }
+    }
+`;
+
 export const CREATE_POOL_GROUP  = gql`
     mutation CreatePoolGroup($groupName: String, $groupDescription: String) {
         createPoolGroup(groupName: $groupName, groupDescription: $groupDescription)
@@ -68,4 +109,39 @@ export const CONFIG_POOL_GROUP_INFO = gql`
         configPoolGroupInfo(poolGroupId: $poolGroupId, poolGroupConfigInput: $poolGroupConfigInput)
     }
 `;
+
+export const ACCEPT_JOIN_APPLICATION = gql`
+    mutation AcceptJoinApplication($poolGroupId: String, $userId: String) {
+        acceptJoinApplication(poolGroupId: $poolGroupId, userId: $userId)
+    }
+`;
+
+export const DECLINE_JOIN_APPLICATION = gql`
+    mutation DeclineJoinApplication($poolGroupId: String, $userId: String) {
+        declineJoinApplication(poolGroupId: $poolGroupId, userId: $userId)
+    }
+`;
+
+export const POOL_GROUP_APPLICATIONS_SUB = gql`
+subscription NewPoolGroupApplication($poolGroupId: String, $isAdmin: Boolean) {
+  newPoolGroupApplication(poolGroupId: $poolGroupId, isAdmin: $isAdmin) {
+    poolGroupId
+    profile {
+      _id
+      username
+      profile_pic
+      address {
+        barangay
+        cityOrMunicipality
+        province
+        region
+        street
+      }
+      is_verified
+      rating
+    }
+  }
+}
+`;
+
 

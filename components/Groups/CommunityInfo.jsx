@@ -87,7 +87,8 @@ const CommunityInfo = ({isAdmin, data, settingsItems}) => {
 
       <Box 
       sx={{ 
-        textAlign: "left", 
+        textAlign: "left",
+        paddingInline:"1em", 
         mb: "1rem",  
         ml:1, mr:1, mt:0.8, 
         maxHeight:"6em", 

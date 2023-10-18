@@ -31,7 +31,9 @@ const Groups = () => {
     // };
     if(getPoolGroupInfoLoading){
         return(
-            <CircularLoading/>
+            <div style={{display:"flex", margin:"auto"}}>
+                <CircularLoading/>
+            </div>
         )
     }
 
@@ -68,22 +70,23 @@ const Groups = () => {
             {name:"Configure", function:()=>{setIsModalOpen("configure");}},
         ];
 
+        const isAdmin = admins.includes(user.id);
+        const isMember = membersList.includes(user.id);
+        const isCreator = creator == user.id;
+
         if(creator == user.id){
             settingsItems.push( {name:"Delete Group", function:()=>{}})
         }
         // Members
         // Guest
-        if(!membersList.includes(user.id)){
+        if(!isMember){
             const isPending =applications.includes(user.id);
             return(
-                <GuestView isPending={isPending} data={poolGroupInfo}/>
+                <GuestView isPending={isPending} data={poolGroupInfo} poolGroupId={poolGroupId}/>
             )
-        }
+        } 
         // Admins
-        if(membersList.includes(user.id) ){
-            const isAdmin = admins.includes(user.id);
-            
-
+        if(isMember){
             return (
                 <Container style={{ padding: 0, maxWidth: '90%' }}> 
                     <Box style={{ margin: '0 auto', marginTop: '6rem' }}>
@@ -91,7 +94,7 @@ const Groups = () => {
         
                             <Grid item xs={3}>
                                 <CommunityInfo isAdmin={isAdmin} data={poolGroupInfo} settingsItems={settingsItems}/>
-                                <MembersList />
+                                <MembersList isAdmin={isAdmin} isCreator={isCreator} poolGroupId={poolGroupId}/>
                             </Grid>
         
                             <Grid item xs={9}>
