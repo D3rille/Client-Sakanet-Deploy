@@ -22,7 +22,6 @@ if (token) {
     }
   } else {
     initialState.user = decodedToken;
-    console.log(initialState.user);
   }
 }
 

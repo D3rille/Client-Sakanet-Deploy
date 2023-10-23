@@ -94,11 +94,11 @@ const Groups = () => {
         
                             <Grid item xs={3}>
                                 <CommunityInfo isAdmin={isAdmin} data={poolGroupInfo} settingsItems={settingsItems}/>
-                                <MembersList isAdmin={isAdmin} isCreator={isCreator} poolGroupId={poolGroupId}/>
+                                <MembersList getPoolGroupInfoData={getPoolGroupInfoData} poolGroupId={poolGroupId}/>
                             </Grid>
         
                             <Grid item xs={9}>
-                                <ProductPools/>
+                                <ProductPools poolGroupId={poolGroupId} isAdmin={isAdmin}/>
                             </Grid>
                         </Grid>
                         {isModalOpen=="configure" &&(

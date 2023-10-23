@@ -24,6 +24,7 @@ import SuggestedGroups from '../../components/myNetwork/SuggestedGroups';
 
 
 export default function MyNetwork(){
+    const {user} = useContext(AuthContext);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [isOpen, setIsOpen] = useState("");
     // Accept Connection
@@ -92,9 +93,9 @@ export default function MyNetwork(){
                 <div className={styles.containerlist}>
                   <MyConnectionList />
                  </div>
-                
               </div>
-              <div style={{minHeight:"15%", maxheight:"32%"}}>
+
+             {user?.role == "FARMER" && (<div style={{minHeight:"15%", maxheight:"32%"}}>
                 <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
                   <div style={{marginLeft:"0.5em", marginRight:"1em"}}>
                       <Image src ={groupicon} alt = "Group" width={30} height={35}/>
@@ -115,8 +116,9 @@ export default function MyNetwork(){
                 <div className={styles.containerlist} style={{padding:"auto", textAlign:"center"}}>
                   <ManagedGroups/>
                  </div>
-              </div>
-              <div style={{minHeight:"15%", maxheight:"32%"}}>
+              </div>)}
+
+              {user?.role == "FARMER" && (<div style={{minHeight:"15%", maxheight:"32%"}}>
                 <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
                   <div style={{marginLeft:"0.5em", marginRight:"1em"}}>
                     <Image src ={groupicon} alt = "Group" width={30} height={35}/>
@@ -127,7 +129,7 @@ export default function MyNetwork(){
                   
                   <JoinedGroups/>
                  </div>
-              </div>
+              </div>)}
             </div>
           </Card>
         </Grid>
@@ -135,7 +137,7 @@ export default function MyNetwork(){
 
         {/* Content 2 */}
         <Grid item xs={9}>
-          <Card style={{height:"60em", borderRadius:"10px", paddingTop:"1.5em"}}>
+          <Card style={{maxheight:"60em", borderRadius:"10px", paddingTop:"1.5em"}}>
               {/* <Typography sx={{color:"grey", fontSize:"1.2rem", fontWeight:"bold", textAlign:"center", mb:"1em"}}>Connections</Typography> */}
               <Grid container >
                   {/* Connection Requests */}
@@ -166,7 +168,7 @@ export default function MyNetwork(){
                   </Grid>
 
                   {/* Pool Groups you may join */}
-                  <Grid item xs={12}>
+                  {user?.role == "FARMER" && (<Grid item xs={12}>
                     <Typography sx={{paddingLeft:"2em",pb:"1em", fontSize:"1rem", fontWeight:"bold"}}>Pool Groups you may join</Typography>
                     <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa', paddingBlock:"1em"}}>
                       <div className={styles.contentCard1}>
@@ -178,7 +180,7 @@ export default function MyNetwork(){
                         <SuggestedGroups/>
                       </div>
                     </Card>
-                  </Grid>
+                  </Grid>)}
               </Grid>
           </Card>
         </Grid>

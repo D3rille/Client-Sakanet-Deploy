@@ -18,7 +18,7 @@ export default function OptionsMenu({triggerComponent, itemAndFunc}) {
     const MenuItems =({item})=>{
         const func = item.function;
         return(
-            <MenuItem  onClick={()=>{
+            <MenuItem onClick={()=>{
                 func();
                 handleClose();
             }}>{item.name}</MenuItem>
@@ -27,7 +27,7 @@ export default function OptionsMenu({triggerComponent, itemAndFunc}) {
 
     return (
     <div>
-        {triggerComponent(handleClick)}
+        {itemAndFunc.length > 0 && (triggerComponent(handleClick))}
         <Menu
         id="demo-positioned-menu"
         aria-labelledby="demo-positioned-button"

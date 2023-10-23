@@ -13,16 +13,65 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import {useMutation} from "@apollo/client";
+import toast from "react-hot-toast";
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const AddStocksModal = ({ onClose }) => {
-  const [quantity, setQuantity] = useState(0);
+import { ADD_STOCKS, GET_CONTRIBUTORS, GET_PRODUCT_POOLS, DELETE_CONTRIBUTION } from '../../graphql/operations/productPool';
+import CustomDialog from '../popups/customDialog';
+
+const AddStocksModal = ({ onClose, poolId, myContribution}) => {
+  const [quantity, setQuantity] = useState(myContribution ?? 0);
   const [unit, setUnit] = useState('');
 
+  const [isDialogOpen, setIsDialogOpen] = useState("");
+
+  const [addStock] = useMutation(ADD_STOCKS);
+
+  const handleAddStocks = () =>{
+    addStock({
+      variables:{
+        quantity: quantity,
+        productPoolId:poolId
+      },
+      refetchQueries:[GET_PRODUCT_POOLS, GET_CONTRIBUTORS],
+      onCompleted:()=>{
+        let message = myContribution ? "Successfully edited contribution.":"You have successfully contributed added stocks.";
+        toast.success(message);
+      },
+      onError:(error)=>{
+        toast.error(error?.message);
+      }
+    }).catch((error)=>{
+      toast.error(error);
+    }).then(()=>{
+      onClose();
+    })
+  };
+
+  const [deleteContribution] = useMutation(DELETE_CONTRIBUTION);
+
+  const handleDeleteContribution = () =>{
+    deleteContribution({
+      variables:{
+        poolId
+      },
+      refetchQueries:[GET_CONTRIBUTORS, GET_PRODUCT_POOLS],
+      onCompleted:()=>{
+        toast.success("You removed your contribution");
+      },
+      onError:(error)=>{{
+        toast.error(error.message);
+      }}
+    })
+  }
+
   const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value) && value >= 0) {
-      setQuantity(value);
-    }
+    setQuantity(parseFloat(e.target.value));
+    // const value = parseInt(e.target.value);
+    // if (!isNaN(value) && value >= 0) {
+    //   setQuantity(value);
+    // }
   };
 
   const handleAddQuantity = () => {
@@ -35,9 +84,9 @@ const AddStocksModal = ({ onClose }) => {
     }
   };
 
-  const handleAddStock = () => {
-    onClose();
-  };
+  // const handleAddStock = () => {
+  //   onClose();
+  // };
 
   return (
     <Dialog open={true} onClose={onClose} PaperProps={{ sx: { borderRadius: '20px' } }}>
@@ -72,36 +121,59 @@ const AddStocksModal = ({ onClose }) => {
           />
         </Box>
 
-        <Box display="flex" justifyContent="flex-end" mt={3}>
-          <Button
-            sx={{
-              borderColor: '#2E603A',
-              color: '#2E603A',
-              mr: 2,
-              '&:hover': {
-                borderColor: '#286652',
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              },
-              borderRadius: '13px',
+        <Box display="flex" justifyContent="space-between" mt={3}>
+          {myContribution && (
+          <IconButton
+            onClick={()=>{
+              setIsDialogOpen("deleteContribution");
             }}
-            onClick={onClose}
           >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: '#2E603A',
-              color: '#fff',
-              '&:hover': { backgroundColor: '#286652' },
-              borderRadius: '13px',
-            }}
-            onClick={handleAddStock}
-          >
-            Add
-          </Button>
+            <DeleteIcon/>
+          </IconButton>
+          )}
+          <Box>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: '#2E603A',
+                color: '#fff',
+                '&:hover': { backgroundColor: '#286652' },
+                borderRadius: '13px',
+              }}
+              onClick={handleAddStocks}
+            >
+              {myContribution ? "Save":"Add"}
+            </Button>
+            <Button
+              sx={{
+                borderColor: '#2E603A',
+                color: '#2E603A',
+                mr: 2,
+                '&:hover': {
+                  borderColor: '#286652',
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+                borderRadius: '13px',
+              }}
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+          </Box>
         </Box>
       </DialogContent>
+      {isDialogOpen == "deleteContribution" &&(
+        <CustomDialog
+          title={"Delete Contribution"}
+          message={"Delete your contribution to this pool?"}
+          btnDisplay={0}
+          openDialog={Boolean(isDialogOpen)}
+          setOpenDialog={setIsDialogOpen}
+          callback={()=>{
+            handleDeleteContribution();
+          }}
+        />
+      )}
     </Dialog>
   );
 };

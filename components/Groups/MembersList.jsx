@@ -10,7 +10,7 @@ import CircularLoading from "../circularLoading";
 
 import { AuthContext } from "../../context/auth";
 
-const MembersList = ({isAdmin, isCreator, poolGroupId}) => {
+const MembersList = ({getPoolGroupInfoData, poolGroupId}) => {
   const router = useRouter();
   const {user} = useContext(AuthContext);
   const [applicationsCount, setApplicationsCount] = useState(0);
@@ -18,6 +18,12 @@ const MembersList = ({isAdmin, isCreator, poolGroupId}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [members, setMembers] = useState([]);
   const limit = 9; // limit of paginated result
+
+  const {admins, creator} = getPoolGroupInfoData?.getPoolGroupInfo;
+
+  const isAdmin = admins.includes(user.id);
+  // const isMember = membersList.includes(user.id);
+  const isCreator = creator == user.id;
 
   const {data:poolMembersData, loading:poolMembersLoading, error:poolMembersError, fetchMore:fetchMoreMembers} = useQuery(GET_POOL_GROUP_MEMBERS,{
       variables:{
@@ -48,6 +54,7 @@ const MembersList = ({isAdmin, isCreator, poolGroupId}) => {
             return Object.assign({}, prev, {
               getPoolGroupMembers: {
                 ...prev.getPoolGroupMembers,
+                endCursor:fetchMoreResult.getPoolGroupMembers.endCursor,
                 members:[...prev.getPoolGroupMembers.members, ...fetchMoreResult.getPoolGroupMembers.members],
                 hasNextPage: fetchMoreResult.getPoolGroupMembers.hasNextPage
               }
@@ -165,8 +172,8 @@ useEffect(()=>{
     {membershipAppData && poolMembersData && members.length>0 &&(<ManageMembersDialog
       isOpen={isModalOpen}
       setIsOpen={setIsModalOpen}
-      isAdmin={isAdmin}
-      isCreator={isCreator}
+      admins={admins}
+      creator={creator}
       poolGroupId={poolGroupId}
       membershipAppData={membershipAppData}
       membershipAppLoading ={membershipAppLoading}

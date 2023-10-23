@@ -122,6 +122,36 @@ export const DECLINE_JOIN_APPLICATION = gql`
     }
 `;
 
+export const PROMOTE_TO_ADMIN = gql`
+    mutation PromoteToAdmin($userId: String, $poolGroupId: String) {
+        promoteToAdmin(userId: $userId, poolGroupId: $poolGroupId)
+    }
+`;
+
+export const REMOVE_FROM_POOL_GROUP = gql`
+    mutation RemoveFromPoolGroup($userId: String, $poolGroupId: String) {
+        removeFromPoolGroup(userId: $userId, poolGroupId: $poolGroupId)
+    }
+`;
+
+export const DEMOTE_ADMIN = gql`
+    mutation DemoteAdmin($userId: String, $poolGroupId: String) {
+        demoteAdmin(userId: $userId, poolGroupId: $poolGroupId)
+    }
+`;
+
+export const LEAVE_POOL_GROUP = gql`
+mutation LeavePoolGroup($poolGroupId: String) {
+  leavePoolGroup(poolGroupId: $poolGroupId)
+}
+`;
+
+export const DELETE_POOL_GROUP = gql`
+mutation DeletePoolGroup($poolGroupId: String, $confirmation: String) {
+  deletePoolGroup(poolGroupId: $poolGroupId, confirmation: $confirmation)
+}
+`;
+
 export const POOL_GROUP_APPLICATIONS_SUB = gql`
 subscription NewPoolGroupApplication($poolGroupId: String, $isAdmin: Boolean) {
   newPoolGroupApplication(poolGroupId: $poolGroupId, isAdmin: $isAdmin) {

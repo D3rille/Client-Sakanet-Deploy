@@ -36,12 +36,16 @@ function SearchResult({loading, data, query, setQuery, setFocus}){
                                         <Link className={styles.searchLink} onClick={()=>{
                                             setFocus(false);
                                             setQuery("");
-                                            router.push(`/Find/${user._id}`);
+                                            if(user.role == "GROUP"){
+                                                router.push(`/Groups?groupId=${user._id}`);
+                                            } else{
+                                                router.push(`/Find/${user._id}`);
+                                            }
                                         }} >
                                             <h3>{user.username}</h3>
                                         </Link>
                                     } 
-                                    secondary={
+                                    secondary={user.role == "GROUP" ? "POOL GROUP":
                                         formatWideAddress(user.address)
                                         } />
                                 </ListItem>

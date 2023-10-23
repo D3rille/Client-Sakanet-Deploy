@@ -1,11 +1,146 @@
-import { Paper, Typography, Avatar, Box, IconButton } from "@mui/material";
+import {useState} from "react";
+import { Paper, Typography, Avatar, Box, IconButton, TextField, Button } from "@mui/material";
 import TuneIcon from '@mui/icons-material/Tune';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CloseIcon from '@mui/icons-material/Close';
+import {useMutation} from "@apollo/client";
+import {useRouter} from "next/router";
+import toast from "react-hot-toast";
 
 import OptionsMenu from "../popups/OptionsMenu";
+import CustomDialog from "../popups/customDialog";
+import { LEAVE_POOL_GROUP, DELETE_POOL_GROUP, GET_MANAGED_GROUPS, GET_JOINED_GROUPS} from "../../graphql/operations/poolGroup";
+
+const DeletePoolDialog=({isOpenDialog, setIsOpenDialog, callback})=>{
+
+  const [confirmation, setConfirmation] = useState("");
+
+  const handleClose = () => {
+      setIsOpenDialog(false);
+  };
+
+  return (
+  <div>
+      {isOpenDialog && <Dialog
+      fullWidth
+      maxWidth={"xs"}
+      onClose={handleClose}
+      aria-labelledby="customized-dialog-title"
+      open={open}
+      >
+      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Pool Group Deletion
+      </DialogTitle>
+      <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
+          }}
+      >
+          <CloseIcon />
+      </IconButton>
+      <DialogContent dividers>
+        <DialogContentText>
+          Do you really want to delete this group? If you are the creator of this group,
+          enter your password to confirm pool group's deletion.
+        </DialogContentText>
+          <TextField
+            value={confirmation}
+            type="password"
+            onChange={(e)=>{
+              e.preventDefault();
+              setConfirmation(e.target.value)}}
+            label="Confirmation"
+            variant="standard"
+            // multiline
+            fullWidth
+          />
+
+      </DialogContent>
+      <DialogActions>     
+        <Button autoFocus onClick={()=>{
+          callback(confirmation);
+        }} variant="contained" color="error">
+            Delete Group
+        </Button>
+        {/* <Button autoFocus onClick={handleClose} variant="outlined" color="error">
+            Cancel
+        </Button> */}
+      </DialogActions>
+      </Dialog>}
+  </div>
+  );
+}
+
 
 const CommunityInfo = ({isAdmin, data, settingsItems}) => {
+  const router = useRouter();
+  const poolGroupId = router.query?.groupId;
+  const [isDialogOpen, setIsDialogOpen] = useState("");
 
-  const settings = (handleClick) =>{
+  const [leaveGroup] = useMutation(LEAVE_POOL_GROUP);
+  const handleLeavePoolGroup = () =>{
+    leaveGroup({
+      variables:{
+        poolGroupId
+      },
+      refetchQueries:[GET_MANAGED_GROUPS, GET_JOINED_GROUPS],
+      onCompleted:()=>{
+        toast("You have left the pool group.");
+        router.replace("/myNetwork");
+      },
+      onError:(error)=>{
+        toast.error(error.message);
+      }
+    })
+  }
+
+  const [deleteGroup] = useMutation(DELETE_POOL_GROUP);
+  const handleDeleteGroup = (confirmation) =>{
+    deleteGroup({
+      variables:{
+        poolGroupId,
+        confirmation
+      },
+      refetchQueries:[GET_MANAGED_GROUPS],
+      onCompleted:()=>{
+        toast("The Pool Group has been deleted.");
+        setIsDialogOpen("");
+        router.replace("/myNetwork");
+      },
+      onError:(error)=>{
+        toast.error(error.message);
+      }
+    });
+
+    
+  }
+
+  const updatedSettingsItems = settingsItems.map((item) => {
+    if (item.name === "Delete Group") {
+      return {
+        ...item,
+        function: () => {
+          setIsDialogOpen("delete group");
+        },
+      };
+    } else {
+      // If the condition is not met, return the original item
+      return item;
+    }
+  });
+  
+  const Settings = (handleClick) =>{
     return (
     <IconButton
       
@@ -15,6 +150,18 @@ const CommunityInfo = ({isAdmin, data, settingsItems}) => {
     >
         <TuneIcon/>
     </IconButton>)
+  }
+
+  const ExitGroup = () =>{
+    return(
+      <IconButton
+      onClick={(event)=>{
+        setIsDialogOpen("leave");
+      }}
+    >
+        <LogoutIcon/>
+    </IconButton>
+    )
   }
 
   // const settingsItems=[
@@ -68,9 +215,14 @@ const CommunityInfo = ({isAdmin, data, settingsItems}) => {
           border: "3px solid #5FBB84",
         }}
       />
-      {isAdmin ? (<div style={{display:"flex", justifyContent:"end", margin:0}}>
-        <OptionsMenu triggerComponent={settings} itemAndFunc={settingsItems}/>
-      </div>):(<br/>)}
+      {isAdmin ? (<div style={{display:"flex", justifyContent:"space-between", margin:0}}>
+        <ExitGroup/>
+        <OptionsMenu triggerComponent={Settings} itemAndFunc={updatedSettingsItems}/>
+      </div>):(
+        <div style={{display:"flex", justifyContent:"end", margin:0}}>
+          <ExitGroup/>
+        </div>
+      )}
       <Typography
         variant="subtitle1"
         sx={{
@@ -93,12 +245,12 @@ const CommunityInfo = ({isAdmin, data, settingsItems}) => {
         ml:1, mr:1, mt:0.8, 
         maxHeight:"6em", 
         overflowY:"auto"}}>
-        <Typography
+        {data && data?.groupDescription && (<Typography
           variant="caption"
           sx={{ color: "#777777", fontWeight: "bold", fontSize:'0.79em' }}
         >
           About:
-        </Typography>
+        </Typography>)}
         <br/>
         <Typography
           variant="caption"
@@ -107,6 +259,41 @@ const CommunityInfo = ({isAdmin, data, settingsItems}) => {
           {data?.groupDescription}
         </Typography>
       </Box>
+      
+      {isDialogOpen == "leave" && (
+        <CustomDialog
+          openDialog={Boolean(isDialogOpen)}
+          setOpenDialog={setIsDialogOpen}
+          title={"Leave Pool Group"}
+          message={"Are you sure you want to leave this pool group?"}
+          btnDisplay={0}
+          callback={()=>{
+            setIsDialogOpen("");
+            handleLeavePoolGroup();
+          }}
+
+        />
+      )}
+
+      {isDialogOpen == "delete group" && (
+        <DeletePoolDialog
+          isOpenDialog={Boolean(isDialogOpen)}
+          setIsOpenDialog={setIsDialogOpen}
+          callback={(confirmation)=>{handleDeleteGroup(confirmation)}}
+
+        />
+        )}
+        {/* <CustomDialog
+          openDialog={Boolean(isDialogOpen)}
+          setOpenDialog={setIsDialogOpen}
+          title={"Delete Pool Group"}
+          message={"Are you sure you want to delete this pool group? All Pool records will be lost."}
+          btnDisplay={0}
+          callback={()=>{
+            setIsDialogOpen("");
+          }}
+
+        /> */}
     </Paper>
   );
 };

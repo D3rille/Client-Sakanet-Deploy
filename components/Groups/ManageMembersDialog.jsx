@@ -6,6 +6,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
@@ -24,6 +29,8 @@ import {useQuery, useMutation} from "@apollo/client";
 import toast from "react-hot-toast";
 import VerifiedIcon from '@mui/icons-material/Verified';
 import StarIcon from '@mui/icons-material/Star';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import {Waypoint} from "react-waypoint";
 import Link from "@mui/material/Link";
 import {useRouter} from "next/router";
@@ -31,7 +38,16 @@ import {useRouter} from "next/router";
 import { AuthContext } from '../../context/auth';
 import OptionsMenu from '../popups/OptionsMenu';
 import CircularLoading from '../circularLoading';
-import {GET_POOL_GROUP_APPLICATIONS, ACCEPT_JOIN_APPLICATION, DECLINE_JOIN_APPLICATION} from "../../graphql/operations/poolGroup";
+import {
+    GET_POOL_GROUP_APPLICATIONS, 
+    ACCEPT_JOIN_APPLICATION, 
+    DECLINE_JOIN_APPLICATION, 
+    PROMOTE_TO_ADMIN,
+    REMOVE_FROM_POOL_GROUP,
+    GET_POOL_GROUP_MEMBERS,
+    DEMOTE_ADMIN,
+    GET_POOL_GROUP_INFO
+} from "../../graphql/operations/poolGroup";
 import {formatWideAddress} from "../../util/addresssUtils";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -61,8 +77,8 @@ const ManageMembersDialog = ({...props}) =>{
     const {
         isOpen, 
         setIsOpen, 
-        isAdmin, 
-        isCreator, 
+        admins, 
+        creator, 
         poolGroupId, 
         membershipAppData, 
         membershipAppLoading, 
@@ -73,9 +89,11 @@ const ManageMembersDialog = ({...props}) =>{
     } = props;
     
     const [tabValue, setTabValue] = useState("1");
+    const [isDialogOpen, setIsDialogOpen] = useState("");
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const [acceptJoinApplication, {error:acceptJoinAppErr}] = useMutation(ACCEPT_JOIN_APPLICATION,{
-        refetchQueries:[GET_POOL_GROUP_APPLICATIONS],
+        refetchQueries:[GET_POOL_GROUP_APPLICATIONS, GET_POOL_GROUP_MEMBERS],
         onCompleted:(data)=>{
             toast.success(data?.acceptJoinApplication);
         },
@@ -85,7 +103,7 @@ const ManageMembersDialog = ({...props}) =>{
     });
 
     const [declineJoinApplication, {error:declineJoinAppErr}] = useMutation(DECLINE_JOIN_APPLICATION,{
-        refetchQueries:[GET_POOL_GROUP_APPLICATIONS],
+        refetchQueries:[GET_POOL_GROUP_APPLICATIONS, GET_POOL_GROUP_MEMBERS],
         onError:(error)=>{
             toast.error(error.message);
         }
@@ -108,11 +126,156 @@ const ManageMembersDialog = ({...props}) =>{
     const handleClose = () =>{
         setIsOpen(false);
     }
+    const [promoteToAdmin] = useMutation(PROMOTE_TO_ADMIN);
 
-    const memberManagementOptions = [
-        {name:"Promote to Admin", function:()=>{}},
-        {name:"Remove from group", function:()=>{}}
-    ]
+    const handlePromoteToAdmin = (userId) =>{
+        promoteToAdmin({
+            variables:{
+                poolGroupId,
+                userId
+            },
+            update:(cache, {data})=>{
+                 // Read the existing data from the cache
+                const existingData = cache.readQuery({
+                    query: GET_POOL_GROUP_INFO,
+                    variables: { poolGroupId },
+                });
+            
+                const updatedAdmins = existingData.getPoolGroupInfo.admins;
+                updatedAdmins.push(data.promoteToAdmin);
+                
+                // Modify the specific field
+                const updatedData = {
+                    ...existingData,
+                    getPoolGroupInfo: {
+                    ...existingData.getPoolGroupInfo,
+                    admins: updatedAdmins,
+                    },
+                };
+            
+                // Write the updated data back to the cache
+                cache.writeQuery({
+                    query: GET_POOL_GROUP_INFO,
+                    variables: { poolGroupId },
+                    data: updatedData,
+                });
+            },
+            onCompleted:()=>{
+                toast.success("Member, successfully promoted.");
+            },
+            onError:(error)=>{
+                toast.error(error.message);
+            }
+        }).catch((error)=>{
+            console.error(error);
+        })
+    }
+
+    const [removeFromPoolGroup] = useMutation(REMOVE_FROM_POOL_GROUP);
+
+    const handleRemoveFromPoolGroup = (userId) =>{
+        removeFromPoolGroup({
+            variables:{
+                userId,
+                poolGroupId
+            },
+            onCompleted:()=>{
+                toast("You have removed a member from the group.");
+            },
+            onError:(error)=>{
+                toast.error(error.message);
+            },
+            refetchQueries:[GET_POOL_GROUP_MEMBERS]
+            
+        }).catch((err)=>{
+            console.error(err);
+        })
+    }
+
+    const [demoteAdmin] = useMutation(DEMOTE_ADMIN);
+
+    const handleDemoteAdmin = (userId) => {
+        demoteAdmin({
+          variables: {
+            userId,
+            poolGroupId
+          },
+          update: (cache, { data }) => {
+            // Read the existing data from the cache
+            const existingData = cache.readQuery({
+              query: GET_POOL_GROUP_INFO,
+              variables: { poolGroupId },
+            });
+      
+            const updatedAdmins = existingData.getPoolGroupInfo.admins.filter((admin)=>{
+                return admin != data.demoteAdmin;
+            });
+            
+            // Modify the specific field
+            const updatedData = {
+              ...existingData,
+              getPoolGroupInfo: {
+                ...existingData.getPoolGroupInfo,
+                admins: updatedAdmins,
+              },
+            };
+      
+            // Write the updated data back to the cache
+            cache.writeQuery({
+              query: GET_POOL_GROUP_INFO,
+              variables: { poolGroupId },
+              data: updatedData,
+            });
+          },
+        });
+    };
+
+    
+    // conditionally add the options an admin could have
+    const isAdmin = admins.includes(user.id);
+    const isCreator = creator == user.id;
+
+
+    const isSubjectMe = (userId) =>{
+        return userId == user.id;
+    }
+    const isSubjectAdmin = (userId) =>{
+        const result = admins.includes(userId);
+        return result;
+    }
+    const isSubjectCreator = (userId) =>{
+        return creator == userId;
+    }
+
+    const MenuItems = (userId) =>{
+        let memberManagementOptions = [];
+        if(!isSubjectMe(userId)){
+            if(isAdmin && !isSubjectCreator(userId)){
+                memberManagementOptions.push({
+                    name:"Remove from group",
+                    function:()=>{handleRemoveFromPoolGroup(userId);}
+                })
+            }
+            if(isCreator && !isSubjectAdmin(userId)){
+                memberManagementOptions.push({
+                    name:"Promote to Admin",
+                    function:()=>{handlePromoteToAdmin(userId)}
+                })
+            }
+            if(isCreator && isSubjectAdmin(userId)){
+                memberManagementOptions.push({
+                    name:"Demote to member",
+                    function:()=>{handleDemoteAdmin(userId)}
+                })
+            }
+        }
+
+        return memberManagementOptions;
+
+        
+    }
+
+    
     
 
     return (
@@ -156,7 +319,7 @@ const ManageMembersDialog = ({...props}) =>{
                     <TabPanel value="1">
                         <div style={{overflowY:"auto", maxHeight:"50vh", paddingInline:"1em"}}>
                         {members && members.map((member, index)=>(
-                            <React.Fragment key={member._id}>
+                            <React.Fragment key={index}>
                                 <Divider/>
                                 <ManagementListItemContainer>
                                     <Box sx={{display:"flex",flexDirection:"row", gap:"1em", alignItems:"center", justifyContent:"center"}}>
@@ -173,11 +336,15 @@ const ManageMembersDialog = ({...props}) =>{
                                         }}>
                                             <Typography>{member?.username ?? ""}</Typography>
                                         </Link>
-                                        <Typography variant="caption" sx={{color:"grey"}}>{formatWideAddress(member?.address ?? "")}</Typography>
+                                        <Box sx={{display:"flex", flexDirection:"column"}}>
+                                            <Typography variant="caption" sx={{color:"grey"}}>{isSubjectCreator(member._id) ? "Creator/Admin" : isSubjectAdmin(member._id) ? "Co-Admin":"Member"}</Typography>
+                                            <Typography variant="caption" sx={{color:"grey"}}>{formatWideAddress(member?.address ?? "")}</Typography>
+                                        </Box>
                                     </Box>
                                     </Box>
-                                    {/* <StyledCheckbox /> */}
-                                    {isAdmin && (<OptionsMenu 
+                                    {/* Menu */}
+                                    {isAdmin && (
+                                    <OptionsMenu 
                                         triggerComponent={(handleClick)=>{
                                             return(
                                                 <IconButton
@@ -189,8 +356,9 @@ const ManageMembersDialog = ({...props}) =>{
                                                 </IconButton>
                                             )
                                         }}
-                                        itemAndFunc={memberManagementOptions}
+                                        itemAndFunc={MenuItems(member._id)}
                                     />)}
+
                                 </ManagementListItemContainer>
                                 <Divider/>
                                 {index == members.length - 1 && (<Waypoint onEnter={()=>{fetchMoreData()}}/>)}
