@@ -49,6 +49,16 @@ export async function uploadVerificationID(imageFile){
 }
 
 
+//Group pool Uploads
+export async function uploadPoolGroupProfilePic(imageFile){
+  return uploadToCloudinary(imageFile, 'poolGroup_profilePic')
+}
+
+export async function uploadPoolGroupCoverPhoto(imageFile){
+  return uploadToCloudinary(imageFile, 'poolGroup_groupPhoto')
+}
+
+
 //Image Delete to Cloudinary
 export async function imageDelete(imageUrl) {
   const cloudName = 'sakanet';

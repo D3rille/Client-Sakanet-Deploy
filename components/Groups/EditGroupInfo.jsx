@@ -9,6 +9,7 @@ import {useRouter} from "next/router";
 import { useDropzone } from "react-dropzone";
 
 import {CONFIG_POOL_GROUP_INFO, GET_POOL_GROUP_INFO } from "../../graphql/operations/poolGroup";
+import { uploadPoolGroupCoverPhoto, uploadPoolGroupProfilePic } from "../../util/imageUtils";
 
 const StyledModal = styled(Modal)({
   display: "flex",
@@ -132,6 +133,8 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
     const [groupDescription, setGroupDescription] = useState(data?.groupDescription ?? "");
     const [profilePicture, setProfilePicture] = useState(null);
     const [coverPhoto, setCoverPhoto] = useState(null);
+    const [profilePicSecureURL, setProfilePicSecureURL] = useState("");
+    const [coverPicSecureURL, setCoverPicSecureURL] = useState("");
 
     const [configPoolGroup] = useMutation(CONFIG_POOL_GROUP_INFO);
 
@@ -141,10 +144,10 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
                 variables:{
                   "poolGroupId": data?.poolGroupId,
                   "poolGroupConfigInput": {
-                    "cover_photo": coverPhoto ?? "",
+                    "cover_photo": coverPicSecureURL ?? "",
                     "groupDescription": groupDescription ?? "",
                     "groupName": groupName ?? "",
-                    "profile_pic": profilePicture ?? ""
+                    "profile_pic": profilePicSecureURL ?? ""
                   },
                 },
                 refetchQueries:[GET_POOL_GROUP_INFO],
@@ -184,6 +187,31 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
         setIsOpen("");
     }
 
+    const handleProfilePicUpload = async() => {
+  
+      try {
+        const profilePicSecureURL = await uploadPoolGroupProfilePic(profilePicture);
+        console.log(profilePicSecureURL);
+        setProfilePicSecureURL(profilePicSecureURL)
+        toast.success("Profile Picture Succesfully Uploaded");
+
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    };
+
+    const handleCoverPicUpload = async() => {
+      try {
+        const coverPicSecureURL = await uploadPoolGroupCoverPhoto(coverPhoto);
+        console.log(coverPicSecureURL);
+        setCoverPicSecureURL(coverPicSecureURL);
+        toast.success("Cover Photo Succesfully Uploaded");
+      } catch (error) {
+        toast.error('Error uploading image:', error);
+        console.error('Error uploading image:', error);
+      }
+    };
+    
 
   return (
       <StyledModal open={isOpen} onClose={onClose}>
@@ -240,7 +268,7 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
               >
                 <h4>Profile Picture</h4>
                 <StyledButton
-                  onClick= {() => {}} //Image upload 
+                  onClick= {handleProfilePicUpload} //Image upload 
                   variant="contained"
                   style={{
                     width: "150px",
@@ -249,7 +277,7 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
                     marginTop: "7px",
                   }}
                 >
-                  Upload New
+                  Upload
                 </StyledButton>
                 <Typography variant="caption">
                   This setting will change the group's photo.
@@ -305,7 +333,7 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
               >
                 <h4>Cover Photo</h4>
                 <StyledButton
-                  onClick={() => {}} // Cover Photo upload logic here
+                  onClick={handleCoverPicUpload} // Cover Photo upload logic here
                   variant="contained"
                   style={{
                     width: "150px",
@@ -314,7 +342,7 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
                     marginTop: "7px",
                   }}
                 >
-                  Upload New
+                  Upload
                 </StyledButton>
                 <Typography variant="caption">
                   This setting will change the group's  cover photo.
