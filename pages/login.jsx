@@ -26,6 +26,8 @@ import {useForm} from '../util/hooks';
 import {AuthContext} from '../context/auth';
 import { useMutation } from '@apollo/client';
 import toast, { Toaster } from 'react-hot-toast';
+import Logo from '../public/bg/LOGO-ONLY-FINAL.png';
+import Image from 'next/image';
 
 const theme = createTheme({
     palette: {
@@ -197,7 +199,7 @@ export default function Login() {
             <Grid item xs={12} sm={12} lg={6}>
                 <Box
                 style={{
-                    backgroundImage: "url(../bg/welcomeback.jpg)",
+                    backgroundImage: "url(../bg/welcome-carry.jpg)",
                     backgroundSize: "cover",
                     marginTop: "15px",
                     marginLeft: "15px",
@@ -222,17 +224,15 @@ export default function Login() {
                 <ThemeProvider theme={theme}>
                     <Container>
                     <Box height={35} />
-                    <Box sx={center}>
-                        <Avatar
-                        sx={{ ml: "35px", mb: "4px", bgcolor: "#ffffff" }}
-                        >
-                        <LockOutlinedIcon />
-                        </Avatar>
-                        <Typography component="h1" variant="h4" justifyContent="center"
-                        style={{marginLeft: "10px", fontWeight: 'bold', color: "#013208", marginTop: "20px"}}>
-                        LOGIN
-                        </Typography>
-                    </Box>
+<Box sx={center}>
+  <Avatar sx={{ ml: "40px", mb: "4px", bgcolor: "#ffffff", width: 56, height: 56, position: 'relative' }}>
+    <Image src={Logo} alt="Logo" layout="fill" objectFit="cover" />
+  </Avatar>
+  <Typography variant="h5" justifyContent="center"
+    style={{ marginLeft: "35px", fontWeight: 'bold', color: "#013208", marginTop: "10px" }}>
+    LOGIN
+  </Typography>
+</Box>
                     <Box
                         component="form"
                         noValidate
@@ -285,8 +285,8 @@ export default function Login() {
                                 color: "#ffffff",
                                 minWidth: "170px",
                                 backgroundColor: "#02452d",
-                                '&:hover': {
-                                backgroundColor: '#FF9A01',
+                                "&:hover": {
+                                  backgroundColor: "#286652",
                                 },
                             }}
                             >
