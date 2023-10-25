@@ -45,10 +45,11 @@ const JoinedGroups = () =>{
             <>
                 {data?.getJoinedGroups.map((group)=>(
                     <div key={group._id} className={styles.grouplist}>
-                        <Link href={`/Groups?groupId=${group._id}`}>
+                        {/* `/Groups?groupId=${group._id}` */}
+                        <Link href={`/Groups/${group._id}`}>
                             <Avatar sx={{width:'30'}} alt={group.groupName} src={group?.profile_pic} />
                         </Link>
-                        <Link href={`/Groups?groupId=${group._id}`}>
+                        <Link href={`/Groups/${group._id}`}>
                             <p style={{marginLeft:'10px',padding:0}}>{group?.groupName}</p>
                         </Link>
                     </div>)

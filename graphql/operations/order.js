@@ -2,18 +2,21 @@ import {gql} from '@apollo/client';
 
 //Just copy paste from apollo playground
 export const GET_ORDERS = gql`
-    query GetOrders($status: String) {
-    getOrders(status: $status) {
+    query GetOrders($status: String, $limit: Int, $cursor: String) {
+    getOrders(status: $status, limit: $limit, cursor: $cursor) {
+        endCursor
+        hasNextPage
+        orders {
         _id
         type
         createdAt
         buyer {
-        id
-        name
+            id
+            name
         }
         seller {
-        id
-        name
+            id
+            name
         }
         unit
         productId
@@ -30,6 +33,7 @@ export const GET_ORDERS = gql`
         totalPrice
         accomplishedAt
         photo
+        }
     }
     }
  `;

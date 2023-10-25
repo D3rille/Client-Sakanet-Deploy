@@ -28,7 +28,8 @@ import {timePassed} from "../../util/dateUtils";
 import CustomDialog from "../popups/customDialog";
 import { GET_ORDERS } from "../../graphql/operations/order";
 import toast from "react-hot-toast";
-
+import { Waypoint } from "react-waypoint";
+// {index == members.length - 1 && (<Waypoint onEnter={()=>{fetchMoreData()}}/>)}
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
 }));
@@ -52,7 +53,7 @@ const More = (handleClickOpen) =>{
 } 
 
 export default function PendingOrders({...props}) {
-  const {orders, role, handleUpdateStatus, handleCancelOrder, handleDeclineOrder}=props;
+  const {orders, role, handleUpdateStatus, handleCancelOrder, handleDeclineOrder, handleGetMoreOrders}=props;
   // const [orders, setOrders] = useState(ordersArr);
   const [openDialog, setOpenDialog] = useState(false);
  
@@ -201,7 +202,7 @@ export default function PendingOrders({...props}) {
         </DialogContent>
         <DialogActions>     
           <Button autoFocus onClick={()=>{
-            handleDeclineOrder(orderId);
+            handleDeclineOrder(orderId, reason);
           }} variant="contained" color="error">
               Decline
           </Button>
@@ -226,8 +227,8 @@ export default function PendingOrders({...props}) {
         marginRight: "auto",
         display: "flex",
         flexDirection: "column",
-        maxHeight:'55vh',
-        overflow: "auto"
+        maxHeight:'65vh',
+        overflow: "scroll"
       }}
     >
       <Table>
@@ -245,7 +246,8 @@ export default function PendingOrders({...props}) {
         </TableHead>
         <TableBody>
           {orders?.map((order, index) => (
-            <StyledTableRow key={index}>
+            <React.Fragment key={index}>
+              <StyledTableRow>
               <TableCell>
                 {order.type === "Pre-Order"?(
                   <Box
@@ -320,26 +322,7 @@ export default function PendingOrders({...props}) {
                         }}
                     />
                     <DeclineDialog orderId={order._id} keyIndex={index}/>
-                    {/* <Button
-                      variant="contained"
-                      size="small"
-                      sx={{
-                        borderRadius: "20px",
-                        backgroundColor: "red",
-                        color: "#FFF",
-                        mr: 1,
-                        alignItems: "center",
-                        "&:hover": {
-                          backgroundColor: "#FE8C47",
-                        },
-                        width: "75px",
-                        height: "20px",
-                        fontSize: "0.6rem",
-                      }}
-                      onClick={() => handleAcceptOrder(order._id)}
-                    >
-                      Decline
-                    </Button> */}
+                    
                     </>
                   ):(
                     <>
@@ -373,6 +356,8 @@ export default function PendingOrders({...props}) {
                   />
               </TableCell>
             </StyledTableRow>
+            {index == orders.length - 1 && (<Waypoint onEnter={()=>{handleGetMoreOrders()}}/>)}
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>

@@ -128,7 +128,8 @@ const CreatePoolGroupModal = ({isOpen, setIsOpen}) => {
                 },
                 onCompleted:(data)=>{
                     toast.success("successfully create the pool group");
-                    router.push(`/Groups?groupId=${data?.createPoolGroup}`);
+                    // router.push(`/Groups?groupId=${data?.createPoolGroup}`);
+                    router.push(`/Groups/${data?.createPoolGroup}`);
 
                 },
                 onError:(error)=>{

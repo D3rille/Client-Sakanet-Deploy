@@ -37,7 +37,8 @@ function SearchResult({loading, data, query, setQuery, setFocus}){
                                             setFocus(false);
                                             setQuery("");
                                             if(user.role == "GROUP"){
-                                                router.push(`/Groups?groupId=${user._id}`);
+                                                // /Groups?groupId=${user._id}
+                                                router.push(`/Groups/${user._id}`);
                                             } else{
                                                 router.push(`/Find/${user._id}`);
                                             }

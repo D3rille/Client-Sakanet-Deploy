@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Divider, Button, Typography } from "@mui/material";
+import { TextField, Divider, Button, Typography, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import { useDropzone } from "react-dropzone";
 import { uploadVerificationID } from "../../util/imageUtils";
@@ -8,10 +8,14 @@ import { GET_MY_PROFILE } from "../../graphql/operations/profile";
 import { useMutation, useQuery } from "@apollo/client";
 import VerifiedIcon from '@mui/icons-material/Verified';
 import toast from 'react-hot-toast';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers";
 
 
 const VerificationContainer = styled("div")({
-  paddingTop: "0.3rem",
+  // paddingTop: "0.3rem",
+  padding:"1em",
   margin: "2rem",
   height: "100%",
 });
@@ -28,9 +32,24 @@ const StyledDivider = styled(Divider)({
   marginBottom: "10px",
 });
 
+const NameField = styled(TextField)({
+  "& input": {
+    height: "40px",
+    padding: "0 14px",
+  },
+  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#2E603A",
+  },
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#2E603A",
+  },
+});
+
 const AccountVerification = () => {
   const [uploadedID, setUploadedID] = useState(null);
   const [verificationStatus, setVerificationStatus] = useState("Not Verified");
+  const [birthDate, setBirthDate] = useState(null);
+
   const [uploadVerificatonPhoto] = useMutation(UPLOAD_VERIFICATION_PHOTO, {
     refetchQueries: [GET_MY_PROFILE]
   });
@@ -115,7 +134,54 @@ const AccountVerification = () => {
             
       {!is_verified ? (
         <div>
-          <h3>Account Verification</h3>
+          <div style={{width:"100%", paddingBottom:"0.5em"}}>
+            <h3 style={{textAlign:"center"}}>Account Verification</h3>
+          </div>
+          <div>
+            <Typography variant="caption">
+              Enter your first name and last name.
+            </Typography>
+            {/* <h3 style={{ marginBottom: "10px" }}>Profile Name</h3>   */}
+            
+            <div>
+              <NameField
+                variant="outlined"
+                placeholder="First name"
+                style={{ marginRight: "1rem" }}
+                InputProps={{
+                  style: {
+                    borderColor: "#2E603A",
+                    width:'200px'
+                  },
+                }}
+              />
+              <NameField
+                variant="outlined"
+                placeholder="Last name"
+                InputProps={{
+                  style: {
+                    borderColor: "#2E603A",
+                    width:'200px'
+                  },
+                }}
+              />
+            </div>
+            <Typography variant="caption" sx={{paddingTop:1}}>
+              Enter your birthdate.
+            </Typography>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Box display="flex" justifyContent="space-between" mt={1}>
+              <DatePicker
+                label="BirthDate"
+                sx={{ width: '50%', '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#2E603A' } }}
+                value={birthDate}
+                onChange={(newValue) => setBirthDate(newValue)}
+                slotProps={{ textField: { variant: 'outlined' } }}
+              />
+            </Box>
+            </LocalizationProvider>
+            
+          </div>
           <StyledDivider />
           {verification_status === "pending" && verification_status != ""  && verification_status != null  ? (
             <div>
@@ -168,19 +234,30 @@ const AccountVerification = () => {
                   }}
                 >
                   <h3>Verify Your Account</h3>
+                  <Typography variant="caption">
+                  Please upload a clear and legible image of a valid Philippine ID. 
+                  Accepted file formats include JPEG, PNG, and PDF. This may include 
+                  documents such as a passport, Philippine Identification, Social Security System ID,
+                  Government Service Insurance System E-Card, Driver’s License, National Bureau of Investigation Clearance,
+                  Police Clearance, Firearms’ License to Own and Possess ID, Professional Regulation Commission ID,
+                  Integrated Bar of the Philippines ID, Overseas Workers Welfare Administration ID, Bureau of Internal Revenue ID,
+                  Voter’s ID, Senior Citizen’s Card, Unified Multi-purpose Identification Card, 
+                  Person with Disabilities Card, or Other valid government-issued ID with Photo
+                  Ensure that the entire document is visible and well-lit for proper verification. Thank you!
+                  </Typography>
                   <StyledButton
                     onClick={() => uploadID(uploadedID)}
                     variant="contained"
                     style={{
                       width: "150px",
-                      margin: "auto 0",
+                      // margin: "auto 0",
+                      marginLeft:"auto",
                       marginBottom: "5px",
                       marginTop: "7px",
                     }}
                   >
                     Verify
                   </StyledButton>
-                  <Typography variant="caption">Upload your ID to verify your account.</Typography>
                 </div>
               </div>
             </div>

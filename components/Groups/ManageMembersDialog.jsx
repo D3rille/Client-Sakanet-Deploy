@@ -24,7 +24,6 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import CheckIcon from '@mui/icons-material/Check';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import {useQuery, useMutation} from "@apollo/client";
 import toast from "react-hot-toast";
 import VerifiedIcon from '@mui/icons-material/Verified';

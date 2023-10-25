@@ -212,7 +212,7 @@ export default function PurchaseDialog({...props}) {
                         flex: 1,
                     }}
                     >
-                    {placeOrderLoading ? (<CircularLoading/>):"ADD TO CART"}
+                    {addToCartLoading ? (<CircularLoading sx={{border:"3px solid white"}}/>):"ADD TO CART"}
                 </Button>
             </>
         );
@@ -462,7 +462,6 @@ export default function PurchaseDialog({...props}) {
                         btnDisplay={0}
                         callback={()=>{
                             executeAddToCart();
-                            // handleClose();
                         }}
                     />
 

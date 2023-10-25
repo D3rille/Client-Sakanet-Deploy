@@ -85,7 +85,7 @@ export default function ForCompletionOrders({...props}) {
         marginRight: "auto",
         display: "flex",
         flexDirection: "column",
-        maxHeight:'55vh',
+        maxHeight:'65vh',
         overflow: "auto"
       }}
     >

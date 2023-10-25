@@ -72,8 +72,8 @@ export const SuggestedGroups = () =>{
                     >
                     <div className={styles.backgroundimg} style={{backgroundImage:`url(${group.cover_photo})`}}>
                     <div className={styles.circular} style={{padding:'5px',borderRadius:'50%',position:'relative'}}>
-
-                    <Link href={`/Groups?groupId=${group._id}`}>
+                    {/*  `/Groups?groupId=${group._id}`*/}
+                    <Link href={`/Groups/${group._id}`}>
                         <Avatar alt={group.groupName} src={group.profile_pic} size="lg" />
                     </Link>
 

@@ -20,6 +20,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {timePassed} from "../../util/dateUtils";
 import {useRouter} from "next/router";
 import CustomDialog from "../popups/customDialog";
+import { Waypoint } from "react-waypoint";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -44,7 +45,7 @@ const More = (handleClickOpen) =>{
 }
 
 export default function AcceptedOrders({...props}) {
-  const {orders, role, handleUpdateStatus}=props;
+  const {orders, role, handleUpdateStatus, handleGetMoreOrders}=props;
   const [openDialog, setOpenDialog] = useState(false);
 
 
@@ -91,7 +92,7 @@ export default function AcceptedOrders({...props}) {
         marginRight: "auto",
         display: "flex",
         flexDirection: "column",
-        maxHeight:'55vh',
+        maxHeight:'65vh',
         overflow: "auto"
       }}
     >
@@ -110,93 +111,96 @@ export default function AcceptedOrders({...props}) {
         </TableHead>
         <TableBody>
           {orders.map((order, index) => (
-            <StyledTableRow key={index}>
-              <TableCell>
-                {order.type == "Pre-Order"?(
-                  <Box
-                  sx={{
-                    backgroundColor: "#FE8C47",
-                    borderRadius: "8px",
-                    width: "fit-content",
-                    padding: "2px 8px",
-                    fontSize: "0.7rem",
-                    
-                    color: "white",
-                  }}
-                  >
-                    PRE-ORDER
-                  </Box>
-                ):(
-                  <Box
-                  sx={{
-                    backgroundColor: "#2F603B",
-                    borderRadius: "8px",
-                    width: "fit-content",
-                    padding: "2px 8px",
-                    fontSize: "0.7rem",
-                    
-                    color: "white",
-                  }}
-                  >
-                    ORDER
-                  </Box>
-                )}
-              </TableCell>
-              <TableCell>{order._id}</TableCell>
-              <TableCell>{order.marketProductName}</TableCell>
-              {/* <TableCell>{role=="FARMER"?order.buyer.name:order.seller.name}</TableCell> */}
-              <TableCell>{order.quantity}</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>₱{order.totalPrice}</TableCell>
-              <TableCell>
-                <div>
-                  {role =="FARMER"? (<Button
-                    variant="contained"
-                    size="medium"
+            <React.Fragment key={index}>
+              <StyledTableRow >
+                <TableCell>
+                  {order.type == "Pre-Order"?(
+                    <Box
                     sx={{
-                      borderRadius: "20px",
-                      backgroundColor: "#2E603A",
-                      color: "#FFF",
-                      mr: 1,
-                      alignItems: "center",
-                      "&:hover": {
-                        backgroundColor: "#FE8C47",
-                      },
-                      width: "75px",
-                      height: "20px",
-                      fontSize: "0.6rem",
+                      backgroundColor: "#FE8C47",
+                      borderRadius: "8px",
+                      width: "fit-content",
+                      padding: "2px 8px",
+                      fontSize: "0.7rem",
+                      
+                      color: "white",
                     }}
-                    onClick={()=>{
-                      setOpenDialog(true);
+                    >
+                      PRE-ORDER
+                    </Box>
+                  ):(
+                    <Box
+                    sx={{
+                      backgroundColor: "#2F603B",
+                      borderRadius: "8px",
+                      width: "fit-content",
+                      padding: "2px 8px",
+                      fontSize: "0.7rem",
+                      
+                      color: "white",
                     }}
-                  >
-                    Complete
-                  </Button>):(
-                  
-                  <Typography sx={{color:"green"}}>
-                    Preparing Order
-                  </Typography>
+                    >
+                      ORDER
+                    </Box>
                   )}
-                  </div>
-                  <CustomDialog
-                    openDialog={openDialog}
-                    setOpenDialog={setOpenDialog}
-                    title={"Complete Order"}
-                    message={"Mark this order as complete?"}
+                </TableCell>
+                <TableCell>{order._id}</TableCell>
+                <TableCell>{order.marketProductName}</TableCell>
+                {/* <TableCell>{role=="FARMER"?order.buyer.name:order.seller.name}</TableCell> */}
+                <TableCell>{order.quantity}</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>₱{order.totalPrice}</TableCell>
+                <TableCell>
+                  <div>
+                    {role =="FARMER"? (<Button
+                      variant="contained"
+                      size="medium"
+                      sx={{
+                        borderRadius: "20px",
+                        backgroundColor: "#2E603A",
+                        color: "#FFF",
+                        mr: 1,
+                        alignItems: "center",
+                        "&:hover": {
+                          backgroundColor: "#FE8C47",
+                        },
+                        width: "75px",
+                        height: "20px",
+                        fontSize: "0.6rem",
+                      }}
+                      onClick={()=>{
+                        setOpenDialog(true);
+                      }}
+                    >
+                      Complete
+                    </Button>):(
+                    
+                    <Typography sx={{color:"green"}}>
+                      Preparing Order
+                    </Typography>
+                    )}
+                    </div>
+                    <CustomDialog
+                      openDialog={openDialog}
+                      setOpenDialog={setOpenDialog}
+                      title={"Complete Order"}
+                      message={"Mark this order as complete?"}
+                      btnDisplay={0}
+                      callback={() => {
+                        handleUpdateStatus(order._id, "Accepted", "For Completion");
+                      }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <TriggeredDialog
+                    triggerComponent={More}
+                    title={"Order Details"}
+                    message={orderDetails(order)}
                     btnDisplay={0}
-                    callback={() => {
-                      handleUpdateStatus(order._id, "Accepted", "For Completion");
-                    }}
-                  />
-              </TableCell>
-              <TableCell>
-                  <TriggeredDialog
-                  triggerComponent={More}
-                  title={"Order Details"}
-                  message={orderDetails(order)}
-                  btnDisplay={0}
-                  />
-              </TableCell>
-            </StyledTableRow>
+                    />
+                </TableCell>
+              </StyledTableRow>
+              {index == orders.length - 1 && (<Waypoint onEnter={()=>{handleGetMoreOrders()}}/>)}
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>

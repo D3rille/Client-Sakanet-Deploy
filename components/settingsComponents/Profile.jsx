@@ -21,7 +21,7 @@ import { UPDATE_DISPLAY_NAME } from "../../graphql/operations/settings";
 const ProfileContainer = styled("div")({
   paddingTop: "0.3rem",
   margin: "2rem",
-  height: '100%'
+  // height: '100%'
 });
 
 const UsernameField = styled(TextField)({
@@ -197,15 +197,11 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
         />
-        {/*
-        <Typography variant="caption" style={{ display: "block" }}>
-          Username must be unique
-        </Typography> */}
       </div>
 
       <StyledDivider />
 
-      <div>
+      {/* <div>
         <h3 style={{ marginBottom: "10px" }}>Profile Name</h3>
         <div>
           <NameField
@@ -235,7 +231,7 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
         </Typography>
       </div>
 
-      <StyledDivider />
+      <StyledDivider /> */}
  {/* PROFILE PIC UPLOAD */}
       <div style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}>
         <div

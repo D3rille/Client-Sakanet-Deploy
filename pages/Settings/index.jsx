@@ -8,14 +8,17 @@ import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import PaymentIcon from '@mui/icons-material/Payment';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Profile from "../../components/settingsComponents/Profile";
 import EmailAndPassword from "../../components/settingsComponents/PasswordAndEmail";
 import PaymentChannels from "../../components/settingsComponents/PaymentChannels";
+import Address from "../../components/settingsComponents/Address";
 import Verification from "../../components/settingsComponents/Verification";
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { useQuery } from '@apollo/client';
 import { GET_MY_PROFILE } from '../../graphql/operations/profile';
+import {useSubs} from "../../context/SubscriptionProvider";
 
 const GridContainer = styled(Grid)({
     background: '#F4F4F4',
@@ -91,9 +94,8 @@ const StyledTab = styled(Tab)({
 });
 
 const Settings = () => {
+    const {profile} = useSubs();
     const [value, setValue] = React.useState(0);
-    
-
     const { loading, error, data } = useQuery(GET_MY_PROFILE);
 
     if (loading) return <p>Loading...</p>;
@@ -144,6 +146,17 @@ const Settings = () => {
                                 } 
                             />
                             <StyledTab 
+                                icon={<LocationOnIcon />} 
+                                label={
+                                    <div>
+                                        Address
+                                        <div style={{ fontSize: '0.8em', color: 'grey' }}>
+                                            Change your business address or personal address..
+                                        </div>
+                                    </div>
+                                } 
+                            />
+                            <StyledTab 
                                 icon={<LockIcon />} 
                                 label={
                                     <div>
@@ -181,9 +194,10 @@ const Settings = () => {
                     <ParentContainer>
                         <InnerPaperRight elevation={3}>
                             {value === 0 && <Profile currentProfilePic = {profile_pic} currentCoverPic = {cover_photo} />}
-                            {value === 1 && <EmailAndPassword />}
-                            {value === 2 && <PaymentChannels />}
-                            {value === 3 && <Verification />}
+                            {value === 1 && <Address address={profile?.profile?.address}/>}
+                            {value === 2 && <EmailAndPassword />}
+                            {value === 3 && <PaymentChannels />}
+                            {value === 4 && <Verification />}
                         </InnerPaperRight>
                     </ParentContainer>
                 </StyledPaperContainer>

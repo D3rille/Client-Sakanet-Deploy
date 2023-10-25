@@ -36,12 +36,13 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
+  const [checkOutItems, setCheckOutItems] = useState([]);
 
   useEffect(()=>{
-    
-    setProductsOnLoad(getCartItemsData?.getCartItems ?? []);
-    
-  }, []);
+    if(getCartItemsData){
+      setProductsOnLoad(getCartItemsData?.getCartItems ?? []);
+    }
+  }, [getCartItemsData]);
 
   const [checkOut, {loading:checkOutLoading}] = useMutation(CHECKOUT_CART,{
     refetchQueries:[GET_CART_ITEMS],
@@ -64,17 +65,19 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
 
 
   const handleCheckChange = (index) => {
-    const updatedProducts = [...products];
+    let updatedProducts = [...products];
     updatedProducts[index].checked = !updatedProducts[index].checked;
     setProducts(updatedProducts);
     getTotalPrice();
   };
 
   const setProductsOnLoad = (productsData) =>{
-    setProducts(productsData.map((product) => ({
-      ...product,
-      checked: false,
-    })))
+    setProducts(productsData.map((product) => {
+      return {
+        ...product,
+        checked: false
+    }
+    }))
   }
 
   const updateQuantity = (index, value) =>{
@@ -97,11 +100,12 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
     setTotalPrice(sum);
   };
 
-  let checkOutInput = [];
+  // let checkOutInput = [];
 
   const setCheckOutInput = () => {
     let input;
     products.map((product)=>{
+      let items = checkOutItems;
       if(product.checked){
         input={
           id:product._id,
@@ -109,7 +113,8 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
           productId:product.productId,
           sellerId: product.seller.id
         }
-        checkOutInput.push(input)
+        items.push(input);
+        setCheckOutItems(items);
       }
     })
   }
@@ -118,9 +123,8 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
     setCheckOutInput();
     checkOut({
       variables:{
-        "cartItems": [
-          ...checkOutInput
-        ]
+        "cartItems": checkOutItems
+        
       }
     });
     for (let index = 0; index < products.length; index++) {
@@ -133,7 +137,14 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={()=>{
+        products?.map(prod =>{
+          prod.checked = false;
+        });
+        setCheckOutItems([]);
+        setTotalPrice(0);
+        handleClose();
+      }}
       aria-labelledby="cart-modal-title"
       aria-describedby="cart-modal-description"
     >
@@ -169,14 +180,18 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
         <IconButton
             edge="start"
             color="inherit"
-            onClick={handleClose}
+            onClick={()=>{
+              products?.map(prod =>{
+                prod.checked = false;
+              });
+              setCheckOutItems([]);
+              setTotalPrice(0);
+              handleClose();
+            }}
             aria-label="close"
         >
             <CloseIcon sx={{color:"red"}} />
         </IconButton>
-        {/* <Button autoFocus color="inherit" onClick={handleClose}>
-            save
-        </Button> */}
         </Toolbar>
         
         {getCartItemsLoading  && (<CircularLoading/>)}
@@ -262,7 +277,14 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
                   color: "#2F9C65",
                   marginRight: "10px",
                 }}
-                onClick={handleClose}
+                onClick={()=>{
+                  products?.map(prod =>{
+                    prod.checked = false;
+                  });
+                  setCheckOutItems([]);
+                  setTotalPrice(0);
+                  handleClose();
+                }}
               >
                 Continue Shopping
               </Button>
@@ -272,14 +294,9 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
                   backgroundColor: "#2F9C65",
                   color: "white",
                 }}
-                // onClick={handleClose}
+                
                 onClick={()=>{
-                  if(checkOutInput.length>0){
-                    setOpenDialog(true)
-                  } else{
-                    toast.error("Please select items first.");
-                  }
-                 
+                  setOpenDialog(true);
                 }}
               >
                   Checkout

@@ -40,6 +40,8 @@ import { GET_USER_INFO, VERIFY_USER, UNVERIFY_USER } from "../../graphql/operati
 import CircularLoading from "../../components/circularLoading";
 import { formatWideAddress } from "../../util/addresssUtils";
 import {formatDate} from "../../util/dateUtils";
+import OptionsMenu from "../../components/popups/OptionsMenu";
+import VerificationViewDialog from "../../components/Admin/VerificationViewDialog";
 
 const StyledGrid = styled(Grid)({
   background: '#F4F4F4',
@@ -54,7 +56,7 @@ const StyledPaper = styled(Paper)({
   width: '90%',
   marginLeft: 'auto',
   marginRight: 'auto',
-  marginTop: '3rem',
+  marginBlock: '3rem',
   borderRadius: '20px',
   overflow: 'hidden',
   minHeight: '100vh'
@@ -130,6 +132,7 @@ const router = useRouter();
 const {user} = useContext(AuthContext);
 const [authorized, setAuthorized] = useState(false);
 const [searchInput, setSearchInput] = useState("");
+const [isModalOpen, setIsModalOpen] = useState("")
 
 const [findUserInfo, {data:findUserInfoData, loading:findUserInfoLoading, error:findUserInfoError}] = useLazyQuery(GET_USER_INFO);
 const [verifyUser] = useMutation(VERIFY_USER);
@@ -239,8 +242,7 @@ return (
                   User Management
               </Typography>
             </Box>
-            <Box sx={{flex:1}}>
-            <SearchPanel>
+            <Box sx={{display:"flex", flex:1, flexDirection:"row"}}>
             <Button 
               variant="contained"
               onClick = {()=>{
@@ -248,39 +250,25 @@ return (
               }}
               sx={{
                 paddingInline:"1em",
-  
-                marginRight:"1em"
+                marginInline:"0.5em"
               }}
             >
               Search
             </Button>
+            <SearchPanel>
             <SearchIcon
               color="action"
-              style={{ marginRight: "8px", color: "#AEBAC6" }}
+              style={{ marginInline: "5px", color: "#AEBAC6" }}
             />
               <InputBase  
                 value={searchInput}
                 onChange={(e)=>setSearchInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                // onFocus={()=>{setFocus(true)}}
-                // onBlur={()=>{
-                //   if(!query){
-                //     setFocus(false)
-                //   }
-                  
-                // }}
                 placeholder="Search Username or Id"
                 fullWidth
-                style={{ paddingLeft: "8px", color: "#AEBAC6" }}
+                style={{ paddingLeft: "8px", color: "#AEBAC6", height:"100%" }}
               />
-              {/* {query && (
-                <IconButton onClick={()=>{
-                  setQuery("");
-                  setFocus(false);
-                }}>
-                  <CloseIcon sx={{fontSize:"1rem"}}/>
-                </IconButton>
-              )} */}
+              
               
             </SearchPanel>
             
@@ -296,7 +284,7 @@ return (
                 marginRight: "auto",
                 display: "flex",
                 flexDirection: "column",
-                maxHeight:'55vh',
+                maxHeight:'70vh',
                 overflow: "auto"
               }}
             >
@@ -341,7 +329,11 @@ return (
                         </TableCell>
                       <TableCell>{formatDate(user.date_joined, "lll")}</TableCell>
                       <TableCell> 
-                        <IconButton>
+                        <IconButton
+                          onClick={()=>{
+                            setIsModalOpen("verificationView");
+                          }}
+                        >
                           <MoreVertIcon/>
                         </IconButton>
                       </TableCell>
@@ -354,7 +346,9 @@ return (
           </StyledPaper>
         </Grid>
     </StyledGrid>
-    
+    {isModalOpen == "verificationView" && (
+      <VerificationViewDialog open={Boolean(isModalOpen)} setOpen={setIsModalOpen}/>
+    )}
   </div>
   
     );

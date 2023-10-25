@@ -26,39 +26,7 @@ const ProductPoolCard = ({ productData, isAdmin, poolStatusFilter }) => {
         variables:{
           productPoolId
         },
-        update:(cache, {data})=>{
-          const existingData = cache.readQuery({ query: GET_PRODUCT_POOLS, 
-            variables:{
-              "poolGroupId": productData.poolGroup,
-              "limit": 10,
-              "cursor": null,
-              "status": poolStatusFilter
-          }});
-
-          if (!existingData || !existingData?.getProductPools) {
-            return;
-          }
-  
-          const { getProductPools } = existingData;
-  
-          const updatedPools = getProductPools.productPools.filter((pool) => pool._id !== data?.deleteProductPool);
-
-          cache.writeQuery({
-            query: GET_PRODUCT_POOLS,
-            variables:{
-              "poolGroupId": productData.poolGroup,
-              "limit": 10,
-              "cursor": null,
-              "status": poolStatusFilter
-            },
-            data: {
-              getProductPools:{
-                ...existingData.getProductPools,
-                productPools: updatedPools
-              },
-            },
-          });
-        },
+        refetchQueries:[GET_PRODUCT_POOLS],
         onCompleted:()=>{
           toast("You have deleted a product pool.");
         },

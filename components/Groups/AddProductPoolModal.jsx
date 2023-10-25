@@ -197,7 +197,7 @@ const AddProductPoolModal = ({ open, onClose, poolGroupId}) => {
             placeholder="Drop-off Location" 
             value={dropOff}
             onChange={e=>setDropOff(e.target.value)}
-            disabled={modeOfCollection == "pick-up"?true:false} 
+            disabled={modeOfCollection == "pick-up"} 
             sx={{ width: '48%', height: '2.5rem', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', background: 'transparent', color: '#2D2C2D' }} 
           />
           <Box width="48%" display="flex" alignItems="center" backgroundColor="#f5f5f5" paddingInline="1em" textAlign="center" borderRadius="5px">
@@ -254,7 +254,7 @@ const AddProductPoolModal = ({ open, onClose, poolGroupId}) => {
               handleCreateProductPool()
 
             }}
-            
+            disabled={modeOfCollection == "drop-off" && !dropOff}
           >
             Add Pool
           </Button>

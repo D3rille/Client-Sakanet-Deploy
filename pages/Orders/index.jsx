@@ -38,14 +38,46 @@ export default function Orders() {
 
     const tabEquivalents = ["Pending", "Accepted", "For Completion", "Completed"];
 
-    const {data, loading, error} = useQuery(GET_ORDERS,{
+    const {data, loading, error, fetchMore:fetchMoreOrders} = useQuery(GET_ORDERS,{
         variables:{
-            "status":tabEquivalents[tabValue]
+            status:tabEquivalents[tabValue],
+            limit: 10,
+            cursor:null
+        },
+        onCompleted:(data)=>{
+          console.log(data)
         },
         onError:(error)=>{
             console.log(error);
         }
     });
+
+    const handleGetMoreOrders = () =>{
+      if(data?.getOrders?.hasNextPage){
+        fetchMoreOrders({
+          variables:{
+            status:tabEquivalents[tabValue],
+            limit:10,
+            cursor:data?.getOrders?.endCursor
+          },
+          onError:(error)=>{
+            toast.error(error.message)
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult) return prev;
+            return Object.assign({}, prev, {
+              getOrders: {
+                ...prev.getOrders,
+                endCursor:fetchMoreResult?.getOrders?.endCursor,
+                hasNextPage: fetchMoreResult?.getOrders?.hasNextPage,
+                orders:[...prev?.getOrders?.orders, ...fetchMoreResult?.getOrders?.orders],
+              }
+            });
+            
+          },
+        })
+      }
+    }
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -62,7 +94,7 @@ export default function Orders() {
         try {
           await updateStatus({
             variables: {orderId},
-            refetchQueries:[{query:GET_ORDERS, variables:{status:currentStatus}}, {query:GET_ORDERS, variables:{status:nextStatus}}],
+            refetchQueries:[GET_ORDERS],
           });
         } catch (error) {
           console.error('Error updating status:', error);
@@ -81,7 +113,7 @@ export default function Orders() {
             variables: { orderId },
             update: (cache) => {
               // Check if the query result exists in the cache
-              const existingData = cache.readQuery({ query: GET_ORDERS, variables:{status:"Pending"} });
+              const existingData = cache.readQuery({ query: GET_ORDERS});
               if (!existingData || !existingData.getOrders) {
                 return;
               }
@@ -90,14 +122,16 @@ export default function Orders() {
               const { getOrders } = existingData;
       
               // Remove the canceled order from the cache
-              const updatedOrders = getOrders.filter((order) => order._id !== orderId);
+              const updatedOrders = getOrders.orders.filter((order) => order?._id !== orderId);
       
               // Write the updated data back to the cache
               cache.writeQuery({
                 query: GET_ORDERS,
-                variables:{status:"Pending"},
                 data: {
-                  getOrders: updatedOrders,
+                  getOrders: {
+                    ...getOrders,
+                    orders:updatedOrders
+                  },
                 },
               });
             },
@@ -115,13 +149,13 @@ export default function Orders() {
         }
     });
 
-    const handleDeclineOrder = async (orderId) => {
+    const handleDeclineOrder = async (orderId, reason) => {
         try {
           await declineOrder({
-            variables: { orderId },
+            variables: { orderId, reason },
             update: (cache) => {
               // Check if the query result exists in the cache
-              const existingData = cache.readQuery({ query: GET_ORDERS, variables:{status:"Pending"} });
+              const existingData = cache.readQuery({ query: GET_ORDERS});
               if (!existingData || !existingData.getOrders) {
                 return;
               }
@@ -130,14 +164,16 @@ export default function Orders() {
               const { getOrders } = existingData;
       
               // Remove the canceled order from the cache
-              const updatedOrders = getOrders.filter((order) => order._id !== orderId);
+              const updatedOrders = getOrders.orders.filter((order) => order?._id !== orderId);
       
               // Write the updated data back to the cache
               cache.writeQuery({
                 query: GET_ORDERS,
-                variables:{status:"Pending"},
                 data: {
-                  getOrders: updatedOrders,
+                  getOrders: {
+                    ...getOrders,
+                    orders:updatedOrders
+                  },
                 },
               });
             },
@@ -150,7 +186,7 @@ export default function Orders() {
     
     if(loading){return(<CircularLoading/>)};
     if(data){
-        const ordersArr = data?.getOrders;
+        const ordersArr = data?.getOrders?.orders;
         return (
         <StyledGrid container>
             <Grid item xs={12}>
@@ -176,10 +212,40 @@ export default function Orders() {
                         </Tabs>
                     </Box>
                     {loading && <CircularLoading/>}
-                    {tabValue===0 && <PendingOrders role={user.role} orders={ordersArr} handleUpdateStatus={handleUpdateStatus} handleCancelOrder={handleCancelOrder} handleDeclineOrder={handleDeclineOrder}/>}
-                    {tabValue === 1 && <AcceptedOrders  role={user.role} orders={ordersArr} handleUpdateStatus={handleUpdateStatus} />}
-                    {tabValue === 2 && <ForCompletionOrders  role={user.role} orders={ordersArr} handleUpdateStatus={handleUpdateStatus} />}
-                    {tabValue === 3 && <CompletedOrders  role={user.role} orders={ordersArr} updateStatus={updateStatus} />}
+                    {tabValue===0 && 
+                      <PendingOrders 
+                        role={user.role} 
+                        orders={ordersArr} 
+                        handleUpdateStatus={handleUpdateStatus} 
+                        handleCancelOrder={handleCancelOrder} 
+                        handleDeclineOrder={handleDeclineOrder}
+                        handleGetMoreOrders={handleGetMoreOrders}
+                      />
+                    }
+                    {tabValue === 1 && 
+                      <AcceptedOrders  
+                        role={user.role} 
+                        orders={ordersArr} 
+                        handleUpdateStatus={handleUpdateStatus} 
+                        handleGetMoreOrders={handleGetMoreOrders}
+                      />
+                    }
+                    {tabValue === 2 && 
+                      <ForCompletionOrders  
+                        role={user.role} 
+                        orders={ordersArr} 
+                        handleUpdateStatus={handleUpdateStatus} 
+                        handleGetMoreOrders={handleGetMoreOrders}
+                      />
+                    }
+                    {tabValue === 3 && 
+                      <CompletedOrders  
+                        role={user.role} 
+                        orders={ordersArr} 
+                        updateStatus={updateStatus} 
+                        handleGetMoreOrders={handleGetMoreOrders}
+                      />
+                    }
                 </StyledPaper>
             </Grid>
         </StyledGrid>
