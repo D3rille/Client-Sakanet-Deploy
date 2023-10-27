@@ -8,13 +8,11 @@ import {
   Box
 } from "@mui/material";
 import { styled } from "@mui/system";
-
 import { formatWideAddress } from "../../util/addresssUtils";
+import {useMutation} from "@apollo/client";
+import { EDIT_ADDRESS } from "../../graphql/operations/settings";
+import toast from "react-hot-toast";
 
-// const PasswordAndEmailContainer = styled("div")({
-//   paddingTop: "0.3rem",
-//   margin: "2rem",
-// });
 
 const CustomTextField = styled(TextField)({
   width: "420px",
@@ -30,42 +28,7 @@ const CustomTextField = styled(TextField)({
     borderColor: "#2E603A",
   },
 });
-  
 
-// const PasswordField = styled(TextField)({
-//     flexDirection: "column",
-//     display:'flex',
-//   width: "420px",
-//   marginBottom: "5px",
-//   "& input": {
-//     height: "40px",
-//     padding: "0 14px",
-//   },
-//   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-//     borderColor: "#2E603A",
-//   },
-//   "&:hover .MuiOutlinedInput-notchedOutline": {
-//     borderColor: "#2E603A",
-//   },
-// });
-
-// const StyledButton = styled(Button)({
-//   backgroundColor: "#2E603A",
-//   "&:hover": {
-//     backgroundColor: "#FE8C47",
-//   },
-// });
-
-// const StyledDivider = styled(Divider)({
-//   marginTop: "10px",
-//   marginBottom: "10px",
-// });
-
-// const SaveButtonContainer = styled("div")({
-//     marginTop: '20px',
-//     display: 'flex',
-//     justifyContent: 'flex-end',
-// });
 
 const Address = ({address}) => {
     const [openConfig, setOpenConfig] = useState(false);
@@ -74,6 +37,37 @@ const Address = ({address}) => {
     const [cityOrMunicipality, setCityOrMunicipality] = useState(address?.cityOrMunicipality ?? "");
     const [province, setProvince] = useState(address?.province ?? "");
     const [region, setRegion] = useState(address?.region ?? "");
+
+    const [editAddress] = useMutation(EDIT_ADDRESS,{
+        variables:{
+            "addressInput": {
+              "street": street,
+              "barangay": barangay,
+              "cityOrMunicipality": cityOrMunicipality,
+              "province": province,
+              "region": region
+            }
+        }, 
+        onCompleted:(data)=>{
+            let hasEdited = false
+            if(address?.street != street){
+                hasEdited = true;
+            } else if(address?.barangay != barangay){
+                hasEdited= true;
+            } else if(address?.cityOrMunicipality != cityOrMunicipality){
+                hasEdited= true;
+            } else if(address?.province != province){
+                hasEdited= true;
+            } else if(address?.region != region){
+                hasEdited= true;
+            }
+
+            if(hasEdited){
+                toast.success(data?.editAddress);
+            }
+                
+        }
+    });
 
     const handleCloseConfig = () =>{
         setOpenConfig(false);
@@ -192,6 +186,7 @@ const Address = ({address}) => {
                                 color="success"
                                 sx={{marginRight:"0.5em"}}
                                 onClick={()=>{
+                                    editAddress();
                                     handleCloseConfig();
                                 }}
                             >
@@ -199,7 +194,7 @@ const Address = ({address}) => {
                             </Button>
                             <Button 
                             variant="outlined" 
-                            color="success"
+                            color="error"
                             onClick={handleCloseConfig}
                             >
                                 Cancel

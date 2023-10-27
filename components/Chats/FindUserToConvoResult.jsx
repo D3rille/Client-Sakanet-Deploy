@@ -49,7 +49,7 @@ function FindUserToConvoResult({...props}){
                         </ListItemAvatar>
                         <div style={{flexDirection:"column"}}>
                             <Link className={styles.searchLink} >
-                                    <h3>{user.username}</h3>
+                                    <h5>{user.username}</h5>
                             </Link>
 
                             <Typography sx={{fontSize:"0.7rem"}}>

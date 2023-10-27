@@ -63,13 +63,44 @@ const ChatsPage = () => {
             data:getMessagesData, 
             loading:getMessagesLoading, 
             error:getMessagesError, 
-            refetch:refetchMessages, 
+            fetchMore:fetchMoreMessages,
             subscribeToMore:subscribeToNewMessage} = useQuery(GET_MESSAGES, {
-            variables:{conversationId:convoId ?? ""},
+            variables:{
+                conversationId:convoId ?? "",
+                limit:10,
+                cursor:null
+            },
         });
         
     } catch (error) {
         console.error(error);
+    }
+
+    const getMoreMessages = () =>{
+        if(getMessagesData?.getMessages?.hasNextPage){
+            fetchMoreMessages({
+                variables:{
+                    conversationId:convoId ?? "",
+                    limit:10,
+                    cursor: getMessagesData?.getMessages?.endCursor
+                },
+                onError:(error)=>{
+                    toast.error(error.message);
+                },
+                updateQuery: (prev, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev;
+                    return Object.assign({}, prev, {
+                      getMessages: {
+                        ...prev.getMessages,
+                        endCursor:fetchMoreResult?.getMessages?.endCursor,
+                        hasNextPage: fetchMoreResult?.getMessages?.hasNextPage,
+                        messages:[...fetchMoreResult?.getMessages?.messages, ...prev?.getMessages?.messages],
+                      }
+                    });
+                    
+                },
+            });
+        }
     }
        
     useEffect(() => {
@@ -173,14 +204,8 @@ const ChatsPage = () => {
                         readConvo={readConvo}
                     />
                     {newConvo && (<CreateConvo 
-                    // handleCreateNewConvo={handleCreateNewConvo}
-                    // createNewConvo ={createNewConvo}
-                    // createNewConvoData = {createNewConvoData}
-                    // createGroupChat = {createGroupChat}
-                    // createGroupChatData={createGroupChatData}
                     handleSendMessage={handleSendMessage}
                     handleStartNewConvo={handleStartNewConvo}
-                    // setCurrentConvoId = {setCurrentConvoId}
                     currentConvoId={convoId}
                     />)}
                     {!newConvo && (
@@ -190,6 +215,7 @@ const ChatsPage = () => {
                         getMessagesError = {getMessagesError}
                         handleSendMessage={handleSendMessage}
                         conversationId={convoId}
+                        getMoreMessages={getMoreMessages}
                     />
                     )}  
                     <ChatInfoPanel 

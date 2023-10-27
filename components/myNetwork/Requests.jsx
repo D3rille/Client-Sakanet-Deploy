@@ -8,7 +8,7 @@ import {useRouter} from "next/router";
 
 
 import {GET_CONNECTION_REQUESTS} from '../../graphql/operations/myNetwork';
-import { formatWideAddress } from '../../util/addresssUtils';
+import { formatShortAddress } from '../../util/addresssUtils';
 
 function Requests({acceptConnection, declineConnection}){
     const router = useRouter();
@@ -49,7 +49,7 @@ function Requests({acceptConnection, declineConnection}){
             }} >
                 <h2 style={{fontSize:'12px'}}>{request.requesterName}</h2>
             </Link>
-          <p style={{fontSize:'12px'}}>{formatWideAddress(request.address)}</p>
+          <p style={{fontSize:'12px'}}>{formatShortAddress(request.address)}</p>
           </div>
           <div style={{display:'flex'}}>
             <button className={styles.acceptbtn} onClick={()=>{acceptConnection({variables:{"requester":request.requesterId}})}}>

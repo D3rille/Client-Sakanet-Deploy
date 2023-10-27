@@ -38,14 +38,15 @@ export const FIND_USER_TO_CHAT = gql`
 `;
 
 export const GET_MESSAGES = gql`
-    query GetMessages($conversationId: String) {
-    getMessages(conversationId: $conversationId) {
+    query GetMessages($conversationId: String, $limit: Int, $cursor: String) {
+    getMessages(conversationId: $conversationId, limit: $limit, cursor: $cursor) {
         _id
         recipientPic
         recipientUsername
         admin
         isGroup
         messages {
+        _id
         profile_pic
         username
         conversationId
@@ -53,27 +54,32 @@ export const GET_MESSAGES = gql`
         message
         createdAt
         }
-        
+        hasNextPage
+        endCursor
     }
     }
 `;
 
 export const GET_CONVERSATIONS = gql`
-    query GetConversations {
-        getConversations {
-            _id
-            name
-            profile_pic
-            hasSeenLastMessage
-            participants
-            lastMessage {
-            from
-            message
-            createdAt
-            }
-        }
+query GetConversations($limit: Int, $page: Int) {
+  getConversations(limit: $limit, page: $page) {
+    hasNextPage
+    conversations {
+      _id
+      name
+      profile_pic
+      hasSeenLastMessage
+      participants
+      lastMessage {
+        from
+        message
+        createdAt
+      }
     }
+  }
+}
 `;
+
 
 export const GET_UNREAD_CONVO = gql`
     query Query {

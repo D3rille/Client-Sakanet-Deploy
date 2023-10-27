@@ -193,11 +193,11 @@ const Settings = () => {
                     </InnerPaperLeft>
                     <ParentContainer>
                         <InnerPaperRight elevation={3}>
-                            {value === 0 && <Profile currentProfilePic = {profile_pic} currentCoverPic = {cover_photo} />}
-                            {value === 1 && <Address address={profile?.profile?.address}/>}
-                            {value === 2 && <EmailAndPassword />}
-                            {value === 3 && <PaymentChannels />}
-                            {value === 4 && <Verification />}
+                            {profile && value === 0 && <Profile profile={profile?.profile} />}
+                            {profile && value === 1 && <Address address={profile?.profile?.address}/>}
+                            {profile && value === 2 && <EmailAndPassword />}
+                            {profile && value === 3 && <PaymentChannels />}
+                            {profile && value === 4 && <Verification profile = {profile?.profile} />}
                         </InnerPaperRight>
                     </ParentContainer>
                 </StyledPaperContainer>

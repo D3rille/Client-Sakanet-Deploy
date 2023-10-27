@@ -10,7 +10,7 @@ var token = null;
 // This condition is used repeatedly because next.js was used and it renders first in the server,
 // if used directly, it returns an error saying that localStorage is not defined
 if (typeof window !== 'undefined') {
-  token = localStorage.getItem('jwtToken');
+  token = sessionStorage.getItem('jwtToken');
 }
 
 if (token) {
@@ -18,7 +18,7 @@ if (token) {
 
   if (decodedToken.exp * 1000 < Date.now()) {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('jwtToken');
+      sessionStorage.removeItem('jwtToken');
     }
   } else {
     initialState.user = decodedToken;
@@ -54,7 +54,7 @@ function AuthProvider(props) {
   function login(userData) {
     //localStorage.setItem('jwtToken', userData.token);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('jwtToken', userData.token);
+      sessionStorage.setItem('jwtToken', userData.token);
     }
     dispatch({
       type: 'LOGIN',
@@ -66,7 +66,7 @@ function AuthProvider(props) {
   function logout() {
     //localStorage.removeItem('jwtToken');
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('jwtToken');
+      sessionStorage.removeItem('jwtToken');
     }
     dispatch({ type: 'LOGOUT' });
   }

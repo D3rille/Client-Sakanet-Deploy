@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import { styled } from "@mui/system";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import {useMutation} from "@apollo/client";
+
+import { ADD_PAYMENT_CHANNEL } from "../../graphql/operations/settings";
 
 const StyledModal = styled(Modal)({
   display: "flex",
@@ -117,6 +120,16 @@ const PaymentModal = ({
 }) => {
   const [paymentChannel, setPaymentChannel] = useState(propChannel);
   const [details, setDetails] = useState(propDetails);
+
+  // const [addPaymentChannel] = useMutation(ADD_PAYMENT_CHANNEL, {
+  //   variables:{
+  //     paymentChannel:{
+  //       channel:paymentChannel,
+  //       details
+
+  //     }
+  //   }
+  // });
 
   useEffect(() => {
     setPaymentChannel(propChannel);

@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
-import { Box, styled, TextField, InputAdornment, IconButton, Tooltip, Typography, Avatar } from '@mui/material';
+import { Box, styled, TextField, InputAdornment, IconButton, Tooltip, Typography, Avatar, Button} from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MessageBubble from './MessageBubble';
 import { format } from 'date-fns';
 import CircularLoading from "../circularLoading";
 import {useSubs} from "../../context/SubscriptionProvider";
 import { AuthContext } from '../../context/auth';
+import { Waypoint } from 'react-waypoint';
 
 const StyledChatExchange = styled(Box)({
     flex: 2,
@@ -52,12 +53,13 @@ const StyledHeader = styled(Box)({
 const StyledChatBody = styled(Box)(({ inputHeight }) => ({
     backgroundColor: '#F9FAFC',
     flex: 1,
-    overflowY: 'auto',
+    overflowY: "auto",
     display: 'flex',
     flexDirection: 'column',
     margin: 0,
+    paddingInline:"1em",
     paddingBottom: "10vh",
-    height: `calc(100% - ${inputHeight})`, // Use height instead of passing inputHeight as a prop
+    // height: `calc(100% - ${inputHeight})`, // Use height instead of passing inputHeight as a prop
 }));
 
 const MessageInputContainer = styled(Box)({
@@ -109,19 +111,33 @@ const StyledSendIcon = styled(IconButton)(({ theme }) => ({
 const ChatExchange = ({...props}) => {
     const { profile } = useSubs();
     const {user} = useContext(AuthContext);
-    const {getMessagesData, getMessagesLoading, getMessagesError, handleSendMessage, conversationId} = props;
+    const {
+        getMessagesData, 
+        getMessagesLoading, 
+        getMessagesError, 
+        handleSendMessage,
+        getMoreMessages, 
+        conversationId} = props;
     const [inputHeight, setInputHeight] = useState('24px');
     const [messageInput, setMessageInput] = useState('');
+    const [loadNext, setLoadNext] = useState(false);
+    const [prevScrollHeight, setPrevScrollHeight] = useState(0);
 
     const recipient = getMessagesData?.getMessages;
    
     const chatBodyRef = useRef(null);
+    
 
     useEffect(() => {
-        if (chatBodyRef.current) {
-            chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+        if(loadNext){
+            chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight - prevScrollHeight;
+            setPrevScrollHeight(chatBodyRef.current.scrollHeight);
         }
-    }, [recipient?.messages]);
+        else if(chatBodyRef.current){
+            chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+            setPrevScrollHeight(chatBodyRef.current.scrollHeight);
+        }
+    }, [recipient]);
 
     const handleInputChange = (event) => {
         const targetValue = event.target.value;
@@ -157,10 +173,23 @@ const ChatExchange = ({...props}) => {
                 <StyledChatBody ref={chatBodyRef}>
                 {getMessagesLoading && (<CircularLoading/>)}
                 {!recipient?.messages && (<Typography sx={{display:"flex", margin:"auto"}}> Select a Conversation</Typography>)}
+                {/* <Button
+                onClick={(e)=>{
+                    e.preventDefault();
+                    getMoreMessages();
+                }}
+                >
+                    See More
+                </Button> */}
                 {recipient?.messages?.map((msg, index) => (
-                    <div key={index}>
+                    <React.Fragment key={index}>
                         <MessageBubble msg = {msg} currentUser = {user.id} isGroup={recipient?.isGroup}/>
-                    </div>
+                        {index == 0 && (<Waypoint onEnter={()=>{
+                            getMoreMessages();
+                            setLoadNext(true);
+                            }}/>)}
+                    </React.Fragment>
+                    // recipient.messages.length -1
                 
                 ))}
                 </StyledChatBody>

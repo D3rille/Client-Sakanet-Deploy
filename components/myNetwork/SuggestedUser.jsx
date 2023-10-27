@@ -7,7 +7,7 @@ import Link from  '@mui/material/Link';
 import {useRouter} from "next/router";
 
 import { GET_SUGGESTED_USERS } from '../../graphql/operations/myNetwork';
-import { formatWideAddress } from '../../util/addresssUtils';
+import { formatShortAddress } from '../../util/addresssUtils';
 
 
 function SuggestedUsers({requestConnection}){
@@ -55,7 +55,7 @@ function SuggestedUsers({requestConnection}){
               }} >
                  <h2 style={{fontSize:'12px'}}>{user.username}</h2>
               </Link>
-              <p style={{fontSize:'12px'}}>{formatWideAddress(user.address)}</p>
+              <p style={{fontSize:'12px'}}>{formatShortAddress(user.address)}</p>
               </div>
               <div style={{display:'flex'}}>
                 <button className={styles.acceptbtn} onClick={()=>{requestConnection({variables:{"connectTo":user._id}})}}>

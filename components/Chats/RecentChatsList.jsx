@@ -27,6 +27,7 @@ import FindUserToConvoResult from "./FindUserToConvoResult";
 import CircularLoading from "../circularLoading";
 import { AuthContext } from "../../context/auth";
 import {useRouter} from "next/router";
+import { Waypoint } from "react-waypoint";
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -86,7 +87,7 @@ const CreateChatBox = styled(Box)({
 });
 
 const ChatListContainer = styled(Box)({
-  maxHeight: "58vh",
+  height: "58vh",
   overflowY: "auto",
   overflowX: "hidden",
 });
@@ -150,9 +151,12 @@ const RecentChatsList = ({...props}) => {
   const {newConvo, handleStartNewConvo, handleCreateConvo, currentConvoId, readConvo} = props;
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [numPage, setNumPage] = useState(1);
  
   const [focus, setFocus]  = useState(false);
   const [query, setQuery] = useState("");
+
+  console.log(numPage)
 
   useEffect(()=>{
     if(currentConvoId){
@@ -161,7 +165,50 @@ const RecentChatsList = ({...props}) => {
   },[currentConvoId]);
 
   
-  const {data:getConvosData, loading:getConvosLoading, subscribeToMore:subscribeToMoreConvos, refetch:refetchConvos} = useQuery(GET_CONVERSATIONS);
+  const {
+    data:getConvosData, 
+    loading:getConvosLoading, 
+    subscribeToMore:subscribeToMoreConvos, 
+    refetch:refetchConvos,
+    fetchMore:getMoreConversations
+  } = useQuery(GET_CONVERSATIONS,{
+    variables:{
+      limit:10,
+      page:1
+    },
+    onError:(error)=>{
+      toast.error(error);
+    }
+  });
+
+  const handleGetMoreConversations = () =>{
+    if(getConvosData?.getConversations?.hasNextPage){
+      getMoreConversations({
+        variables:{
+          limit:10,
+          page: numPage + 1
+        },
+        onCompleted:()=>{
+          setNumPage(numPage + 1);
+        },
+        onError:(error)=>{
+          toast.error(error.message);
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return Object.assign({}, prev, {
+            getConversations: {
+              ...prev.getConversations,
+              hasNextPage: fetchMoreResult?.getConversations?.hasNextPage,
+              conversations:[...prev?.getConversations?.conversations, ...fetchMoreResult?.getConversations?.conversations],
+            }
+          });
+          
+        },
+      })
+    }
+  }
+
   const [findUser, {data:findUserData, loading:findUserLoading}] = useLazyQuery(FIND_USER_TO_CHAT);
 
   useEffect(()=>{
@@ -170,7 +217,15 @@ const RecentChatsList = ({...props}) => {
       variables:{receiverId:user?.id ?? ""},
       updateQuery:(prev, {subscriptionData})=>{
         if(!subscriptionData.data) return prev;
-        refetchConvos();
+        refetchConvos({
+          variables:{
+            limit:10,
+            page:1
+          },
+          onCompleted:()=>{
+            setNumPage(2);
+          }
+        });
       }
     });
   }, []);
@@ -276,15 +331,26 @@ const RecentChatsList = ({...props}) => {
           </div>
         
         )}
-        {!focus && getConvosData?.getConversations.map((chat) => (
-          <ChatItems 
-            key={chat._id} 
-            chat={chat} 
-            selectedChatId={selectedChatId} 
-            handleChatClick={handleChatClick} 
-            handleReadConvo={handleReadConvo}
-            currentConvoId={currentConvoId}
-          />
+        {!focus && getConvosData?.getConversations?.conversations.map((chat, index) => (
+          // <React.Fragment key={index}>
+          <Waypoint key={index} onEnter={()=>{
+            if(index==getConvosData?.getConversations?.conversations.length -1){
+              handleGetMoreConversations();
+            }
+          }}>
+            <div>
+              <ChatItems 
+                chat={chat} 
+                selectedChatId={selectedChatId} 
+                handleChatClick={handleChatClick} 
+                handleReadConvo={handleReadConvo}
+                currentConvoId={currentConvoId}
+                />
+            </div>
+          </Waypoint>
+          //     {index == getConvosData?.getConversations?.conversations.length-1 &&
+          //     (<Waypoint onEnter={()=>{handleGetMoreConversations()}}/>)}
+          // </React.Fragment>
         ))}
         {focus && (
           <FindUserToConvoResult 

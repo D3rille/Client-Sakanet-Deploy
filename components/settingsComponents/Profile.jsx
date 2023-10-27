@@ -14,8 +14,8 @@ import { imageDelete, uploadCoverPhoto, uploadImage } from "../../util/imageUtil
 import { UPLOAD_COVER_PIC, UPLOAD_PROFILE_PIC } from "../../graphql/operations/image";
 import { useMutation } from "@apollo/client";
 import { GET_MY_PROFILE } from "../../graphql/operations/profile";
-import { UPDATE_DISPLAY_NAME } from "../../graphql/operations/settings";
-
+import { UPDATE_DISPLAY_NAME, ADD_DESCRIPTION} from "../../graphql/operations/settings";
+import toast from "react-hot-toast";
 
 
 const ProfileContainer = styled("div")({
@@ -78,10 +78,15 @@ const SaveButtonContainer = styled("div")({
   });
 
 
-const Profile = ({currentProfilePic, currentCoverPic}) => {
+const Profile = ({profile}) => {
+  const {profile_pic, cover_photo, description } = profile;
+  const nameDisplay = profile?.displayName ?? "";
   const [profilePicture, setProfilePicture] = useState(null); //Profile Pic
   const [coverPhoto, setCoverPhoto] = useState(null); //Cover photo
-  const [displayName, setDisplayName] = useState(""); // Display Name
+  const [displayName, setDisplayName] = useState(nameDisplay); // Display Name
+  const [profile_description, setProfile_description] = useState(description ?? "");
+  const [isEditing, setIsEditing] = useState(false);
+
 
   const [uploadProfilePic] = useMutation(UPLOAD_PROFILE_PIC,{
     refetchQueries:[
@@ -97,17 +102,38 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
   const [updateDisplayName] = useMutation(UPDATE_DISPLAY_NAME,{
     refetchQueries:[
       GET_MY_PROFILE
-    ]
+    ], 
+    onCompleted:(data)=>{
+      toast.success(data?.changeDisplayName)
+    }
   });
-  const handleSave = () => {
-    if (displayName !== "") {
+
+  const [addDescription] = useMutation(ADD_DESCRIPTION,{
+    refetchQueries:[GET_MY_PROFILE],
+    onCompleted:(data)=>{
+      toast.success(data?.addDescription);
+    }
+  });
+
+  const handleSave = () => {  
+    if(nameDisplay != displayName){
       updateDisplayName({
         variables: {
           displayName: displayName
         }
       });
+    }
+
+    if(description != profile_description){
+      addDescription({
+        variables:{
+          description:profile_description
+        }
+      });
+    }
+
+    setIsEditing(false);
   }
-}
   const handleProfilePictureDrop = (acceptedFiles) => {
     setProfilePicture(acceptedFiles[0]);
   };
@@ -118,9 +144,9 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
   
   const handleProfilePicUpload = async (profilePicture) =>
   {
-      if (currentProfilePic !== "" || null)
+      if (profile_pic !== "" || null)
     {
-      imageDelete(currentProfilePic);
+      imageDelete(profile_pic);
     }
     try {
       const secureUrl = await uploadImage(profilePicture);
@@ -144,9 +170,9 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
   };
   const handleCoverPhotoUpload = async (coverPhoto) => 
   {
-    if (currentCoverPic !== "" || null)
+    if (cover_photo !== "" || null)
     {
-      imageDelete(currentCoverPic);
+      imageDelete(cover_photo);
     }
     try {
       const secureUrl = await uploadCoverPhoto(coverPhoto);
@@ -181,26 +207,6 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
   });
   return (
     <ProfileContainer>
-      
-      {/* Display Name */}
-      <div style={{ marginTop: "1rem" }}>
-        <h3>Display Name</h3> 
-        <UsernameField
-          variant="outlined"
-          placeholder="Enter your display name"
-          InputProps={{
-            style: {
-              borderColor: "#2E603A",
-              marginTop: "10px",
-            },
-          }}
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-        />
-      </div>
-
-      <StyledDivider />
-
       {/* <div>
         <h3 style={{ marginBottom: "10px" }}>Profile Name</h3>
         <div>
@@ -363,10 +369,40 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
 
 
       <StyledDivider />
+       {/* Display Name */}
+       <div style={{ marginTop: "1rem" }}>
+        <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+          <h3 style={{marginRight: "0.5em"}}>Display Name:</h3> 
+          {!isEditing && nameDisplay && (<Typography variant="h6">
+            {nameDisplay}
+          </Typography>)}
+
+          {!nameDisplay && (<Typography variant="body">
+            None
+          </Typography>)}
+
+        </div>
+
+        {isEditing && (<UsernameField
+          variant="outlined"
+          placeholder="Enter your display name"
+          InputProps={{
+            style: {
+              borderColor: "#2E603A",
+              marginTop: "10px",
+            },
+          }}
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+        />)}
+      </div>
 
       <div>
-        <h3>Bio</h3>
-        <TextareaAutosize
+        <h3>Profile Description</h3>
+        {!isEditing && (<Typography variant="caption">
+          {profile_description}
+        </Typography>)}
+        {isEditing && (<TextareaAutosize
           minRows={5}
           placeholder="Write your bio..."
           style={{
@@ -377,13 +413,40 @@ const Profile = ({currentProfilePic, currentCoverPic}) => {
             backgroundColor: "#F9F8F8",
             color: "#6E6F6F",
           }}
-        />
+          value={profile_description}
+          onChange={(e)=>{
+            setProfile_description(e.target.value);
+          }}
+        />)}
 
-        <Typography variant="caption">Max of 250 characters.</Typography>
+        {/* <Typography variant="caption">Max of 250 characters.</Typography> */}
       </div>
 
       <SaveButtonContainer>
-        <StyledButton variant="contained" onClick={handleSave} style={{marginBottom: '1rem',}}>Save Changes</StyledButton>
+        {!isEditing && (
+          <StyledButton 
+            variant="contained" 
+            style={{marginBottom: '1rem',}}
+            onClick={()=>{
+              setIsEditing(true);
+            }}
+          >
+            Edit
+          </StyledButton>
+        )}
+        {isEditing && (<div style={{display:"flex", flexDirection:"row"}}>
+          <StyledButton 
+            variant="outlined" 
+            color="error" 
+            style={{marginBottom: '1rem', backgroundColor:"white", marginInline:"1em"}}
+            onClick={()=>{
+              setIsEditing(false);
+            }}
+            >
+            Cancel
+          </StyledButton>
+          <StyledButton variant="contained" onClick={handleSave} style={{marginBottom: '1rem',}}>Save Changes</StyledButton>
+        </div>)}
       </SaveButtonContainer>
     </ProfileContainer>
   );

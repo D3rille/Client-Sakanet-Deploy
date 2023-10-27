@@ -45,7 +45,7 @@ const NameField = styled(TextField)({
   },
 });
 
-const AccountVerification = () => {
+const AccountVerification = ({profile}) => {
   const [uploadedID, setUploadedID] = useState(null);
   const [verificationStatus, setVerificationStatus] = useState("Not Verified");
   const [birthDate, setBirthDate] = useState(null);
@@ -57,13 +57,14 @@ const AccountVerification = () => {
     refetchQueries: [GET_MY_PROFILE]
   });
 
-  const { loading, error, data } = useQuery(GET_MY_PROFILE);
+  // const { loading, error, data } = useQuery(GET_MY_PROFILE);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error.message}</p>;
 
 
-  const { verification_photo, is_verified, verification_status } = data.getMyProfile.profile;
+  // const { verification_photo, is_verified, verification_status } = data.getMyProfile.profile;
+  const { verification_photo, is_verified, verification_status } = profile;
 
   const handleIDUpload = (acceptedFiles) => {
     setUploadedID(acceptedFiles[0]);
