@@ -7,7 +7,7 @@ import styles from '../../styles/Navbar.module.css';
 import { GET_SUGGESTED_GROUPS, JOIN_POOL_GROUP } from "../../graphql/operations/poolGroup";
 import CircularLoading from "../circularLoading";
 
-export const SuggestedGroups = () =>{
+export const SuggestedGroups = ({suggestedGroupsResults}) =>{
     const [joinPoolGroup] = useMutation(JOIN_POOL_GROUP);
 
     const handleJoinPoolGroup = (poolGroupId) =>{
@@ -30,17 +30,7 @@ export const SuggestedGroups = () =>{
         }
     }
 
-    try {
-        var {data, loading, error} = useQuery(GET_SUGGESTED_GROUPS, {
-            onError:(error)=>{
-                toast.error(error.message);
-            }
-        });
-        
-    } catch (error) {
-        toast.error("something went wrong");
-        console.error(error)
-    }
+    const {data, loading, error} = suggestedGroupsResults;
 
     if (loading){
         return(

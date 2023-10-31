@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import {useMutation} from '@apollo/client';
+import {useMutation,  useQuery} from '@apollo/client';
 import groupicon from '../../public/images/Screenshot 2023-07-23 102237.png';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import { Card, Link, CircularProgress, Grid, Box, IconButton} from '@mui/material';
+import { Card, Link, CircularProgress, Grid, Box, IconButton, Button} from '@mui/material';
 import styles from '../../styles/Navbar.module.css';
 import { AuthContext } from '@/context/auth';
 import Image from "next/image";
@@ -15,18 +15,30 @@ import Requests from '../../components/myNetwork/Requests';
 import SuggestedUsers from '../../components/myNetwork/SuggestedUser';
 import { GET_CONNECTED_USERS, GET_CONNECTION_REQUESTS, GET_SUGGESTED_USERS } from '../../graphql/operations/myNetwork';
 import { ACCEPT_CONNECTION, DECLINE_CONNECTION, REQUEST_CONNECTION } from '../../graphql/operations/myNetwork';
+import { GET_SUGGESTED_GROUPS } from '../../graphql/operations/poolGroup';
 import default_profile from "../../public/images/default_profile.jpg";
 import { formatWideAddress } from '../../util/addresssUtils';
 import CreatePoolGroupModal from "../../components/myNetwork/CreatePoolGroupModal";
 import ManagedGroups from '../../components/myNetwork/ManagedGroups';
 import JoinedGroups from "../../components/myNetwork/JoinedGroups";
 import SuggestedGroups from '../../components/myNetwork/SuggestedGroups';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 
 export default function MyNetwork(){
     const {user} = useContext(AuthContext);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [isOpen, setIsOpen] = useState("");
+
+    const suggestedUsersResults = useQuery(GET_SUGGESTED_USERS,{
+      onError:(error)=>{
+        toast.error(error.message);
+        console.error(error);
+      }
+    });
+    const suggestedGroupsResults = useQuery(GET_SUGGESTED_GROUPS, {
+    });
+
     // Accept Connection
     const [acceptConnection, {data:acceptMutationData}] = useMutation(ACCEPT_CONNECTION,{
       refetchQueries:[
@@ -142,7 +154,7 @@ export default function MyNetwork(){
               <Grid container >
                   {/* Connection Requests */}
                   <Grid item xs={12}>
-                  <Typography sx={{paddingLeft:"2em",pb:"1em", fontSize:"1rem", fontWeight:"bold"}}>Connection Requests</Typography>
+                  <Typography sx={{paddingLeft:"2em",pb:"0.5em", fontSize:"1rem", fontWeight:"bold"}}>Connection Requests</Typography>
                     <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa',  paddingBlock:"1em"}}>
                       <div className={styles.contentCard1}>
                         {/* <p style={{fontWeight:500}}>Requests</p> */}
@@ -155,21 +167,31 @@ export default function MyNetwork(){
                   </Grid>
                   {/* Suggested Users */}
                   <Grid item xs={12}>
-                    <Typography sx={{paddingLeft:"2em",pb:"1em", fontSize:"1rem", fontWeight:"bold"}}>Suggested Users</Typography>
+                    <div style={{display:"flex", flexDirection:"row", alignItems:"center", paddingBottom:"0.5em"}}>
+                      <Typography sx={{paddingLeft:"2em", fontSize:"1rem", fontWeight:"bold"}}>Suggested Users</Typography>
+                      <IconButton onClick={()=>{suggestedUsersResults.refetch()}} sx={{marginInline:"0.5em"}}>
+                        <RefreshIcon/>
+                      </IconButton>
+                    </div>
                     <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa',  paddingBlock:"1em"}}>
                       <div className={styles.contentCard1}>
                         {/* <p style={{fontWeight:500}}>Suggestions</p> */}
                         {/* <Link sx={{color:'black',fontSize:'12px'}}>View all</Link> */}
                       </div>
                       <div className={styles.requestlist}>
-                        <SuggestedUsers requestConnection={requestConnection}/>
+                        <SuggestedUsers requestConnection={requestConnection} suggestedUsersResults={suggestedUsersResults}/>
                       </div>
                     </Card>
                   </Grid>
 
                   {/* Pool Groups you may join */}
                   {user?.role == "FARMER" && (<Grid item xs={12}>
-                    <Typography sx={{paddingLeft:"2em",pb:"1em", fontSize:"1rem", fontWeight:"bold"}}>Pool Groups you may join</Typography>
+                    <div style={{display:"flex", flexDirection:"row", alignItems:"center",paddingBottom:"0.5em"}}>
+                      <Typography sx={{paddingLeft:"2em", fontSize:"1rem", fontWeight:"bold"}}>Pool Groups you may join</Typography>
+                      <IconButton onClick={()=>{suggestedGroupsResults.refetch()}} sx={{marginInline:"0.5em"}}>
+                        <RefreshIcon/>
+                      </IconButton>
+                    </div>
                     <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa', paddingBlock:"1em"}}>
                       <div className={styles.contentCard1}>
                         {/* <p style={{fontWeight:500}}>You may want to join...</p> */}
@@ -177,7 +199,7 @@ export default function MyNetwork(){
                       </div>
                       <div className={styles.requestlist}>
                         {/* {joinlist} */}
-                        <SuggestedGroups/>
+                        <SuggestedGroups suggestedGroupsResults={suggestedGroupsResults}/>
                       </div>
                     </Card>
                   </Grid>)}

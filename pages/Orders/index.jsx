@@ -8,7 +8,15 @@ import AcceptedOrders from "../../components/Orders/AcceptedOrders";
 import ForCompletionOrders from "../../components/Orders/ForCompletionOrders";
 import CompletedOrders from "../../components/Orders/CompletedOrders";
 import { useQuery, useMutation} from "@apollo/client";
-import { GET_ORDERS, UPDATE_STATUS, CANCEL_ORDER, DECLINE_ORDER } from "../../graphql/operations/order";
+import {
+   GET_ORDERS, 
+   UPDATE_STATUS, 
+   CANCEL_ORDER, 
+   DECLINE_ORDER, 
+   SEND_SELLER_PAYMENT_CHANNELS,
+   RETURN_STOCK
+  } from "../../graphql/operations/order";
+import { GET_MY_PRODUCTS } from "../../graphql/operations/product";
 import { AuthContext } from '@/context/auth';
 import CircularLoading from  "../../components/circularLoading";
 import toast from 'react-hot-toast';
@@ -43,9 +51,6 @@ export default function Orders() {
             status:tabEquivalents[tabValue],
             limit: 10,
             cursor:null
-        },
-        onCompleted:(data)=>{
-          console.log(data)
         },
         onError:(error)=>{
             console.log(error);
@@ -90,11 +95,39 @@ export default function Orders() {
         }
     });
 
-    const handleUpdateStatus = async (orderId, currentStatus, nextStatus) => {
+    const [sendSellerPaymentChannels] = useMutation(SEND_SELLER_PAYMENT_CHANNELS);
+
+    const handleUpdateStatus = async (orderId, currentStatus, nextStatus, buyerId) => {
         try {
           await updateStatus({
             variables: {orderId},
-            refetchQueries:[GET_ORDERS],
+            onCompleted:()=>{
+              if(tabEquivalents[tabValue] == "Accepted"){
+                sendSellerPaymentChannels({
+                  variables:{
+                      buyerId
+                  }
+                });
+              }
+            },
+            refetchQueries:[
+            {
+              query:GET_ORDERS,
+              variables:{
+                status:currentStatus,
+                limit:10,
+                cursor:null
+              }
+            },
+            {
+              query:GET_ORDERS,
+              variables:{
+                status:nextStatus,
+                limit:10,
+                cursor:null
+              }
+            }
+          ],
           });
         } catch (error) {
           console.error('Error updating status:', error);
@@ -103,7 +136,8 @@ export default function Orders() {
     
     const [cancelOrder, {error:cancelOrderError}] = useMutation(CANCEL_ORDER, {
         onError:(cancelOrderError)=>{
-            console.log(cancelOrderError);
+            toast.error(cancelOrderError.message);
+            console.error(cancelOrderError);
         }
     });
 
@@ -145,7 +179,8 @@ export default function Orders() {
     const [declineOrder, {error:declineOrderError}] = useMutation(DECLINE_ORDER, {
         refetchQueries:[GET_ORDERS],
         onError:(declineOrderError)=>{
-            console.log(cancelOrderError);
+            toast.error(declineOrderError.message);
+            console.error(declineOrderError);
         }
     });
 
@@ -183,6 +218,23 @@ export default function Orders() {
           console.log(error);
         }
     };
+
+    const [returnStock] = useMutation(RETURN_STOCK);
+    const handleReturnStock = (orderId, productId) => {
+      returnStock({
+        variables:{
+          orderId,
+          productId
+        },
+        refetchQueries:[GET_ORDERS, GET_MY_PRODUCTS],
+        onCompleted:(data)=>{
+          toast.success(data?.returnStock);
+        },
+        onError:(error)=>{
+          toast.error(error.message);
+        }
+      })
+    }
     
     if(loading){return(<CircularLoading/>)};
     if(data){
@@ -236,6 +288,7 @@ export default function Orders() {
                         orders={ordersArr} 
                         handleUpdateStatus={handleUpdateStatus} 
                         handleGetMoreOrders={handleGetMoreOrders}
+                        handleReturnStock={handleReturnStock}
                       />
                     }
                     {tabValue === 3 && 

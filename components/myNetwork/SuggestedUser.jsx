@@ -1,6 +1,7 @@
+import {useState} from "react";
 import {useQuery} from '@apollo/client';
 import Avatar from '@mui/material/Avatar';
-import { Card, CircularProgress } from '@mui/material';
+import { Card, CircularProgress, Button } from '@mui/material';
 import styles from '../../styles/Navbar.module.css';
 import toast from 'react-hot-toast';
 import Link from  '@mui/material/Link';
@@ -10,10 +11,11 @@ import { GET_SUGGESTED_USERS } from '../../graphql/operations/myNetwork';
 import { formatShortAddress } from '../../util/addresssUtils';
 
 
-function SuggestedUsers({requestConnection}){
+function SuggestedUsers({requestConnection, suggestedUsersResults}){
     const router = useRouter();
-    const {data, error, loading} = useQuery(GET_SUGGESTED_USERS);
-  
+
+    const {data, error, loading} = suggestedUsersResults;
+    
     if (loading){return (
       <>
          <div sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' , width:"100%"}}>

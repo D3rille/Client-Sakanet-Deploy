@@ -1,11 +1,6 @@
 import { gql } from '@apollo/client';
 
 
-export const CREATE_PRODUCT = gql`
-  mutation CreateProduct($product: ProductInput) {
-    createProduct(product: $product)
-    }
-`;
 export const GET_ALL_MARKET_PRODUCTS = gql`
  query GetAllMarketProducts($type: String, $limit: Int, $page: Int) {
   getAllMarketProducts(type: $type, limit: $limit, page: $page) {
@@ -328,3 +323,32 @@ export const GET_MARKET_PRODUCT = gql`
   }
 `;
 
+export const CREATE_PRODUCT = gql`
+  mutation CreateProduct($product: ProductInput) {
+    createProduct(product: $product)
+    }
+`;
+
+export const EDIT_PRODUCT = gql`
+mutation EditProductDetails($productId: String, $product: ProductInput) {
+  editProductDetails(productId: $productId, product: $product)
+}
+`;
+
+export const CLOSE_PRODUCT =  gql`
+mutation CloseProduct($productId: String) {
+  closeProduct(productId: $productId)
+}
+`;
+
+export const DELETE_PRODUCT = gql`
+mutation DeleteProduct($productId: String) {
+  deleteProduct(productId: $productId)
+}
+`;
+
+export const REOPEN_PRODUCT = gql`
+mutation ReopenProduct($productId: String, $product: ProductInput) {
+  reopenProduct(productId: $productId, product: $product)
+}
+`;

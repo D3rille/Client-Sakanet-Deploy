@@ -112,7 +112,7 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
         "until":  selectedDate?.toISOString(),
         "area_limit": values.areaLimit ?? "",
         "pickup_location":values.pickUpLocation,
-        "dateOfHarvest":dateOfHarvest,
+        "dateOfHarvest":dateOfHarvest?.toISOString(),
         "modeOfDelivery": values.modeOfDelivery,
         "unit": values.unit,
       }

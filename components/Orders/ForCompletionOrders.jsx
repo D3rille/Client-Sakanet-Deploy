@@ -18,6 +18,9 @@ import { styled } from "@mui/system";
 import TriggeredDialog from "../popups/confirmationDialog";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {timePassed} from "../../util/dateUtils";
+import SmsIcon from '@mui/icons-material/Sms';
+import {useRouter} from "next/router";
+import CustomDialog from "../popups/customDialog";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -42,7 +45,9 @@ const More = (handleClickOpen) =>{
 }
 
 export default function ForCompletionOrders({...props}) {
-  const {orders, role, handleUpdateStatus}=props;
+  const {orders, role, handleUpdateStatus, handleReturnStock}=props;
+  const router = useRouter();
+  const [openDialog, setOpenDialog] = useState("");
 
   //Details of the Order upon clicking More icon
   const orderDetails=(order)=>{
@@ -143,7 +148,32 @@ export default function ForCompletionOrders({...props}) {
               <TableCell>{order.quantity}</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>₱{order.totalPrice}</TableCell>
               <TableCell>
-                {((role=="FARMER" && order.sellerResponse == "completed") || (role == "BUYER" && order.buyerResponse=="completed")) ? (
+                {role == "BUYER" && order.sellerResponse=="completed" && (
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      borderRadius: "20px",
+                      backgroundColor: "#2E603A",
+                      color: "#FFF",
+                      mr: 1,
+                      alignItems: "center",
+                      "&:hover": {
+                        backgroundColor: "#FE8C47",
+                      },
+                      width: "auto",
+                      height: "20px",
+                      fontSize: "0.6rem",
+                    }}
+                    onClick={()=>{
+                      handleUpdateStatus(order._id, "For Completion", "Completed", null)
+                    }}
+                  >
+                    {/* {role=="FARMER" ? "Completed": "Received Order"} */}
+                    Received Order
+                  </Button>
+                )}
+                  {role=="FARMER" && order.sellerResponse == "completed" && (
                     <Button
                       variant="contained"
                       size="small"
@@ -161,25 +191,50 @@ export default function ForCompletionOrders({...props}) {
                         fontSize: "0.6rem",
                       }}
                       onClick={()=>{
-                        handleUpdateStatus(order._id, "For Completion", "Completed")
+                        setOpenDialog("restock");
                       }}
                     >
-                      {role=="FARMER" ? "Completed": "Received Order"}
+                      Return to Stock ?
                     </Button>
-                  ):(
-                    <Typography sx ={{fontSize:"0.8rem"}}>
-                      Waiting...
-                    </Typography> 
-                  )
-                }
+                  )}
+                  {openDialog == "restock" && (<CustomDialog
+                    openDialog={Boolean(openDialog)}
+                    setOpenDialog={setOpenDialog}
+                    title={"Return stock?"}
+                    message={`Are you sure you want to return stock? This will delete the record of the order on both buyer and seller side.
+                    Returning a stock will restock your product offering, regardless
+                    whether the product is closed or open except if the product was already deleted. Proceed? 
+                    `}
+                    btnDisplay={0}
+                    callback={()=>{
+                      handleReturnStock(order?._id, order?.productId);
+                    }}
+                  />)}
+
               </TableCell>
               <TableCell>
+                <div style={{display:"flex", flexDirection:"row"}}>
+                 
+                    <IconButton
+                    onClick={()=>{
+                      if(role == "FARMER"){
+                        router.push(`/Chats?userId=${order?.buyer?.id}`);
+                      } else{
+                        router.push(`/Chats?userId=${order.seller.id}`);
+                      }
+                    }}
+                    >
+                      <SmsIcon/>
+                    </IconButton>
+                  
                   <TriggeredDialog
                   triggerComponent={More}
                   title={"Order Details"}
                   message={orderDetails(order)}
                   btnDisplay={0}
                   />
+
+                </div>
               </TableCell>
             </StyledTableRow>
           ))}

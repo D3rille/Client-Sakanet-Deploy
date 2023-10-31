@@ -37,7 +37,7 @@ import styles from "../../styles/productOverview.module.css";
 import { useRouter } from "next/router";
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { GET_PRODUCT,GET_AVAILABLE_PRODUCTS  } from "../../graphql/operations/product";
-import { PLACE_ORDER } from "../../graphql/operations/order";
+import { PLACE_ORDER, SELLER_HAS_PAYMENT_CHANNELS } from "../../graphql/operations/order";
 import { formatWideAddress } from "../../util/addresssUtils";
 import {formatDate, timePassed} from "../../util/dateUtils";
 import TriggeredDialog from "../../components/popups/confirmationDialog";
@@ -87,6 +87,18 @@ export default function PurchaseDialog({...props}) {
         }
     });
 
+    const [checkHasPaymentChannels, {data:sellerPaymentChannels}] = useLazyQuery(SELLER_HAS_PAYMENT_CHANNELS);
+
+    useEffect(()=>{
+        if(productData && !productDataLoading){
+            checkHasPaymentChannels({
+                variables:{
+                    sellerId: productData?.getProduct?.seller?.id
+    
+                }
+            });
+        }
+    },[productData, productDataLoading]);
 
     if (productDataLoading) return <CircularLoading/>;
     if(productData){
@@ -102,7 +114,7 @@ export default function PurchaseDialog({...props}) {
         closePurchaseModal();
     }
 
-    const executePlaceOrder=()=>{
+    const executePlaceOrder=async()=>{
 
         placeOrder({variables:{
             "order": {
@@ -418,7 +430,7 @@ export default function PurchaseDialog({...props}) {
                         }
                         label="Cash"
                         />
-                        <FormControlLabel
+                        {sellerPaymentChannels?.sellerHasOnlinePaymentChannels && (<FormControlLabel
                         name="modeOfPayment"
                         value="Online"
                         control={
@@ -431,7 +443,7 @@ export default function PurchaseDialog({...props}) {
                             />
                         }
                         label="Online"
-                        />
+                        />)}
                     </RadioGroup>
                     </CardContent>
                     <Box

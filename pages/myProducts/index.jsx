@@ -32,13 +32,17 @@ import FarmerSideToggleButton from "../../components/FarmerSide/FarmerSideToggle
 import {
   GET_MY_PRODUCTS,
   SEARCH_MY_PRODUCTS,
+  DELETE_PRODUCT
 } from "../../graphql/operations/product";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import CircularLoading from "../../components/circularLoading";
 import {formatDate, timePassed} from "../../util/dateUtils";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {useRouter} from "next/router";
 import TriggeredDialog from "../../components/popups/confirmationDialog";
+import OptionsMenu from "../../components/popups/OptionsMenu";
+import EditProductModal from "../../components/FarmerSide/EditProductModal";
+import CustomDialog from "../../components/popups/customDialog";
 
 const StyledIconButton = styled(IconButton)({
   background: "#2E603A",
@@ -71,16 +75,6 @@ const StyledIconButton = styled(IconButton)({
   },
 });
 
-// const ExpandMore = styled((props) => {
-//   const { expand, ...other } = props;
-//   return <IconButton {...other} />;
-// })(({ theme, expand }) => ({
-//   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-//   // marginLeft: 'auto',
-//   transition: theme.transitions.create('transform', {
-//     duration: theme.transitions.duration.shortest,
-//   }),
-// }));
 const triggerComponent = (handleClickOpen) => {
   return (
     <Button onClick={()=>{
@@ -91,7 +85,30 @@ const triggerComponent = (handleClickOpen) => {
   );
 }
 
-function ProductCard({ product, openDetails, setOpenDetails }) {
+function ProductCard({ product, openDetails, setOpenDetails, productStatus }) {
+  const [openOptions, setOpenOptions] = useState("");
+  const [deleteProduct] = useMutation(DELETE_PRODUCT);
+
+  const handleDeleteProduct = () =>{
+    deleteProduct({
+      variables:{
+        productId:product._id
+      },
+      refetchQueries:[GET_MY_PRODUCTS]
+    })
+  }
+  
+  const Options = (handleClick) =>{
+    return(
+    <IconButton
+    onClick={(e)=>{
+      handleClick(e);
+    }}
+    >
+      <MoreVertIcon />
+    </IconButton>
+    );
+  }
   
   const details =()=>{
     return(
@@ -120,6 +137,12 @@ function ProductCard({ product, openDetails, setOpenDetails }) {
       </>
     );
   }
+
+  const moreOptions = [
+    {name:"Edit", function:()=>{setOpenOptions("edit")}},
+    {name:"Delete", function:()=>{setOpenOptions("delete")}},
+  ]
+
   return (
     <Card
       sx={{
@@ -176,9 +199,10 @@ function ProductCard({ product, openDetails, setOpenDetails }) {
               alignItems:"flex-start",
             }}
           >
-            <IconButton aria-label=" product settings">
-              <MoreVertIcon />
-            </IconButton>
+          <OptionsMenu
+          triggerComponent={Options}
+          itemAndFunc={moreOptions}
+          />
           </Box>
 
         </Box>
@@ -271,13 +295,31 @@ function ProductCard({ product, openDetails, setOpenDetails }) {
         </Button> */}
         <TriggeredDialog triggerComponent={triggerComponent} message={details()} title={"More Product Details"} btnDisplay={0}/>
       </CardActions>
-      
+      {/* Modals */}
+      {openOptions == "edit" && (<EditProductModal
+      isOpen = {Boolean(openOptions)}
+      onClose={()=>{setOpenOptions("")}}
+      data={product}
+      productStatus={productStatus}
+      />)}
+      {openOptions == "delete" && (<CustomDialog
+          openDialog={Boolean(openOptions)}
+          setOpenDialog={setOpenOptions}
+          title={"Delete Product"}
+          message={"Delete product? This will no longer be visible to buyers and your product list. Proceed?"}
+          btnDisplay={0}
+          callback={()=>{
+            handleDeleteProduct();
+            setOpenOptions("");
+          }}
+          />)}
+
     </Card>
   );
 }
 
 const ProductsGrid = ({ ...props }) => {
-  const {productData, openDetails, setOpenDetails} = props;
+  const {productData, openDetails, setOpenDetails, productStatus} = props;
   return (
     <div
       style={{
@@ -288,7 +330,12 @@ const ProductsGrid = ({ ...props }) => {
       }}
     >
       {productData?.map((product) => (
-        <ProductCard key={product._id} product={product} openDetails={openDetails} setOpenDetails={setOpenDetails}/>
+        <ProductCard 
+        key={product._id} 
+        product={product} 
+        openDetails={openDetails} 
+        setOpenDetails={setOpenDetails} 
+        productStatus={productStatus}/>
       ))}
     </div>
   );
@@ -490,7 +537,11 @@ export default function FarmerSide() {
                    <CircularLoading />
                 </>
               ) : (
-                <ProductsGrid productData={productData} openDetails={openDetails} setOpenDetails={setOpenDetails}/>
+                <ProductsGrid 
+                productData={productData} 
+                openDetails={openDetails} 
+                setOpenDetails={setOpenDetails} 
+                productStatus={productStatus}/>
               )}
              
             </div>

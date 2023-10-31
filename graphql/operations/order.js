@@ -37,6 +37,13 @@ export const GET_ORDERS = gql`
     }
     }
  `;
+
+export const SELLER_HAS_PAYMENT_CHANNELS = gql`
+query Query($sellerId: String) {
+  sellerHasOnlinePaymentChannels(sellerId: $sellerId)
+}
+`;
+
 export const UPDATE_STATUS = gql`
     mutation UpdateStatus($orderId: String) {
         updateStatus(orderId: $orderId)
@@ -59,4 +66,15 @@ export const PLACE_ORDER = gql`
     }
 `;
 
+export const SEND_SELLER_PAYMENT_CHANNELS = gql`
+mutation SendSellerPaymentChannels($buyerId: String) {
+  sendSellerPaymentChannels(buyerId: $buyerId)
+}
+`;
+
+export const RETURN_STOCK = gql`
+mutation ReturnStock($orderId: String, $productId: String) {
+  returnStock(orderId: $orderId, productId: $productId)
+}
+`;
 

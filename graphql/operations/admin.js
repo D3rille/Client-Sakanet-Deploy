@@ -28,6 +28,8 @@ export const GET_USER_INFO = gql`
             role
             rating
             cover_photo
+            verification_photo
+            verification_status
         }
     }
 `;
@@ -42,4 +44,10 @@ export const UNVERIFY_USER  = gql`
     mutation UnverifyUser($userId: String) {
         unverifyUser(userId: $userId)
     }
+`;
+
+export const REJECT_VERIFICATION = gql`
+mutation RejectVerification($userId: String) {
+  rejectVerification(userId: $userId)
+}
 `;

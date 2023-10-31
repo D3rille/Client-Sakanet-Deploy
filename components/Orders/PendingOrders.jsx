@@ -317,7 +317,7 @@ export default function PendingOrders({...props}) {
                       message={"Are you sure you want to accept this order?"}
                       btnDisplay={0}
                       callback={() => {
-                        handleUpdateStatus(order._id, "Pending", "Accepted");
+                        handleUpdateStatus(order._id, "Pending", "Accepted", null);
                           // handleRemoveOrder(index);
                         }}
                     />
