@@ -109,7 +109,6 @@ const AddProductPoolModal = ({ open, onClose, poolGroupId}) => {
       <DialogTitle sx={{fontWeight:'bold'}}>Add Product Pool</DialogTitle>
       <Divider />
       <DialogContent>
-        {/* <Box component="input" {...productName} placeholder="Product Name" sx={{ mt: 2, width: '100%', height: '2.5rem', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', background: 'transparent', color: '#2D2C2D' }} /> */}
         <Box sx={{display:"flex", justifyContent:"space-between"}}>
           <Autocomplete
             disablePortal

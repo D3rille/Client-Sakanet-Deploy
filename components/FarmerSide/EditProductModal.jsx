@@ -42,7 +42,7 @@ import CustomDialog from "../popups/customDialog";
 
 
 
-export default function EditProductModal({ isOpen, onClose, data, productStatus }) {
+export default function EditProductModal({ isOpen, onClose, data, productStatus, currentPage, selectedCategory }) {
   const {onChange, onSubmit, onClear, values} = useForm(()=>{},{
     category: data?.category,
     area_limit: data?.area_limit ?? "",
@@ -54,7 +54,7 @@ export default function EditProductModal({ isOpen, onClose, data, productStatus 
     modeOfDelivery: data?.modeOfDelivery ?? "pick-up",
     pickUpLocation: data?.pickUpLocation ?? "",
   });
-  
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateOfHarvest, setDateOfHarvest] = useState(null);
   const [openDialog, setOpenDialog] = useState("");
@@ -95,7 +95,26 @@ export default function EditProductModal({ isOpen, onClose, data, productStatus 
       variables:{
         productId:data?._id
       },
-      refetchQueries:[GET_MY_PRODUCTS]
+      refetchQueries:[
+        {
+          query:GET_MY_PRODUCTS,
+          variables:{
+            category:selectedCategory,
+            limit:8,
+            page:currentPage,
+            status:"closed"
+          }
+        },
+        {
+          query:GET_MY_PRODUCTS,
+          variables:{
+            category:selectedCategory,
+            limit:8,
+            page:currentPage,
+            status:"open"
+          }
+        }
+      ]
     })
   }
   const handleReopenProduct = () =>{

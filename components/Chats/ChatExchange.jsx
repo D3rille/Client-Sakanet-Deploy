@@ -172,7 +172,7 @@ const ChatExchange = ({...props}) => {
                 </StyledHeader>
                 <StyledChatBody ref={chatBodyRef}>
                 {getMessagesLoading && (<CircularLoading/>)}
-                {!recipient?.messages && (<Typography sx={{display:"flex", margin:"auto"}}> Select a Conversation</Typography>)}
+                {!recipient?.messages && !getMessagesLoading && (<Typography sx={{display:"flex", margin:"auto"}}> Select a Conversation</Typography>)}
                 {/* <Button
                 onClick={(e)=>{
                     e.preventDefault();

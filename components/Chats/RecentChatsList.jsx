@@ -156,8 +156,6 @@ const RecentChatsList = ({...props}) => {
   const [focus, setFocus]  = useState(false);
   const [query, setQuery] = useState("");
 
-  console.log(numPage)
-
   useEffect(()=>{
     if(currentConvoId){
       setSelectedChatId(currentConvoId);

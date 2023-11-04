@@ -1,5 +1,6 @@
 import * as React from "react";
-import { useState } from "react";
+import Head from 'next/head';
+import { useState, useContext, useEffect } from "react";
 import {
   Grid,
   Paper,
@@ -40,12 +41,25 @@ import Pagination from "@mui/material/Pagination";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-// import AddIcon from "@mui/icons-material/Add";
-// import RemoveIcon from "@mui/icons-material/Remove";
+import { AuthContext } from "../../context/auth";
 import PurchaseDialog from "../../components/BuyerSide/PurchaseDialog";
 import toast from 'react-hot-toast';
 
-export default function Products() {
+
+export default function AddProductsPage() {
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user.role !== 'BUYER') {
+      router.push('/404');
+    }
+  }, [user]);
+
+  return user.role == 'BUYER' ? <Products /> : null;
+}
+
+function Products() {
   const router = useRouter();
   const productId = router.query.productid; //Product Id for dynamic page
   const goBack = () => {
@@ -162,10 +176,14 @@ export default function Products() {
 
 
 
-  if (loading) return (<CircularLoading/>); //TODO: Implement Loading and Error messaging
+  if (loading) return (
+    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+      <CircularLoading/>
+    </div>
+  ); //TODO: Implement Loading and Error messaging
   if (error) return <p>Error: {error.message}</p>;
   
-  if(data){
+  if(data && !loading){
     let products;
     let totalProduct;
 
@@ -182,7 +200,12 @@ export default function Products() {
     return (
     
       <Grid container className={styles.gridContainer}>
-        
+        <Head>
+          <title>Products</title>
+          <meta name="description" content="Products page" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
         <Grid item xs={12}>
         
           <Paper elevation={3} className={styles.paperContainer}>
@@ -442,7 +465,7 @@ export default function Products() {
                 </Button>
               </Paper>
               <div className={styles.parentContainer}>
-                <Paper elevation={3} className={styles.innerPaperRight}>
+                {/* <Paper elevation={3} className={styles.innerPaperRight}>
                   <div className={styles.logosearchbar}>
                     <TextField
                       size="small"
@@ -479,7 +502,7 @@ export default function Products() {
                       placeholder="Search"
                     />
                   </div>
-                </Paper>
+                </Paper> */}
                 
                 <div className={styles.productGridContainer}>
     {productsType === "Sell" ? <OrderProductGrid products = {products}  setPurchaseModal={setPurchaseModal}/> : 

@@ -8,6 +8,7 @@ import AcceptedOrders from "../../components/Orders/AcceptedOrders";
 import ForCompletionOrders from "../../components/Orders/ForCompletionOrders";
 import CompletedOrders from "../../components/Orders/CompletedOrders";
 import { useQuery, useMutation} from "@apollo/client";
+import Head from 'next/head';
 import {
    GET_ORDERS, 
    UPDATE_STATUS, 
@@ -20,6 +21,7 @@ import { GET_MY_PRODUCTS } from "../../graphql/operations/product";
 import { AuthContext } from '@/context/auth';
 import CircularLoading from  "../../components/circularLoading";
 import toast from 'react-hot-toast';
+import { useRouter } from "next/router";
 
 const StyledGrid = styled(Grid)({
     background: '#F4F4F4',
@@ -40,7 +42,20 @@ const StyledPaper = styled(Paper)({
     minHeight: '100vh'
 });
 
-export default function Orders() {
+export default function OrdersPage() {
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user.role == 'ADMIN') {
+      router.push('/404');
+    }
+  }, [user]);
+
+  return user.role != 'ADMIN' ? <Orders /> : null;
+}
+
+function Orders() {
     const { user } = useContext(AuthContext);
     const [tabValue, setTabValue] = useState(0);
 
@@ -97,12 +112,12 @@ export default function Orders() {
 
     const [sendSellerPaymentChannels] = useMutation(SEND_SELLER_PAYMENT_CHANNELS);
 
-    const handleUpdateStatus = async (orderId, currentStatus, nextStatus, buyerId) => {
+    const handleUpdateStatus = async (orderId, currentStatus, nextStatus, buyerId, modeOfPayment) => {
         try {
           await updateStatus({
             variables: {orderId},
             onCompleted:()=>{
-              if(tabEquivalents[tabValue] == "Accepted"){
+              if(tabEquivalents[tabValue] == "Accepted" && modeOfPayment == "Online"){
                 sendSellerPaymentChannels({
                   variables:{
                       buyerId
@@ -236,11 +251,21 @@ export default function Orders() {
       })
     }
     
-    if(loading){return(<CircularLoading/>)};
+    if(loading){return(
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+        <CircularLoading/>
+      </div>
+    )};
     if(data){
         const ordersArr = data?.getOrders?.orders;
         return (
         <StyledGrid container>
+          <Head>
+            <title>Orders</title>
+            <meta name="description" content="Orders page" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
             <Grid item xs={12}>
                 <StyledPaper elevation={3}>
                     <Box sx={{ textAlign: 'left', mt: 6, marginLeft: '5rem', marginRight: 'auto' }}>

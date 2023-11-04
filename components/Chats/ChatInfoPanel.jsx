@@ -279,7 +279,12 @@ const ChatInfoPanel = ({...props}) => {
     };
 
     if(findGroupMembersLoading){
-        return (<CircularLoading/>);
+        return (
+            <div style={{display:"flex", justifyContent:"center", alignItems:"center", width:"24vw"}}>
+                <CircularLoading/>
+
+            </div>
+        );
     }
 
     // if(findGroupMembersData){

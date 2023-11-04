@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
   Grid,
   Paper,
@@ -26,6 +26,10 @@ import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import ProductCategories from "../../components/ProductCategory";
 import CircularLoading from "../../components/circularLoading";
 import toast from 'react-hot-toast';
+import Head from 'next/head';
+
+
+import { AuthContext } from "../../context/auth";
 
 function ProductCard({ product, getDataForModal, setOpenProdModal}) {
 
@@ -103,7 +107,20 @@ const ProductsGrid = ( {productData, getDataForModal, setOpenProdModal} ) => {
   );
 };
 
-export default function Products() {
+export default function AddProductsPage() {
+    const { user } = useContext(AuthContext);
+    const router = useRouter();
+  
+    useEffect(() => {
+      if (user.role !== 'FARMER') {
+        router.push('/404');
+      }
+    }, [user]);
+  
+    return user.role == 'FARMER' ? <AddProducts /> : null;
+}
+
+function AddProducts() {
     const router = useRouter();
     const [openProdModal, setOpenProdModal] = useState(false); 
     const [selectedCategory, setSelectedCategory] = useState("");
@@ -165,7 +182,11 @@ export default function Products() {
         }
     });
 
-    if (loading) return (<CircularLoading/>);
+    if (loading) return (
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+            <CircularLoading sx={{margin:"auto"}}/>
+        </div>
+    );
     if (error) return <p>Error: {error.message}</p>;
     
 
@@ -188,6 +209,12 @@ export default function Products() {
         return (
         <Grid container className={styles.gridContainer}
         style={{ minHeight: '100vh' }}>
+            <Head>
+                <title>My Products</title>
+                <meta name="description" content="My Products page" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
             <Grid item xs={12}>
             <Paper elevation={3} className={styles.paperContainer}
             style={{ minHeight: '80vh' }}>

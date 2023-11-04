@@ -186,7 +186,7 @@ export default function AcceptedOrders({...props}) {
                       message={"Mark this order as complete?"}
                       btnDisplay={0}
                       callback={() => {
-                        handleUpdateStatus(order._id, "Accepted", "For Completion", order?.buyer?.id );
+                        handleUpdateStatus(order._id, "Accepted", "For Completion", order?.buyer?.id, order?.modeOfPayment );
                       }}
                     />
                 </TableCell>

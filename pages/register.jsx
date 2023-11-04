@@ -17,6 +17,7 @@ import Slide from "@mui/material/Slide";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import Head from 'next/head';
 import {
   Radio,
   FormControl,
@@ -209,7 +210,7 @@ export default function Register() {
     onError(err) {
       try {
         // console.log(err.graphQLErrors[0].extensions.errors);
-        setErrors(err.graphQLErrors[0].extensions.errors);
+        setErrors(err?.graphQLErrors[0]?.extensions.errors);
         setOpen(true);
       } catch (e) {
         console.log("Error: ", e);
@@ -219,7 +220,7 @@ export default function Register() {
     onCompleted: (data) => {
       toast.success("User successfully Registered");
       // router.push('/login');
-      router.push("/");
+      router.replace("/");
     },
     //variables to pass on mutation, copy paste from apollo playground then only change the value
     variables: {
@@ -280,8 +281,13 @@ export default function Register() {
   } else {
     return (
       <>
-        <Toaster />
-
+      <Toaster />
+      <Head>
+        <title>Register</title>
+        <meta name="description" content="Registration page" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
     <div
       style={{
         backgroundImage: `url(${bgimg})`,

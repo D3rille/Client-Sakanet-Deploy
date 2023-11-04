@@ -19,11 +19,13 @@ import Select from '@mui/material/Select';
 import { useQuery, useLazyQuery } from '@apollo/client';
 import toast from "react-hot-toast";
 import {useRouter} from "next/router";
+import Head from 'next/head';
 
 import { GET_TOTAL_STATS, GET_SALES_OR_ORDERS_STATS } from '../../graphql/operations/statistics';
 import CircularLoading from "../../components/circularLoading";
 import {AuthContext} from "../../context/auth";
 import SalesOrOrdersStats from '../../components/Statistics/SalesOrOrdersStats';
+import { formatToCurrency } from '../../util/currencyFormatter';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -32,7 +34,20 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
   }));
 
-export default function Statistics(){
+export default function StatisticsPage() {
+    const { user } = useContext(AuthContext);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (user.role !== 'BUYER') {
+        router.push('/404');
+        }
+    }, [user]);
+
+    return user.role == 'BUYER' ? <Statistics /> : null;
+}
+
+function Statistics(){
     const { user } = useContext(AuthContext); 
     const router = useRouter();
     const [startDate, setStartDate] = useState(null);
@@ -101,6 +116,12 @@ export default function Statistics(){
         <Box sx={{
             margin:"5em",
         }}>
+            <Head>
+                <title>Statistics</title>
+                <meta name="description" content="Statistics page" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
             <Box sx={{display:"flex", flexDirection:"row", paddingBlock:"1em", width:"30%", alignItems:"center"}}>
                 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -145,7 +166,7 @@ export default function Statistics(){
                                             Total Sales
                                         </Typography>
                                         <Typography variant="h4">
-                                            P {getTotalStatsData?.getTotalStats?.totalSales}
+                                            {formatToCurrency(getTotalStatsData?.getTotalStats?.totalSales)}
                                         </Typography>
                                     </Box>
                                 </>

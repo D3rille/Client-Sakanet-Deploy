@@ -199,11 +199,11 @@
     align-items: center;
     padding: 0px 10px 0px 20px;
 }
-.requestlist{
+/* .requestlist{
     display: flex;
     overflow: scroll;
 
-}
+} */
 .cardprofile{
     margin-left: 15px;
     margin-bottom: 5px;

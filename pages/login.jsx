@@ -28,6 +28,10 @@ import { useMutation } from '@apollo/client';
 import toast, { Toaster } from 'react-hot-toast';
 import Logo from '../public/bg/LOGO-ONLY-FINAL.png';
 import Image from 'next/image';
+import Head from 'next/head';
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const theme = createTheme({
     palette: {
@@ -107,7 +111,11 @@ export default function Login() {
     const [open, setOpen] = useState(false);
     const vertical = "top";
     const horizontal = "right";
-//   const navigate = useNavigate();
+
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => {
+      setShowPassword((prevShowPassword) => !prevShowPassword);
+    };
 
     const {onChange, onSubmit, values} = useForm(loginUser, {
         loginCred: "",
@@ -122,7 +130,7 @@ export default function Login() {
         // Display error
         onError(err){
             // console.log(err.graphQLErrors[0].message);
-            toast.error(err.graphQLErrors[0].message);
+            toast.error(err?.graphQLErrors[0]?.message);
             // setErrors(err);
             
         },
@@ -170,6 +178,12 @@ export default function Login() {
             overflow:"auto"
         }}
         >
+          <Head>
+            <title>Login</title>
+            <meta name="description" content="Login page" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
         <Box sx={boxstyle}>
           <Collapse in={open}>
             <Alert
@@ -224,15 +238,15 @@ export default function Login() {
                 <ThemeProvider theme={theme}>
                     <Container>
                     <Box height={35} />
-<Box sx={center}>
-  <Avatar sx={{ ml: "40px", mb: "4px", bgcolor: "#ffffff", width: 56, height: 56, position: 'relative' }}>
-    <Image src={Logo} alt="Logo" layout="fill" objectFit="cover" />
-  </Avatar>
-  <Typography variant="h5" justifyContent="center"
-    style={{ marginLeft: "35px", fontWeight: 'bold', color: "#013208", marginTop: "10px" }}>
-    LOGIN
-  </Typography>
-</Box>
+                    <Box sx={center}>
+                      <Avatar sx={{ ml: "40px", mb: "4px", bgcolor: "#ffffff", width: 56, height: 56, position: 'relative' }}>
+                        <Image src={Logo} alt="Logo" layout="fill" objectFit="cover" />
+                      </Avatar>
+                      <Typography variant="h5" justifyContent="center"
+                        style={{ marginLeft: "35px", fontWeight: 'bold', color: "#013208", marginTop: "10px" }}>
+                        LOGIN
+                      </Typography>
+                    </Box>
                     <Box
                         component="form"
                         noValidate
@@ -256,20 +270,39 @@ export default function Login() {
                             />
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                            <TextField
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            value={values.password}
-                            onChange={onChange}
-                            autoComplete="new-password"
-                            variant="outlined"
-                            InputProps={{ style: { color: '#02452d' } }}
-                            InputLabelProps={{ style: { color: '#02452d' } }}
+                          <TextField
+                              required
+                              fullWidth
+                              name="password"
+                              label="Password"
+                              type={showPassword ? "text" : "password"}
+                              id="password"
+                              value={values.password}
+                              onChange={onChange}
+                              autoComplete="new-password"
+                              variant="outlined"
+                              InputProps={{
+                                style: { color: "#02452d" },
+                                endAdornment: values.password && (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="toggle password visibility"
+                                      onClick={handleClickShowPassword}
+                                      edge="end"
+                                      style={{ color: "#2E603A" }}
+                                    >
+                                      {showPassword ? (
+                                        <VisibilityOff />
+                                      ) : (
+                                        <Visibility />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                ),
+                              }}
+                              InputLabelProps={{ style: { color: "#02452d" } }}
                             />
+                          
                         </Grid>
 
                         <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>

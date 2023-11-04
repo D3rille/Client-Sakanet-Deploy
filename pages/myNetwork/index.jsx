@@ -9,6 +9,9 @@ import { AuthContext } from '@/context/auth';
 import Image from "next/image";
 import toast, { Toaster } from 'react-hot-toast';
 import AddIcon from '@mui/icons-material/Add';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+
 
 import MyConnectionList from '../../components/myNetwork/MyConnectionList';
 import Requests from '../../components/myNetwork/Requests';
@@ -24,8 +27,20 @@ import JoinedGroups from "../../components/myNetwork/JoinedGroups";
 import SuggestedGroups from '../../components/myNetwork/SuggestedGroups';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
+export default function MyNetworkPage() {
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
 
-export default function MyNetwork(){
+  useEffect(() => {
+    if (user.role == 'ADMIN') {
+      router.push('/404');
+    }
+  }, [user]);
+
+  return user.role != 'ADMIN' ? <MyNetwork /> : null;
+}
+
+function MyNetwork(){
     const {user} = useContext(AuthContext);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [isOpen, setIsOpen] = useState("");
@@ -90,6 +105,12 @@ export default function MyNetwork(){
   
   return (
     <div style={{margin:"5em"}}>
+      <Head>
+        <title>My Network</title>
+        <meta name="description" content="My Network page" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Grid container spacing={4}>
         {/* Side Card */}
         <Grid item xs={3}>
@@ -155,14 +176,10 @@ export default function MyNetwork(){
                   {/* Connection Requests */}
                   <Grid item xs={12}>
                   <Typography sx={{paddingLeft:"2em",pb:"0.5em", fontSize:"1rem", fontWeight:"bold"}}>Connection Requests</Typography>
-                    <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa',  paddingBlock:"1em"}}>
-                      <div className={styles.contentCard1}>
-                        {/* <p style={{fontWeight:500}}>Requests</p> */}
-                        {/* <Link sx={{color:'black',fontSize:'12px'}}>View all</Link> */}
-                      </div>
-                      <div className={styles.requestlist}>
+                    <Card className={styles.contentCard} sx={{display:"flex",borderRadius:'12px',border:'0.5px solid #f1f3fa',  paddingBlock:"1em", overflowX:"scroll"}}>
+                      {/* <div className={styles.requestlist} sx={{display:"flex", flexDirection:"row"}}>
+                      </div> */}
                         <Requests acceptConnection={acceptConnection} declineConnection={declineConnection}/>
-                      </div>
                     </Card>
                   </Grid>
                   {/* Suggested Users */}
@@ -173,14 +190,8 @@ export default function MyNetwork(){
                         <RefreshIcon/>
                       </IconButton>
                     </div>
-                    <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa',  paddingBlock:"1em"}}>
-                      <div className={styles.contentCard1}>
-                        {/* <p style={{fontWeight:500}}>Suggestions</p> */}
-                        {/* <Link sx={{color:'black',fontSize:'12px'}}>View all</Link> */}
-                      </div>
-                      <div className={styles.requestlist}>
-                        <SuggestedUsers requestConnection={requestConnection} suggestedUsersResults={suggestedUsersResults}/>
-                      </div>
+                    <Card className={styles.contentCard} sx={{display:"flex",borderRadius:'12px',border:'0.5px solid #f1f3fa',  paddingBlock:"1em", overflowX:"scroll"}}>
+                      <SuggestedUsers requestConnection={requestConnection} suggestedUsersResults={suggestedUsersResults}/>
                     </Card>
                   </Grid>
 
@@ -192,15 +203,8 @@ export default function MyNetwork(){
                         <RefreshIcon/>
                       </IconButton>
                     </div>
-                    <Card className={styles.contentCard} sx={{borderRadius:'12px',border:'0.5px solid #f1f3fa', paddingBlock:"1em"}}>
-                      <div className={styles.contentCard1}>
-                        {/* <p style={{fontWeight:500}}>You may want to join...</p> */}
-                        {/* <Link sx={{color:'black',fontSize:'12px'}}>View all</Link> */}
-                      </div>
-                      <div className={styles.requestlist}>
-                        {/* {joinlist} */}
+                    <Card className={styles.contentCard} sx={{display:"flex", borderRadius:'12px',border:'0.5px solid #f1f3fa', paddingBlock:"1em", overflowX:"scroll"}}>
                         <SuggestedGroups suggestedGroupsResults={suggestedGroupsResults}/>
-                      </div>
                     </Card>
                   </Grid>)}
               </Grid>

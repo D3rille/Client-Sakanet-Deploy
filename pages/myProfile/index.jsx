@@ -5,7 +5,7 @@ import coverPhoto from "../../public/images/coverphoto.jpg";
 // import profilePhoto from '../../public/images/pfp.jpg';
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import { TextField, Card, Button, Link, Rating } from "@mui/material";
+import { TextField, Card, Button, Link, Rating, Grid, Box } from "@mui/material";
 import locationIcon from "../../public/icons/location.svg";
 import contactIcon from "../../public/icons/contact.svg";
 import emailIcon from "../../public/icons/email.svg";
@@ -26,10 +26,27 @@ import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import VerifiedIcon from '@mui/icons-material/Verified';
 import toast from "react-hot-toast";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import {useRouter} from "next/router";
+
+import { formatDate } from "../../util/dateUtils.js";
+
+export default function MyProfilePage() {
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user.role == 'ADMIN') {
+      router.push('/404');
+    }
+  }, [user]);
+
+  return user.role != 'ADMIN' ? <MyProfile /> : null;
+}
 
 
-
-export default function MyProfile() {
+function MyProfile() {
   const {user} = useContext(AuthContext);
   const [reviews, setReviews] = useState([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
@@ -107,7 +124,7 @@ export default function MyProfile() {
 
  
   if (loading) return(
-    <div style={{display:"flex", margin:"auto"}}>
+    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
       <CircularLoading/>
     </div>
   
@@ -126,6 +143,7 @@ export default function MyProfile() {
     account_mobile,
     account_email,
     cover_photo,
+    description, displayName
   } = data.getMyProfile.profile;
 
   const ratingsData = {
@@ -142,461 +160,284 @@ export default function MyProfile() {
     ratingStatistics.reviewerCount ?? 0
   })`;
 
-  return (
-    <>
-      <div key="profile" className={styles.mainProfile}>
-        <div className={styles.profileContainer}>
-          <div className={styles.topPortion}>
-            <div className={styles.userCoverImg}>
-              <img
-                className={styles.coverphoto}
-                src={cover_photo}
-                alt="Cover Photo"
-              />
-            </div>
-            <div className={styles.profileImg}>
-              <Avatar
-                src={profile_pic ?? ""}
-                alt="Profile"
-                className={styles.profilephoto}
-              />
-            </div>
-            <div className={styles.username}>
-              {username}{is_verified?<VerifiedIcon color='success'/>:""}
-            </div>
-            <div className={styles.userJob}>{role}</div>
-          </div>
-          <Divider
-            textAlign="right"
-            component="div"
-            role="presentation"
-            className={styles.numConnections}
-          >
-            <Typography
-              variant="h4"
-              component="span"
-              style={{ fontWeight: "bolder", color: "#057a59" }}
-            >
-              {data.getMyProfile.connections}
-            </Typography>
-            <Typography
-              variant="h6"
-              component="span"
-              style={{
-                fontWeight: "normal",
-                color: "black",
-                marginInline: "4px",
-              }}
-            >
-              Connections
-            </Typography>
-          </Divider>
-          <div className={styles.bottomPortion}>
-            <div className={styles.rightSide}>
-              <div key="element3" className={styles.content1}>
-                <Card
-                  className={styles.aboutCard}
-                  sx={{
-                    width: "100%",
-                    height: "max-Content",
-                    borderRadius: "10px",
-                    padding: "15px 0px 10px 20px",
-                    backgroundColor: "#FCFCFF",
-                    boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <div className={styles.contentheader}>
-                    <Typography sx={{ fontSize: "20px", fontWeight: "bolder" }}>
-                      About Me
-                    </Typography>
-                  </div>
-                  <div className={styles.locationtitle}>
-                    <Image
-                      sx={{ width: "10px", height: "15px" }}
-                      src={locationIcon}
-                      alt="Location"
-                      width={20}
-                      height={25}
-                    />
-                    <p className={styles.infoContent}>
-                      {formatWideAddress(address)}
-                    </p>
-                  </div>
-                  {account_mobile && (
-                    <>
-                      <div className={styles.contacttitle}>
-                        <Image
-                          sx={{ width: "10px", height: "15px" }}
-                          src={contactIcon}
-                          alt="Contact Number"
-                          width={20}
-                          height={25}
-                        />
-                        <p className={styles.infoContent}>{account_mobile}</p>
-                      </div>
-                    </>
-                  )}
-                  {account_email && (
-                    <>
-                      <div className={styles.emailtitle}>
-                        <Image
-                          sx={{ width: "10px", height: "15px" }}
-                          src={emailIcon}
-                          alt="Email Address"
-                          width={20}
-                          height={25}
-                        />
-                        <p className={styles.infoContent}>{account_email}</p>
-                      </div>
-                    </>
-                  )}
+  return(
+    <Box sx={{margin:"auto", paddingInline:"10em", paddingBottom:"5em"}}>
+        <Head>
+            <title>My Profile</title>
+            <meta name="description" content="My Profile page" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Grid container sx={{position:"relative"}}>
+            <Grid item xs = {12}>
+                <Card elevation={3} sx={{height:"20em", borderRadius:"0.6rem",  backgroundColor: "#FCFCFF",}}>
+                    <img src={cover_photo} style={{display:"flex", objectFit:"cover", height:"100%", width:"100%"}}/>
                 </Card>
-                <Card
-                  className={styles.ratingsChart}
-                  sx={{
-                    width: "100%",
-                    height: "max-Content",
-                    borderRadius: "10px",
-                    padding: "15px 0px 10px 20px",
-                    backgroundColor: "#FCFCFF",
-                    boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
-                  }}
+            </Grid>
+            
+            <Grid item xs={12}>
+                {/* <Card elevation={3} sx={{height:"7em"}}> */}
+                    <Grid container>
+                        <Grid item xs={3}>
+                                <Avatar
+                                    src={profile_pic ?? ""}
+                                    sx={{
+                                    position:"absolute",
+                                    top: "11em",
+                                    left: "3em",
+                                    width: "10em",
+                                    height: "10em",
+                                    border: "4px solid white",
+                                    boxShadow: "2px 2px 2px #888888"
+                                    }}
+                                />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <div style={{display:"flex", justifyContent:"start", alignItems:"center", paddingTop:"1em"}}>
+                                <div style={{display:"flex",flexDirection:"column" }}>
+
+                                <Typography
+                                    variant="title"
+                                    sx={{fontSize:"1.8rem", fontWeight:"bold", wordBreak:"break-word"}}
+                                >
+                                    {username ?? ""}{is_verified?<VerifiedIcon color="success"/>:""}
+                                </Typography>
+                                {displayName && (<Typography
+                                    variant="body2"
+                                    sx={{color:"grey"}}
+                                >
+                                    {`(${displayName})`}
+                                </Typography>)}
+                                <Typography
+                                    variant="body3"
+                                    sx={{color:"green"}}
+                                >
+                                    {role}
+                                </Typography>
+                                </div>
+                                
+                            </div>
+                            
+                        </Grid>
+                    </Grid>
+                {/* </Card> */}
+
+            </Grid>
+            <Divider
+                textAlign="right"
+                component="div"
+                role="presentation"
+                className={styles.numConnections}
+                sx={{marginTop:"0.5em"}}
+            >
+                <Typography
+                variant="h4"
+                component="span"
+                style={{ fontWeight: "bolder", color: "#057a59" }}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div style={{ width: "40%", textAlign: "center" }}>
-                      <Typography
-                        sx={{ fontSize: "20px", fontWeight: "bolder" }}
-                      >
-                        {reviewerNumber}
-                      </Typography>
-                      <Typography sx={{ fontSize: "5rem", fontWeight: "bold" }}>
-                        {rating.toFixed(1)}
-                      </Typography>
-                      <Rating name="read-only" value={rating} readOnly />
-                    </div>
-                    <div style={{ width: "60%" }}>
-                      <StarRatingChart ratings={ratingsData} />
-                    </div>
-                  </div>
-                </Card>
-
-                {/* REVIEW CARDS*/}
-                {getReviewsLoading && (
-                  <div style={{display:"flex", margin:"auto"}}>
-                    <CircularLoading/>
-                  </div>
-                )}
-                {!getReviewsData && (
-                  <div style={{display:"flex", margin:"auto"}}>
-                    <p>No Reviews</p>
-                  </div>
-                )}
-                
-                {getReviewsData && (<Card
-                  className={styles.reviewCard}
-                  sx={{
-                    width: "100%",
-                    height: "max-content",
-                    borderRadius: "10px",
-                    padding: "15px 20px",
-                    backgroundColor: "#FCFCFF",
-                    boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
-                    cursor: "pointer",
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                 {data?.getMyProfile?.connections}
+                </Typography>
+                <Typography
+                variant="h6"
+                component="span"
+                style={{
+                    fontWeight: "normal",
+                    color: "black",
+                    marginInline: "4px",
+                }}
                 >
-                  {getReviewsData.getAllReviews.length == 0 
-                  ? (<div style={{display:"flex", margin:"auto"}}>
-                      <p>No Reviews</p>
-                    </div>):(
-                      <>
-                      <FormatQuoteIcon
+                Connections
+                </Typography>
+            </Divider>
+
+            <Grid item xs={12} sx={{mt:"3em"}} >
+                <Grid container spacing={2}>
+                    <Grid item xs={5}>
+                      <Card elevation={3} sx={{paddingBlock:"1em", paddingInline:"2em", borderRadius:"10px",  backgroundColor: "#FCFCFF",}}>
+                                
+                                {description? (
+                                <Typography sx={{wordWrap:"break-word"}}>
+                                  {description}
+                                </Typography>
+                                ):(
+                                    <Typography sx={{textAlign:"center"}}>
+                                        No Description 
+                                    </Typography>
+                                )}
+                        </Card>
+                        <Card elevation={3} sx={{padding:"1em", borderRadius:"10px", marginBlock:"1em",  backgroundColor: "#FCFCFF",}}>
+                            <Typography variant="h6" sx={{fontWeight:"bold"}}>
+                                About
+                            </Typography>
+                            <div style={{minHeight:"3em"}}>
+                              <div className={styles.locationtitle}>
+                                <Image
+                                  sx={{ width: "10px", height: "15px" }}
+                                  src={locationIcon}
+                                  alt="Location"
+                                  width={20}
+                                  height={25}
+                                />
+                                <p className={styles.infoContent}>
+                                  {formatWideAddress(address)}
+                                </p>
+                              </div>
+                              {account_mobile && (
+                                <>
+                                  <div className={styles.contacttitle}>
+                                    <Image
+                                      sx={{ width: "10px", height: "15px" }}
+                                      src={contactIcon}
+                                      alt="Contact Number"
+                                      width={20}
+                                      height={25}
+                                    />
+                                    <p className={styles.infoContent}>{account_mobile}</p>
+                                  </div>
+                                </>
+                              )}
+                              {account_email && (
+                                <>
+                                  <div className={styles.emailtitle}>
+                                    <Image
+                                      sx={{ width: "10px", height: "15px" }}
+                                      src={emailIcon}
+                                      alt="Email Address"
+                                      width={20}
+                                      height={25}
+                                    />
+                                    <p className={styles.infoContent}>{account_email}</p>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={7}>
+                        {/* Ratings */}
+                        <Card
+                          className={styles.ratingsChart}
                           sx={{
-                          position: "absolute",
-                          left: "10px",
-                          top: "10px",
-                          fontSize: "70px",
-                          color: "#F7F7F9",
-                          zIndex: 2,
+                            width: "100%",
+                            height: "max-Content",
+                            borderRadius: "10px",
+                            padding: "1em 1.5em",
+                            marginBottom:"1em",
+                            backgroundColor: "#FCFCFF",
+                            boxShadow: "0 3px 3px 3px rgba(0, 0, 0, 0.1)",
                           }}
-                      />
-                      <div style={{ marginTop: "20px", zIndex: 1 }}>
-                          <Avatar
-                          src={reviews[currentReviewIndex]?.profile_pic ?? ""}
-                          sx={{
-                              border: "4px solid #32806A",
-                              width: "70px",
-                              height: "70px",
-                          }}
-                          />
-                      </div>
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            <div style={{ width: "40%", textAlign: "center" }}>
+                              <Typography
+                                sx={{ fontSize: "20px", fontWeight: "bolder" }}
+                              >
+                                {reviewerNumber}
+                              </Typography>
+                              <Typography sx={{ fontSize: "5rem", fontWeight: "bold" }}>
+                                {rating.toFixed(1)}
+                              </Typography>
+                              <Rating name="read-only" value={rating} readOnly />
+                            </div>
+                            <div style={{ width: "60%" }}>
+                              <StarRatingChart ratings={ratingsData} />
+                            </div>
+                          </div>
+                        </Card>
 
-                      <Typography
-                          sx={{
-                          fontSize: "14px",
-                          textAlign: "center",
-                          marginTop: "10px",
-                          }}
-                      >
-                          {reviews[currentReviewIndex]?.username ?? ""}
-                      </Typography>
+                        {/* Reviews */}
+                        {getReviewsLoading && (
+                          <div style={{display:"flex", margin:"auto",  backgroundColor: "#FCFCFF",}}>
+                            <CircularLoading/>
+                          </div>
+                        )}
+                        {getReviewsData?.getAllReviews.length == 0 && (
+                          <div style={{display:"flex", margin:"auto",  backgroundColor: "#FCFCFF",}}>
+                            <p>No Reviews</p>
+                          </div>
+                        )}
+                        {getReviewsData && (<Card elevation={3} sx={{paddingBlock:"1em", paddingInline:"2em", borderRadius:"10px", marginBlock:"1em",  backgroundColor: "#FCFCFF",}}>
+                            <div style={{display:"flex", flexDirection:"row" }}>
+                              <div>
+                                <Typography variant="h6" sx={{fontWeight:"bold"}}>
+                                    Reviews
+                                </Typography>
+                              </div>
+                              <div style={{display:"flex",flex:1, justifyContent:"end"}}>
+                                <IconButton>
+                                  <ArrowBackIosIcon
+                                    onClick={handlePreviousReview}
+                                    disabled={currentReviewIndex === 0}
+                                  />
+                                </IconButton>
+                                <IconButton
+                                  onClick={handleNextReview}
+                                  disabled={currentReviewIndex === reviews.length - 1}
+                                >
+                                  <ArrowForwardIosIcon/>
+                                </IconButton>
+                              </div>
+                            </div>
+                            <div style={{marginBlock:"1em"}}>
+                              <div style={{display:"flex", paddingInline:"1em"}}>
+                                <div style={{display:"flex", flex:1,}}>
+                                  <Avatar
+                                  src=""
+                                  width="400px"
+                                  height="400px"
+                                  sx={{marginRight:"1em"}}
+                                  />
+                                  <div style={{display:"flex", flexDirection:"column"}}>
+                                    <Typography
+                                      variant="title2"
+                                    >
+                                        {reviews[currentReviewIndex]?.username ?? ""}
+                                    </Typography>
+                                    <Rating name="rate" 
+                                      value={reviews[currentReviewIndex]?.rate ?? 0} 
+                                      sx={{fontSize:"1rem"}}
+                                      readOnly 
+                                    />
+                                  </div>
+                                </div>
+                                <div  style={{display:"flex", flex:1, justifyContent:"end"}}>
+                                    <Typography
+                                      variant="caption"
+                                      sx={{color:"#c5c5c5"}}
+                                    >
+                                        {reviews[currentReviewIndex]?.edited ? "edited":""}
+                                    </Typography>
+                                </div>
+                              </div>
 
-                      <Rating name="rate" 
-                        value={reviews[currentReviewIndex]?.rate ?? 0} 
-                        sx={{fontSize:"0.8rem"}}
-                        readOnly 
-                      />
+                              <div style={{paddingInline:"1em", paddingTop:"0.5em"}}>
+                                <Typography>
+                                  {reviews[currentReviewIndex]?.comment ?? ""}
+                                </Typography>
+                              </div>
+                              <div style={{display:"flex", justifyContent:"end", paddingInline:"1em"}}>
+                                  <Typography
+                                    variant="caption"
+                                    sx={{color:"#c5c5c5"}}
+                                  >
+                                      {formatDate(reviews[currentReviewIndex]?.date, "ll")}
+                                  </Typography>
+                              </div>
 
-                      <Typography
-                          sx={{
-                          fontSize: "15px",
-                          textAlign: "center",
-                          marginBottom: "1.5rem",
-                          marginTop: "10px",
-                          fontWeight: "bold",
-                          }}
-                      >
-                          {reviews[currentReviewIndex]?.comment ?? ""}
-                      </Typography>
-
-                      <FormatQuoteIcon
-                          sx={{
-                          position: "absolute",
-                          right: "10px",
-                          bottom: "10px",
-                          fontSize: "70px",
-                          color: "#F7F7F9",
-                          zIndex: 2,
-                          }}
-                      />
-
-                      <IconButton
-                          sx={{
-                          position: "absolute",
-                          left: "5px",
-                          top: "50%",
-                          transform: "translateY(-50%)",
-                          zIndex: 2,
-                          }}
-                          onClick={handlePreviousReview}
-                          disabled={currentReviewIndex === 0}
-                      >
-                          <ArrowBack />
-                      </IconButton>
-
-                      <IconButton
-                          sx={{
-                          position: "absolute",
-                          right: "5px",
-                          top: "50%",
-                          transform: "translateY(-50%)",
-                          zIndex: 2,
-                          }}
-                          onClick={handleNextReview}
-                          disabled={currentReviewIndex === reviews.length - 1}
-                      >
-                          <ArrowForward />
-                      </IconButton>
-                      
-                      </>)}
-                </Card>)}
-                {/*  */}
-              </div>
-            </div>
-            <div className={styles.leftSide}>
-              <div className={styles.feedContainer}>
-                <div className={styles.topContainer}>
-                  <div className={styles.feedInputContainer}>
-                    <div className={styles.avatarContainer}>
-                      <Avatar src={profile_pic ?? ""}></Avatar>
-                    </div>
-                    <div className={styles.inputContainer}>
-                      <input
-                        className={styles.postDesc}
-                        placeholder="Write Something..."
-                        value={UserPostDescrip}
-                        onChange={(e) => {
-                          setUserPostDescrip(e.target.value);
-                        }}
-                        style={{
-                          outline: isFocused ? "none" : "",
-                          border: isFocused ? "none" : "",
-                        }}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                      />
-                      <IconButton>
-                        <Image
-                          src={uploadIcon}
-                          alt="Upload Icon"
-                          width={30}
-                          height={30}
-                        />
-                      </IconButton>
-                    </div>
-                    <div className={styles.postbtnContainer}>
-                      <Button onClick={handleButtonClick}>Post</Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={styles.bottomContainer}>
-                <div className={styles.mainPostContainer}>
-                  <div className={styles.headPosition}>
-                    <div className={styles.userInfoPortion}>
-                      <div className={styles.userAvatar}>
-                        <Avatar src={profile_pic}></Avatar>
-                      </div>
-                      <div className={styles.userInfoDetails}>
-                        <div className={styles.userName}>Juan Dela Cruz</div>
-                        <div className={styles.creationDate}>1 day ago</div>
-                      </div>
-                    </div>
-                    <div className={styles.descriptionPortion}>
-                      Available products
-                    </div>
-                    <div className={styles.bodyportion}>
-                      <Image
-                        className={styles.postImage}
-                        sx={{}}
-                        src={samplePost}
-                        alt="post"
-                      />
-                    </div>
-                  </div>
-                  <hr className={styles.postDivider} />
-                  <div className={styles.footerPortion}>
-                    <div className={styles.likepost}>
-                      <IconButton sx={{ color: "#057a59" }} size="small">
-                        <ThumbUpIcon />
-                      </IconButton>
-                    </div>
-                    <Link href="">Comments</Link>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.bottomContainer}>
-                <div className={styles.mainPostContainer}>
-                  <div className={styles.headPosition}>
-                    <div className={styles.userInfoPortion}>
-                      <div className={styles.userAvatar}>
-                        <Avatar src={profile_pic}></Avatar>
-                      </div>
-                      <div className={styles.userInfoDetails}>
-                        <div className={styles.userName}>Juan Dela Cruz</div>
-                        <div className={styles.creationDate}>1 day ago</div>
-                      </div>
-                    </div>
-                    <div className={styles.descriptionPortion}>
-                      Available products
-                    </div>
-                    <div className={styles.bodyportion}>
-                      <Image
-                        className={styles.postImage}
-                        sx={{}}
-                        src={samplePost}
-                        alt="post"
-                      />
-                    </div>
-                  </div>
-                  <hr className={styles.postDivider} />
-                  <div className={styles.footerPortion}>
-                    <div className={styles.likepost}>
-                      <IconButton sx={{ color: "#057a59" }} size="small">
-                        <ThumbUpIcon />
-                      </IconButton>
-                    </div>
-                    <Link href="">Comments</Link>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.bottomContainer}>
-                <div className={styles.mainPostContainer}>
-                  <div className={styles.headPosition}>
-                    <div className={styles.userInfoPortion}>
-                      <div className={styles.userAvatar}>
-                        <Avatar src={profile_pic}></Avatar>
-                      </div>
-                      <div className={styles.userInfoDetails}>
-                        <div className={styles.userName}>Juan Dela Cruz</div>
-                        <div className={styles.creationDate}>1 day ago</div>
-                      </div>
-                    </div>
-                    <div className={styles.descriptionPortion}>
-                      Available products
-                    </div>
-                    <div className={styles.bodyportion}>
-                      <Image
-                        className={styles.postImage}
-                        sx={{}}
-                        src={samplePost}
-                        alt="post"
-                      />
-                    </div>
-                  </div>
-                  <hr className={styles.postDivider} />
-                  <div className={styles.footerPortion}>
-                    <div className={styles.likepost}>
-                      <IconButton sx={{ color: "#057a59" }} size="small">
-                        <ThumbUpIcon />
-                      </IconButton>
-                    </div>
-                    <Link href="">Comments</Link>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.bottomContainer}>
-                <div className={styles.mainPostContainer}>
-                  <div className={styles.headPosition}>
-                    <div className={styles.userInfoPortion}>
-                      <div className={styles.userAvatar}>
-                        <Avatar src={profile_pic}></Avatar>
-                      </div>
-                      <div className={styles.userInfoDetails}>
-                        <div className={styles.userName}>Juan Dela Cruz</div>
-                        <div className={styles.creationDate}>1 day ago</div>
-                      </div>
-                    </div>
-                    <div className={styles.descriptionPortion}>
-                      Available products
-                    </div>
-                    <div className={styles.bodyportion}>
-                      <Image
-                        className={styles.postImage}
-                        sx={{}}
-                        src={samplePost}
-                        alt="post"
-                      />
-                    </div>
-                  </div>
-                  <hr className={styles.postDivider} />
-                  <div className={styles.footerPortion}>
-                    <div className={styles.likepost}>
-                      <IconButton sx={{ color: "#057a59" }} size="small">
-                        <ThumbUpIcon />
-                      </IconButton>
-                    </div>
-                    <Link href="">Comments</Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+                            </div>
+                        </Card>)}
+                    </Grid>
+                    
+                </Grid>
+            </Grid>
+           
+        </Grid>
+    </Box>
+);
 }

@@ -9,25 +9,24 @@ import {useRouter} from "next/router";
 
 import {GET_CONNECTION_REQUESTS} from '../../graphql/operations/myNetwork';
 import { formatShortAddress } from '../../util/addresssUtils';
+import CircularLoading from '../circularLoading';
 
 function Requests({acceptConnection, declineConnection}){
     const router = useRouter();
     const {data, loading, error} = useQuery(GET_CONNECTION_REQUESTS);
   
     if (loading){return (
-      <>
-         <div sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' , width:"100%"}}>
-          <CircularProgress/> 
-        </div>
-      </>);}
+      
+          <CircularLoading/> 
+      );}
       else if(error){
         toast.error(error);
         return(<p>Error Loading Connection Requests</p>)
       }
       if(data?.getConnectionRequests?.length==0){
         return (
-          <div sx={{display:"flex", margin:"auto", width:"100%"}}>
-            <p >No Connection Requests</p>
+          <div style={{display:"flex", width:"100%", height:"100%", padding:"auto"}}>
+            <p style={{margin:"auto", color:"#c5c5c5", fontSize:"18px"}} >No Connection Requests</p>
           </div>
         )
       }

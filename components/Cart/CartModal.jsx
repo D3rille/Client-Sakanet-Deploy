@@ -125,6 +125,9 @@ const CartModal = ({ open, handleClose, getCartItemsData, getCartItemsLoading  }
       variables:{
         "cartItems": checkOutItems
         
+      }, 
+      onCompleted:()=>{
+        setTotalPrice(0);
       }
     });
     for (let index = 0; index < products.length; index++) {

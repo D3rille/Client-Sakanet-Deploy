@@ -10,7 +10,9 @@ import {
   Rating,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import VerifiedIcon from '@mui/icons-material/Verified';
 import { formatWideAddress } from "../util/addresssUtils";
+import { formatToCurrency } from "../util/currencyFormatter";
 
 function PreOrderProductCard({ ...props }) {
   const {product, setPurchaseModal} = props;
@@ -43,9 +45,9 @@ function PreOrderProductCard({ ...props }) {
                 alignItems: "flex-start",
               }}
             >
-              <Typography variant="body1" sx={{ fontWeight: "bolder", fontSize:'0.9rem'}}>
-                {product.seller.name}
-              </Typography>
+              <Typography variant="body1" sx={{ fontWeight: "bolder", fontSize: '0.9rem' }}>
+                {product.seller.name}{product.seller.is_verified ? (<VerifiedIcon sx={{fontSize:"0.7rem", color:"green"}}/>):null}
+             </Typography>
               <Typography
                 color="textSecondary"
                 variant="body2"
@@ -109,7 +111,7 @@ function PreOrderProductCard({ ...props }) {
               PRE-ORDER
             </Box>
             <Typography variant="body1" align="right" sx={{ fontWeight: "bold" }}>
-              ₱ {product.price}/{product.unit}
+              {formatToCurrency(product.price, 2)}/{product.unit}
             </Typography>
           </Box>
           <Typography gutterBottom align="left" sx={{ fontWeight: "bolder" }}>
@@ -134,7 +136,7 @@ function PreOrderProductCard({ ...props }) {
               backgroundColor: "#ECEDEC",
               color: "#2C2D2D",
               flex: 1,
-              fontSize: "0.7rem",
+              fontSize: "1rem",
               borderBottomLeftRadius: "12px",
               margin: 0,
               borderRadius: 0,
@@ -146,7 +148,7 @@ function PreOrderProductCard({ ...props }) {
           >
             Buy Now
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             endIcon={<AddShoppingCartIcon style={{ color: "#C9D5CA" }} />}
             style={{
@@ -160,7 +162,7 @@ function PreOrderProductCard({ ...props }) {
             }}
           >
             Add to Cart
-          </Button>
+          </Button> */}
         </Box>
       </Card>
     );

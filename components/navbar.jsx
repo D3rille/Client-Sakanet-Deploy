@@ -198,72 +198,72 @@ const markAllAsRead = () => {
 
   const {data:getCartItemsData, loading:getCartItemsLoading} = useQuery(GET_CART_ITEMS);
 
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error.message}</p>;
-
-  // const { profile_pic } = data.getMyProfile;
+  
   if (user.role=="ADMIN") return;
 
+  // <Drawer
+  //       sx={{
+  //         width: drawerWidth,
+  //         flexShrink: 0,
+  //         "& .MuiDrawer-paper": {
+  //           width: drawerWidth,
+  //           boxSizing: "border-box",
+  //         },
+  //       }}
+  //       variant="persistent"
+  //       anchor="left"
+  //       open={open}
+  //     >
+  //       <DrawerHeader>
+  //         <div
+  //           style={{ display: "flex", alignItems: "flex-start", width: "100%" }}
+  //         >
+  //           {/* <img style={{ width: '60px' }} alt="Travis Howard" src={Logo} /> */}
+  //           <Image src={Logo} alt="Logo" width={60} height={60} />
+  //         </div>
+  //         <IconButton onClick={handleDrawerClose}>
+  //           {theme.direction === "ltr" ? (
+  //             <ChevronLeftIcon />
+  //           ) : (
+  //             <ChevronRightIcon />
+  //           )}
+  //         </IconButton>
+  //       </DrawerHeader>
+  //       <Divider />
+  //       <List>
+  //         {["Home", "Products", "My Network", "Messages", "Notifications"].map(
+  //           (text, index) => (
+  //             <ListItem key={text} disablePadding>
+  //               <ListItemButton
+  //                 sx={{
+  //                   "&:hover": {
+  //                     backgroundColor: "#f1f1f1",
+  //                     cursor: "pointer",
+  //                   },
+  //                 }}
+  //               >
+  //                 <ListItemText primary={text} />
+  //               </ListItemButton>
+  //             </ListItem>
+  //           )
+  //         )}
+  //       </List>
+  //       <Divider />
+  //       <List>
+  //         {["Edit Profile", "Change Password", "Logout"].map((text, index) => (
+  //           <ListItem key={text} disablePadding>
+  //             <ListItemButton onClick={text === "Logout" ? logout : null}>
+  //               <ListItemText primary={text} />
+  //             </ListItemButton>
+  //           </ListItem>
+  //         ))}
+  //       </List>
+  //     </Drawer>
+
+  const productRoutes = /\/Products.*/;
+  const myProductsRoutes = /\/myProducts.*/;
   return (
     <>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader>
-          <div
-            style={{ display: "flex", alignItems: "flex-start", width: "100%" }}
-          >
-            {/* <img style={{ width: '60px' }} alt="Travis Howard" src={Logo} /> */}
-            <Image src={Logo} alt="Logo" width={60} height={60} />
-          </div>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {["Home", "Products", "My Network", "Messages", "Notifications"].map(
-            (text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "#f1f1f1",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            )
-          )}
-        </List>
-        <Divider />
-        <List>
-          {["Edit Profile", "Change Password", "Logout"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={text === "Logout" ? logout : null}>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
       <div key="element1" className={styles.header}>
         <div className={[styles.navsection]}  style={cardStyle} elevation={3}>
           <div className={styles.menu} onClick={handleDrawerOpen}>
@@ -271,7 +271,11 @@ const markAllAsRead = () => {
           </div>
           
           <div style={{paddingInline:"1vw", paddingBlock:"2px"}}>
-            <Image src={Logo} alt="Logo" width={70} height={50} />
+            <Link onClick={()=>{
+              router.replace("/");
+            }}>
+              <Image src={Logo} alt="Logo" width={70} height={50} />
+            </Link>
           </div>
             
           <div className={styles.logosearchbar}>
@@ -317,7 +321,7 @@ const markAllAsRead = () => {
             <ul>
               <li
                 style={
-                  isActiveTab(["/Products", "/myProducts"])
+                  (productRoutes.test(router.pathname) || myProductsRoutes.test(router.pathname))
                     ? {
                         cursor: "pointer",
                         backgroundColor: "#2F613A",
@@ -337,7 +341,7 @@ const markAllAsRead = () => {
               >
                 Products
               </li>
-              <li
+              {/* <li
                 style={
                   isActiveTab(["/"])
                     ? {
@@ -350,7 +354,7 @@ const markAllAsRead = () => {
                 onClick={() => router.push("/")}
               >
                 Home
-              </li>
+              </li> */}
               <li
                 style={
                   isActiveTab(["/myNetwork"])

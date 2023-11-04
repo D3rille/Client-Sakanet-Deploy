@@ -56,6 +56,7 @@ query GetAvailableProducts($category: String, $itemId: String, $filter: productF
         name
         profile_pic
         rating
+        is_verified
         address {
           street
           barangay

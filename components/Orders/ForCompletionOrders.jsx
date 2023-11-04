@@ -166,7 +166,7 @@ export default function ForCompletionOrders({...props}) {
                       fontSize: "0.6rem",
                     }}
                     onClick={()=>{
-                      handleUpdateStatus(order._id, "For Completion", "Completed", null)
+                      handleUpdateStatus(order._id, "For Completion", "Completed", null, false)
                     }}
                   >
                     {/* {role=="FARMER" ? "Completed": "Received Order"} */}

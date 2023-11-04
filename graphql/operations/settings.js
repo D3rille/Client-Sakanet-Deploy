@@ -36,3 +36,15 @@ mutation EditAddress($addressInput: AddressInput) {
   editAddress(addressInput: $addressInput)
 }
 `;
+
+export const EDIT_EMAIL_OR_NUM = gql`
+mutation EditEmailOrNum($email: String, $phoneNumber: String) {
+  editEmailOrNum(email: $email, phoneNumber: $phoneNumber)
+}
+`;
+
+export const CHANGE_PASSWORD = gql`
+mutation ChangePassword($currentPass: String, $newPass: String, $confirmPass: String) {
+  changePassword(currentPass: $currentPass, newPass: $newPass, confirmPass: $confirmPass)
+}
+`;

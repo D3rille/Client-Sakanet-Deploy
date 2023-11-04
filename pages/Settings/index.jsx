@@ -1,4 +1,5 @@
 import React from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Tabs from '@mui/material/Tabs';
@@ -19,6 +20,10 @@ import Divider from '@mui/material/Divider';
 import { useQuery } from '@apollo/client';
 import { GET_MY_PROFILE } from '../../graphql/operations/profile';
 import {useSubs} from "../../context/SubscriptionProvider";
+import { AuthContext } from '../../context/auth';
+import {useRouter} from "next/router";
+import Head from 'next/head';
+
 
 const GridContainer = styled(Grid)({
     background: '#F4F4F4',
@@ -93,6 +98,19 @@ const StyledTab = styled(Tab)({
     },
 });
 
+export default function SettingsPage() {
+    const { user } = useContext(AuthContext);
+    const router = useRouter();
+  
+    useEffect(() => {
+      if (user.role == 'ADMIN') {
+        router.push('/404');
+      }
+    }, [user]);
+  
+    return user.role != 'ADMIN' ? <Settings /> : null;
+}
+
 const Settings = () => {
     const {profile} = useSubs();
     const [value, setValue] = React.useState(0);
@@ -110,6 +128,12 @@ const Settings = () => {
 
     return (
         <GridContainer container>
+            <Head>
+                <title>Settings</title>
+                <meta name="description" content="Settings page" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
             <Grid item xs={12}>
                 <StyledPaperContainer elevation={3}>
                     <InnerPaperLeft elevation={3} sx={{ borderRadius: "13px", padding: "1rem" }}>
@@ -195,7 +219,7 @@ const Settings = () => {
                         <InnerPaperRight elevation={3}>
                             {profile && value === 0 && <Profile profile={profile?.profile} />}
                             {profile && value === 1 && <Address address={profile?.profile?.address}/>}
-                            {profile && value === 2 && <EmailAndPassword />}
+                            {profile && value === 2 && <EmailAndPassword user={profile?.profile} />}
                             {profile && value === 3 && <PaymentChannels />}
                             {profile && value === 4 && <Verification profile = {profile?.profile} />}
                         </InnerPaperRight>
@@ -205,5 +229,3 @@ const Settings = () => {
         </GridContainer>
     );
 };
-
-export default Settings;

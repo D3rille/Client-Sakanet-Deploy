@@ -8,6 +8,7 @@ import { setContext } from '@apollo/client/link/context';
 const httpLink = new createHttpLink({
   uri: 'http://localhost:4000/graphql',
 });
+// https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
 
 //Setting context that resolvers use
 const authLink = setContext((_, { headers }) => {
@@ -31,7 +32,7 @@ typeof window !== "undefined"
 ? new GraphQLWsLink(createClient({
   url: 'ws://localhost:4000/graphql/subscriptions',
 })):null;
-
+// wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
 // The split function takes three parameters:
 //
 // * A function that's called for each operation to execute

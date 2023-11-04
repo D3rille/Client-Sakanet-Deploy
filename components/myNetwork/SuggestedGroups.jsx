@@ -34,9 +34,7 @@ export const SuggestedGroups = ({suggestedGroupsResults}) =>{
 
     if (loading){
         return(
-            <div style={{display:"flex", margin:"auto"}}>
-                <CircularLoading/>
-            </div>
+            <CircularLoading/>
         )
     }
 
@@ -48,7 +46,9 @@ export const SuggestedGroups = ({suggestedGroupsResults}) =>{
 
     if(!data || data?.getSuggestedGroups.length == 0){
         return(
-            <Typography sx={{color:"#e5e5e5", padding:"1em"}}>No Groups</Typography>
+        <div style={{display:"flex", width:"100%", height:"100%", padding:"auto"}}>
+            <p style={{margin:"auto", color:"#c5c5c5", fontSize:"18px"}} >No Groups</p>
+        </div>
         )
     }
     
@@ -71,7 +71,7 @@ export const SuggestedGroups = ({suggestedGroupsResults}) =>{
                     </div>
                     <div style={{margin:'5px',textAlign:'center',height:'30px'}}>
 
-                    <Link href={`/Groups?groupId=${group._id}`}>
+                    <Link href={`/Groups/${group._id}`}>
                         <h2 style={{fontSize:'12px',fontWeight:'300'}}>{group.groupName}</h2>
                     </Link>
 

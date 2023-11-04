@@ -1,7 +1,8 @@
-import {useState, useContext} from "react";
+import {useState, useContext, useEffect} from "react";
 import { Container, Box, Grid } from '@mui/material';
 import {useRouter} from "next/router";
 import {useQuery} from "@apollo/client";
+import Head from 'next/head';
 
 import {AuthContext} from "../../context/auth";
 import CommunityInfo from "../../components/Groups/CommunityInfo";
@@ -13,6 +14,18 @@ import GuestView from "../../components/Groups/GuestView";
 import CreatePoolGroupModal from "../../components/myNetwork/CreatePoolGroupModal";
 import EditGroupInfo from "../../components/Groups/EditGroupInfo";
 
+export default function GroupsPage() {
+    const { user } = useContext(AuthContext);
+    const router = useRouter();
+  
+    useEffect(() => {
+      if (user.role !== 'FARMER') {
+        router.push('/404');
+      }
+    }, [user]);
+  
+    return user.role === 'FARMER' ? <Groups /> : null;
+}
 const Groups = () => {
     const router = useRouter();
     const {user} = useContext(AuthContext);
@@ -31,7 +44,7 @@ const Groups = () => {
     // };
     if(getPoolGroupInfoLoading){
         return(
-            <div style={{display:"flex", margin:"auto"}}>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
                 <CircularLoading/>
             </div>
         )
@@ -82,13 +95,27 @@ const Groups = () => {
         if(!isMember){
             const isPending =applications.includes(user.id);
             return(
-                <GuestView isPending={isPending} data={poolGroupInfo} poolGroupId={poolGroupId}/>
+                <>
+                    <Head>
+                        <title>Pool Group</title>
+                        <meta name="description" content="Pool Group Page" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1" />
+                        <link rel="icon" href="/favicon.ico" />
+                    </Head>
+                    <GuestView isPending={isPending} data={poolGroupInfo} poolGroupId={poolGroupId}/>
+                </>
             )
         } 
         // Admins
         if(isMember){
             return (
                 <Container style={{ padding: 0, maxWidth: '90%' }}> 
+                     <Head>
+                        <title>Pool Group</title>
+                        <meta name="description" content="Pool Group Page" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1" />
+                        <link rel="icon" href="/favicon.ico" />
+                    </Head>
                     <Box style={{ margin: '0 auto', marginTop: '6rem' }}>
                         <Grid container spacing={3} style={{ background: '#F4F4F4', minHeight: '100vh' }} justifyContent="flex-start">
         
@@ -115,5 +142,3 @@ const Groups = () => {
     }
 
 };
-
-export default Groups;

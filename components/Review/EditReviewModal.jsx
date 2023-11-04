@@ -24,7 +24,7 @@ const EditReviewModal = ({ isOpen, onClose, handleEditReview, myReviewData}) => 
       onClose={()=>{handleResetValues();onClose();}}
       aria-labelledby="rate-and-review-modal"
       aria-describedby="rate-and-review-modal-description"
-      style={{
+      sx={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -35,7 +35,8 @@ const EditReviewModal = ({ isOpen, onClose, handleEditReview, myReviewData}) => 
           backgroundColor: "#FDFDFF",
           borderRadius: "10px",
           padding: "20px",
-          maxWidth: "600px",
+          height: "400px",
+          width:"500px",
         }}
       >
         <Typography variant="h6" id="rate-and-review-modal">

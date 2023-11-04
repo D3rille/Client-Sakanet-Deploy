@@ -44,8 +44,8 @@ const GuestView = ({isPending, data, poolGroupId}) => {
                                         src={data?.profile_pic ?? ""}
                                         sx={{
                                         position:"absolute",
-                                        top: "30%",
-                                        left: "5%",
+                                        top: "11em",
+                                        left: "3em",
                                         width: "10em",
                                         height: "10em",
                                         border: "4px solid white",

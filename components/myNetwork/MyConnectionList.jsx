@@ -8,7 +8,8 @@ import Link from  '@mui/material/Link';
 import {useRouter} from "next/router";
 
 import { GET_CONNECTED_USERS} from '../../graphql/operations/myNetwork';
-import { formatWideAddress } from '../../util/addresssUtils';
+import { formatWideAddress, formatShortAddress } from '../../util/addresssUtils';
+import CircularLoading from '../circularLoading';
 
 
 function MyConnectionList(){
@@ -16,11 +17,10 @@ function MyConnectionList(){
     const {data, loading, error} = useQuery(GET_CONNECTED_USERS);
   
     if (loading){return (
-    <>
-       <div sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' , width:"100%"}}>
-        <CircularProgress/> 
+       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <CircularLoading/> 
       </div>
-    </>);}
+    );}
     else if(error){
       toast.error(error);
       return(<p>Error Loading Connected Users</p>)
@@ -53,7 +53,7 @@ function MyConnectionList(){
               }} >
                 <h2>{user.username}</h2>
               </Link>
-              <p className={styles.title}>{formatWideAddress(user.address)}</p>
+              <p className={styles.title}>{formatShortAddress(user.address)}</p>
             </div>
             </div>
             <div className={styles.messageactions}>

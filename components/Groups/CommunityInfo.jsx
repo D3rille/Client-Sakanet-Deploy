@@ -186,6 +186,7 @@ const CommunityInfo = ({isAdmin, data, settingsItems}) => {
         sx={{
           height: "120px",
           backgroundColor: "#D8D5F7",
+          overflow:"hidden",
           marginBottom: 2,
           marginLeft: -2,
           marginRight: -2,

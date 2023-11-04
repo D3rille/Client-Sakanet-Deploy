@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
   Grid,
   Box,
@@ -18,6 +18,7 @@ import {
   IconButton,
   Modal,
 } from "@mui/material";
+import Head from 'next/head';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -43,6 +44,8 @@ import TriggeredDialog from "../../components/popups/confirmationDialog";
 import OptionsMenu from "../../components/popups/OptionsMenu";
 import EditProductModal from "../../components/FarmerSide/EditProductModal";
 import CustomDialog from "../../components/popups/customDialog";
+
+import { AuthContext } from "../../context/auth";
 
 const StyledIconButton = styled(IconButton)({
   background: "#2E603A",
@@ -85,7 +88,7 @@ const triggerComponent = (handleClickOpen) => {
   );
 }
 
-function ProductCard({ product, openDetails, setOpenDetails, productStatus }) {
+function ProductCard({ product, openDetails, setOpenDetails, productStatus, currentPage, selectedCategory }) {
   const [openOptions, setOpenOptions] = useState("");
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
 
@@ -146,7 +149,8 @@ function ProductCard({ product, openDetails, setOpenDetails, productStatus }) {
   return (
     <Card
       sx={{
-        width: "100%",
+        // width: "100%",
+        width:"20vw",
         maxWidth:"20vw",
         borderRadius: "12px",
         mb: 1,
@@ -301,6 +305,8 @@ function ProductCard({ product, openDetails, setOpenDetails, productStatus }) {
       onClose={()=>{setOpenOptions("")}}
       data={product}
       productStatus={productStatus}
+      currentPage={currentPage}
+      selectedCategory={selectedCategory}
       />)}
       {openOptions == "delete" && (<CustomDialog
           openDialog={Boolean(openOptions)}
@@ -319,12 +325,14 @@ function ProductCard({ product, openDetails, setOpenDetails, productStatus }) {
 }
 
 const ProductsGrid = ({ ...props }) => {
-  const {productData, openDetails, setOpenDetails, productStatus} = props;
+  const {productData, openDetails, setOpenDetails, productStatus, currentPage, selectedCategory} = props;
   return (
     <div
       style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(1px, 1fr))",
+        display: "flex",
+        flexWrap:"wrap",
+        maxWidth:"100%",
+        // gridTemplateColumns: "repeat(auto-fit, minmax(1px, 1fr))",
         gap: "16px",
         marginTop: "20px",
       }}
@@ -335,13 +343,29 @@ const ProductsGrid = ({ ...props }) => {
         product={product} 
         openDetails={openDetails} 
         setOpenDetails={setOpenDetails} 
-        productStatus={productStatus}/>
+        productStatus={productStatus}
+        currentPage={currentPage}
+        selectedCategory={selectedCategory}
+        />
       ))}
     </div>
   );
 };
 
-export default function FarmerSide() {
+export default function MyProductsPage() {
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user.role !== 'FARMER') {
+      router.push('/404');
+    }
+  }, [user]);
+
+  return user.role == 'FARMER' ? <MyProducts /> : null;
+}
+
+function MyProducts() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("Sell");
   const [productStatus, setProductStatus] = useState("open");
@@ -379,7 +403,7 @@ export default function FarmerSide() {
     {
       variables: {
         category:selectedCategory,
-        limit:10,
+        limit:8,
         page:currentPage,
         status:productStatus
       },
@@ -400,7 +424,11 @@ export default function FarmerSide() {
     }
   );
 
-  if (loading) return <CircularLoading />;
+  if (loading) return (
+    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+      <CircularLoading sx={{margin:"auto"}}/>
+    </div>
+  );
   if (error) return <p>Error: {error.message}</p>;
   if (searchError) return <p>Error: {searchError.message}</p>;
 
@@ -423,6 +451,12 @@ export default function FarmerSide() {
     return (
       <Grid container className={styles.gridContainer}
       style={{ minHeight: '100vh' }}>
+        <Head>
+            <title>My Products</title>
+            <meta name="description" content="My Products page" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
         <Grid item xs={12}>
           <Paper elevation={3} className={styles.paperContainer}
           style={{ minHeight: '80vh' }}>
@@ -533,15 +567,18 @@ export default function FarmerSide() {
             </Paper>
             <div className={styles.productGridContainer}>
               {searchLoading ? (
-                <>
-                   <CircularLoading />
-                </>
+                <div style={{display:"flex", margin:"auto", justifyContent:"center"}}>
+                  <CircularLoading />
+                </div>
               ) : (
                 <ProductsGrid 
                 productData={productData} 
                 openDetails={openDetails} 
                 setOpenDetails={setOpenDetails} 
-                productStatus={productStatus}/>
+                productStatus={productStatus}
+                currentPage={currentPage}
+                selectedCategory={selectedCategory}
+                />
               )}
              
             </div>

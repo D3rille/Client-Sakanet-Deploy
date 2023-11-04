@@ -18,7 +18,7 @@
     width: 95%; 
     flex-direction: column;
     margin: 2rem;
-    margin-top: auto;
+    /* margin-top: auto; */
     justify-content: center;
   }
   .logosearchbar{

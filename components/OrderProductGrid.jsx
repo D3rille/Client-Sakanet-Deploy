@@ -10,7 +10,9 @@ import {
   Rating,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import VerifiedIcon from '@mui/icons-material/Verified';
 import { formatWideAddress } from "../util/addresssUtils";
+import {formatToCurrency} from "../util/currencyFormatter";
 
 
 
@@ -53,7 +55,7 @@ function ProductCard({ ...props }) {
             }}
           >
             <Typography variant="body1" sx={{ fontWeight: "bolder", fontSize: '0.9rem' }}>
-              {product.seller.name}
+              {product.seller.name}{product.seller.is_verified ? (<VerifiedIcon sx={{fontSize:"0.7rem", color:"green"}}/>):null}
             </Typography>
             <Typography
               color="textSecondary"
@@ -98,7 +100,7 @@ function ProductCard({ ...props }) {
       {/* Product details */}
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography variant="body1" align="right" sx={{ fontWeight: "bold" }}>
-          ₱ {product.price}/{product.unit}
+          {formatToCurrency(product.price, 2)}/{product.unit}
         </Typography>
         <Typography gutterBottom align="left" sx={{ fontWeight: "bolder" }}>
             {product.item.tagalogName ? (
