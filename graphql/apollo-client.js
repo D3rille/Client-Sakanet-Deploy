@@ -6,9 +6,8 @@ import { createClient } from 'graphql-ws';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = new createHttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: 'https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql',
 });
-// https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
 
 //Setting context that resolvers use
 const authLink = setContext((_, { headers }) => {
@@ -30,7 +29,7 @@ const authLink = setContext((_, { headers }) => {
 const wsLink = 
 typeof window !== "undefined"
 ? new GraphQLWsLink(createClient({
-  url: 'ws://localhost:4000/graphql/subscriptions',
+  url: 'wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql/subscriptions',
 })):null;
 // wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
 // The split function takes three parameters:
