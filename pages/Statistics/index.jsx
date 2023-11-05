@@ -39,12 +39,12 @@ export default function StatisticsPage() {
     const router = useRouter();
 
     useEffect(() => {
-        if (user.role !== 'BUYER') {
+        if (user.role !== 'FARMER') {
         router.push('/404');
         }
     }, [user]);
 
-    return user.role == 'BUYER' ? <Statistics /> : null;
+    return user.role == 'FARMER' ? <Statistics /> : null;
 }
 
 function Statistics(){
