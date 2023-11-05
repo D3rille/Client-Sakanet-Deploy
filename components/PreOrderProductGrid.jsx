@@ -179,7 +179,7 @@ function PreOrderProductCard({ ...props }) {
           marginTop: "20px",
         }}
       >
-        {products.map((product) => (
+        {products && products?.map((product) => (
           <PreOrderProductCard key={product._id} product={product}  setPurchaseModal={setPurchaseModal} />
         ))}
       </div>

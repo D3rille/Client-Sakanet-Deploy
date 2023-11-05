@@ -170,7 +170,7 @@ const OrderProductGrid = ({ ...props }) => {
         marginTop: '20px',
       }}
     >
-      {products.map((product) => (
+      {products && products?.map((product) => (
         <ProductCard key={product._id} product={product}  setPurchaseModal={setPurchaseModal} />
       ))}
     </div>

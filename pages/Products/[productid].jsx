@@ -81,6 +81,9 @@ function Products() {
     until: null,
   });
 
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const [purchaseModal, setPurchaseModal] = useState([false, ""]);
 
   const productFilters = ()=>{
@@ -131,28 +134,66 @@ function Products() {
   //   setCurrentLocation("");
   // };
 
-  
+  const [getAvailableProducts,{data:AvailProdData, loading:AvailProdLoading, error:AvailProdError}] = useLazyQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
+    variables: {
+      category: productsType,
+      itemId: productId,
+      filter: filters,
+      page: currentPage,
+      limit: 6,
+    },
+  });
+
+  const [getSuggestedProducts,{data:SuggestedProdData, loading:SuggestedProdLoading, error:SuggestedProdError}] = useLazyQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
+    variables: {
+      category: productsType,
+      itemId: productId,
+      filter: filters,
+      page: currentPage,
+      limit: 6,
+    },
+  });
+
+  useEffect(()=>{
+    if(productsSortBy == "available"){
+      getAvailableProducts();
+    } else{
+      getSuggestedProducts();
+    }
+
+  }, [getAvailableProducts, getSuggestedProducts, productsSortBy]);
+
+  useEffect(()=>{
+    if(productsSortBy == "available"){
+      setLoading(AvailProdLoading);
+      setData(AvailProdData);
+    } else{
+      setData(SuggestedProdData);
+      setLoading(SuggestedProdLoading);
+    }
+
+  },[AvailProdData, SuggestedProdData, AvailProdLoading, SuggestedProdLoading, productsSortBy]);
   
   // Use different queries based on the sortBy property
-  const { data, loading, error } = productsSortBy === 'available'
-    ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
-        variables: {
-          category: productsType,
-          itemId: productId,
-          filter: filters,
-          page: currentPage,
-          limit: 6,
-        },
-      })
-    : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
-        variables: {
-          category: productsType,
-          itemId: productId,
-          filter: filters,
-          page: currentPage,
-          limit: 6,
-        },
-      });
+  // const { data, loading, error } = productsSortBy === 'available'
+  //   ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
+  //       variables: {
+  //         category: productsType,
+  //         itemId: productId,
+  //         filter: filters,
+  //         page: currentPage,
+  //         limit: 6,
+  //       },
+  //     })
+  //   : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
+  //       variables: {
+  //         category: productsType,
+  //         itemId: productId,
+  //         filter: filters,
+  //         page: currentPage,
+  //         limit: 6,
+  //       },
+  //     });
 
 
   const [placeOrder, placeOrderResults] = useMutation(PLACE_ORDER,{
@@ -180,19 +221,19 @@ function Products() {
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
       <CircularLoading/>
     </div>
-  ); //TODO: Implement Loading and Error messaging
-  if (error) return <p>Error: {error.message}</p>;
+  ); 
+  // if (error) return <p>Error: {error.message}</p>;
   
   if(data && !loading){
     let products;
     let totalProduct;
 
     if (productsSortBy === 'available') {
-      products = data.getAvailableProducts.product;
-      totalProduct = data.getAvailableProducts.totalProduct;
+      products = data?.getAvailableProducts?.product;
+      totalProduct = data?.getAvailableProducts?.totalProduct;
     } else if (productsSortBy === 'suggested') {
-      products = data.getSuggestedProducts.product;
-      totalProduct = data.getSuggestedProducts.totalProduct;
+      products = data?.getSuggestedProducts?.product;
+      totalProduct = data?.getSuggestedProducts?.totalProduct;
     }
   
      const totalPages = Math.ceil(totalProduct/ 10);
