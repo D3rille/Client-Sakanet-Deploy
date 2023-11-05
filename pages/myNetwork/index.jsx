@@ -156,7 +156,7 @@ function MyNetwork(){
                   <div style={{marginLeft:"0.5em", marginRight:"1em"}}>
                     <Image src ={groupicon} alt = "Group" width={30} height={35}/>
                   </div>
-                  <p className={styles.title}> Groups you've joined</p>
+                  <p className={styles.title}> Groups you joined</p>
                 </div>
                 <div className={styles.containerlist} style={{padding:"auto", textAlign:"center"}}>
                   

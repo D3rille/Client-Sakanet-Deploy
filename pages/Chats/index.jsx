@@ -73,23 +73,26 @@ const Chats = () => {
     const [kickOut] = useMutation(KICKOUT_PARTICIPANT);
     const [leaveGroupChat] = useMutation(LEAVE_GROUPCHAT);
     
-    try {
-        var {
-            data:getMessagesData, 
-            loading:getMessagesLoading, 
-            error:getMessagesError, 
-            fetchMore:fetchMoreMessages,
-            subscribeToMore:subscribeToNewMessage} = useQuery(GET_MESSAGES, {
-            variables:{
-                conversationId:convoId ?? "",
-                limit:10,
-                cursor:null
-            },
-        });
+    const {
+        data:getMessagesData, 
+        loading:getMessagesLoading, 
+        error:getMessagesError, 
+        fetchMore:fetchMoreMessages,
+        subscribeToMore:subscribeToNewMessage} = useQuery(GET_MESSAGES, {
+        variables:{
+            conversationId:convoId ?? "",
+            limit:10,
+            cursor:null
+        },
+        onError:(error)=>{
+            toast.error(error.message);
+        }
+    });
+    // try {
         
-    } catch (error) {
-        console.error(error);
-    }
+    // } catch (error) {
+    //     console.error(error);
+    // }
 
     const getMoreMessages = () =>{
         if(getMessagesData?.getMessages?.hasNextPage){

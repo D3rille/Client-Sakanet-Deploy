@@ -297,7 +297,7 @@ const Profile = ({profile}) => {
             Upload New
           </StyledButton>
           <Typography variant="caption">
-            This setting will change your profile's photo.
+            This setting will change your profile photo.
           </Typography>
         </div>
       </div>
@@ -362,7 +362,7 @@ const Profile = ({profile}) => {
             Upload New
           </StyledButton>
           <Typography variant="caption">
-            This setting will change your profile's cover photo.
+            This setting will change your profile cover photo.
           </Typography>
         </div>
       </div>

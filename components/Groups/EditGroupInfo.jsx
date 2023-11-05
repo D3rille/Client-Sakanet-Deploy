@@ -280,7 +280,7 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
                   Upload
                 </StyledButton>
                 <Typography variant="caption">
-                  This setting will change the group's photo.
+                  This setting will change the profile photo of the group.
                 </Typography>
               </div>
             </div>
@@ -345,7 +345,7 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
                   Upload
                 </StyledButton>
                 <Typography variant="caption">
-                  This setting will change the group's  cover photo.
+                  This setting will change the cover photo of the group.
                 </Typography>
               </div>
             </div>
