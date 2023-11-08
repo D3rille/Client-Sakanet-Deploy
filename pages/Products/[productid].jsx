@@ -144,7 +144,7 @@ function Products() {
     },
   });
 
-  const [getSuggestedProducts,{data:SuggestedProdData, loading:SuggestedProdLoading, error:SuggestedProdError}] = useLazyQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
+  const [getSuggestedProducts,{data:SuggestedProdData, loading:SuggestedProdLoading, error:SuggestedProdError}] = useLazyQuery(GET_SUGGESTED_PRODUCT, { //Available Product
     variables: {
       category: productsType,
       itemId: productId,
@@ -168,8 +168,8 @@ function Products() {
       setLoading(AvailProdLoading);
       setData(AvailProdData);
     } else{
-      setData(SuggestedProdData);
       setLoading(SuggestedProdLoading);
+      setData(SuggestedProdData);
     }
 
   },[AvailProdData, SuggestedProdData, AvailProdLoading, SuggestedProdLoading, productsSortBy]);

@@ -123,7 +123,7 @@ function MyNetwork(){
                   </div>
                   <p className={styles.title}> My connections</p>
                 </div>
-                <div className={styles.containerlist}>
+                <div className={styles.containerlist} style={{padding:"auto",display:"flex", justifyContent:"center", flexDirection:"column"}}>
                   <MyConnectionList />
                  </div>
               </div>

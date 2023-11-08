@@ -36,3 +36,12 @@ export const LOGIN_USER = gql`
   }
 }
  `;
+
+export const VALIDATE_REG_PERSONAL_INFO = gql`
+  mutation ValidateRegPersonalInfo($registerInput: RegisterInput) {
+    validateRegPersonalInfo(registerInput: $registerInput) {
+      errors
+      valid
+    }
+  }
+`;

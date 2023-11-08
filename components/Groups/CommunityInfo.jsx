@@ -206,9 +206,11 @@ const CommunityInfo = ({isAdmin, data, settingsItems}) => {
           <Image
           src={data?.cover_photo ?? ""}
           sx={{
-            width:"100%", height:"100%", objectFit:"cover"
+           objectFit:"cover"
           }}
           alt="cover photo"
+          width={350}
+          height={150}
           />
         )}
 

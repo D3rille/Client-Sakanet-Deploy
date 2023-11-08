@@ -8,13 +8,14 @@ import { setContext } from '@apollo/client/link/context';
 const httpLink = new createHttpLink({
   uri: 'https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql',
 });
+// https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
 
 //Setting context that resolvers use
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   var token = "";
   if (typeof window !== 'undefined') {
-    token = sessionStorage.getItem('jwtToken');
+    token = localStorage.getItem('jwtToken');
   }
   
   // return the headers to the context so httpLink can read them

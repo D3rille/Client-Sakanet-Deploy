@@ -273,7 +273,7 @@ export default function PurchaseDialog({...props}) {
                 sx={{
                     display: "flex",
                     flexDirection: { xs: "column", sm: "row" },
-                    height: { xs: "auto", sm: "400px" },
+                    height: { xs: "70vh"},
                     backgroundColor: "#FEFEFF",
                     borderRadius: "20px",
                 }}

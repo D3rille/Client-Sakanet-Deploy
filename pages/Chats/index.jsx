@@ -84,9 +84,9 @@ const Chats = () => {
             limit:10,
             cursor:null
         },
-        onError:(error)=>{
-            toast.error(error.message);
-        }
+        // onError:(error)=>{
+        //     toast.error(error.message);
+        // }
     });
     // try {
         
@@ -242,13 +242,13 @@ const Chats = () => {
                         getMoreMessages={getMoreMessages}
                     />
                     )}  
-                    <ChatInfoPanel 
+                    {getMessagesData && (<ChatInfoPanel 
                         getMessagesData={getMessagesData}
                         addParticipants={addParticipants} 
                         kickOut={kickOut}
                         leaveGroupChat={leaveGroupChat}
                         currentConvoId={convoId} 
-                    /> 
+                    />)} 
                 </StyledPaperContainer>
             </Grid>
         </StyledGridContainer>

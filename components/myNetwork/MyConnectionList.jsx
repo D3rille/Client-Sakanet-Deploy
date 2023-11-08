@@ -1,6 +1,6 @@
 import {useQuery} from '@apollo/client';
 import Avatar from '@mui/material/Avatar';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Typography } from '@mui/material';
 import SmsIcon from '@mui/icons-material/Sms';
 import styles from '../../styles/Navbar.module.css';
 import toast from 'react-hot-toast';
@@ -27,11 +27,12 @@ function MyConnectionList(){
     }
     if(data?.getConnectedUsers?.length==0){
       return (
-        <>
-        <div sx={{textAlign:"center", width:"100%"}}>
-          <p >No Connected Users</p>
-        </div>
-        </>
+        <Typography sx={{color:"#e5e5e5", padding:"auto", textAlign:"center"}}>No Connections</Typography>
+        // <>
+        // <div style={{textAlign:"center", display:"flex", justifyContent:"center",}}>
+        //   <p >No Connected Users</p>
+        // </div>
+        // </>
       
       )
     }

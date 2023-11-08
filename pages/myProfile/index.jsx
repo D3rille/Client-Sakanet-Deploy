@@ -358,11 +358,13 @@ function MyProfile() {
                           </div>
                         )}
                         {getReviewsData?.getAllReviews.length == 0 && (
-                          <div style={{display:"flex", margin:"auto",  backgroundColor: "#FCFCFF",}}>
-                            <p>No Reviews</p>
-                          </div>
+                          <Card elevation={3} sx={{paddingBlock:"1em", paddingInline:"2em", borderRadius:"10px", marginBlock:"1em",  backgroundColor: "#FCFCFF",}}>
+                            <div style={{display:"flex", margin:"auto",  backgroundColor: "#FCFCFF",}}>
+                              <p>No Reviews</p>
+                            </div>
+                          </Card>
                         )}
-                        {getReviewsData && (<Card elevation={3} sx={{paddingBlock:"1em", paddingInline:"2em", borderRadius:"10px", marginBlock:"1em",  backgroundColor: "#FCFCFF",}}>
+                        {getReviewsData?.getAllReviews?.length > 0 && (<Card elevation={3} sx={{paddingBlock:"1em", paddingInline:"2em", borderRadius:"10px", marginBlock:"1em",  backgroundColor: "#FCFCFF",}}>
                             <div style={{display:"flex", flexDirection:"row" }}>
                               <div>
                                 <Typography variant="h6" sx={{fontWeight:"bold"}}>

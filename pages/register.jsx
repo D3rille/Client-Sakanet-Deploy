@@ -29,7 +29,7 @@ import Logo from "../public/bg/LOGO-ONLY-FINAL.png";
 import Image from "next/image";
 
 import { useState, useContext, forwardRef, useRef } from "react";
-import { REGISTER_USER } from "../graphql/operations/auth"; //imported the mutation
+import { REGISTER_USER, VALIDATE_REG_PERSONAL_INFO } from "../graphql/operations/auth"; //imported the mutation
 import { useMutation } from "@apollo/client";
 import toast, { Toaster } from "react-hot-toast";
 import CircularLoading from "../components/circularLoading";
@@ -167,18 +167,6 @@ export default function Register() {
       setCityOrMunicipality(municipality);
       setBarangay(barangayName);
       setStreet(street);
-
-      // console.log('Selected Address:', selectedAddress);
-      // console.log('Barangay:', barangayName);
-      // console.log('Municipality:', municipality);
-      // console.log('City:', city);
-      // console.log('Province:', province);
-      // console.log('Region:', region);
-      // console.log('Postal Code:', postalCode);
-      // console.log('Country:', country);
-      // console.log('Longitude', longitude );
-      // console.log('Latitude', latitude);
-      // console.log('Street:', street)
     }
   };
 
@@ -194,7 +182,7 @@ export default function Register() {
     confirmPassword: "",
     account_email: "",
     account_mobile: "",
-    role: "FARMER",
+    role: "",
   });
   //upon changing something on input field, update that value(values)
   // const onChange = (event) =>{
@@ -242,23 +230,30 @@ export default function Register() {
     },
   });
 
+  const [validateRegPersonalInfo, {data:personalInfoValData}] = useMutation(VALIDATE_REG_PERSONAL_INFO, {
+    variables:{
+      "registerInput": {
+        "username": values?.username,
+        "password": values?.password,
+        "confirmPassword": values?.confirmPassword,
+        "account_email": values?.account_email,
+        "account_mobile": values?.account_mobile
+      }
+    },
+    onCompleted:(data)=>{
+      if(data?.validateRegPersonalInfo?.valid){
+        setCurrentPage(currentPage + 1);
+        setErrors({});
+      } else{
+        setOpen(true);
+      }
+    }
+  })
+
   // The callback Function you pass on UseForm upon onSubmit
   function registerUser() {
     addUser();
   }
-
-  // const handleSubmit = async (event) => {
-  //   setOpen(true);
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  // };
-
-  // const handleClose = (event, reason) => {
-  //   if (reason === "clickaway") {
-  //     return;
-  //   }
-  //   setOpen(false);
-  // };
 
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
@@ -298,36 +293,66 @@ export default function Register() {
       }}
     >
       <Box sx={{ ...boxstyle, height: "70vh" }}>
-        <Collapse in={open}>
-  <Alert
-    severity="error"
-    action={
-      <IconButton
-        aria-label="close"
-        color="inherit"
-        size="small"
-        onClick={() => {
-          setOpen(false);
-        }}
-      >
-        <CloseIcon fontSize="inherit" />
-      </IconButton>
-    }
-    sx={{
-      position: "absolute",
-      top: "-10%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      width: "50%",
-      zIndex: 9999, 
-    }}
-  >
-    {Object.keys(errors).length > 0 &&
-      Object.values(errors).map((value) => (
-        <p key={value}>{value}</p>
-      ))}
-  </Alert>
-        </Collapse>
+      {currentPage == 1 && (<Collapse in={open}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{
+              position: "absolute",
+              top: "0",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              zIndex: 9999, 
+            }}
+          >
+            {personalInfoValData?.validateRegPersonalInfo?.errors?.length > 0 && 
+            personalInfoValData?.validateRegPersonalInfo?.errors.map((error, index)=>(
+              <p key ={index}>{error}</p>
+            ))}
+          </Alert>
+        </Collapse>)}
+        {currentPage != 1 && (<Collapse in={open}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{
+              position: "absolute",
+              top: "-10%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              zIndex: 9999, 
+            }}
+          >
+            {Object.keys(errors).length > 0 &&
+              Object.values(errors).map((value) => (
+                <p key={value}>{value}</p>
+              ))}
+          </Alert>
+        </Collapse>)}
         <Grid container>
           <Grid item xs={12} sm={12} lg={6}>
             <Box
@@ -464,13 +489,6 @@ export default function Register() {
                             </Grid>
                           </Grid>
 
-                          {/* <Grid item xs={0.5} sx={{color:"black"}}>
-                                
-                            </Grid>
-
-                            <Grid item xs={4} >
-                            
-                            </Grid> */}
 
                           {/* Password */}
                           <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
@@ -515,7 +533,8 @@ export default function Register() {
                               variant="contained"
                               fullWidth={true}
                               onClick={() => {
-                                setCurrentPage(currentPage + 1);
+                                // setCurrentPage(currentPage + 1);
+                                validateRegPersonalInfo();
                               }}
                               size="large"
                               sx={{
@@ -673,6 +692,7 @@ export default function Register() {
                                     variant="outlined"
                                     onClick={() => {
                                       setCurrentPage(currentPage - 1);
+                                      setErrors({});
                                     }}
                                     size="large"
                                     sx={{
@@ -699,7 +719,13 @@ export default function Register() {
                                   <Button
                                     type="button"
                                     onClick={() => {
-                                      setCurrentPage(currentPage + 1);
+                                      if(values.role){
+                                        setCurrentPage(currentPage + 1);
+                                        setErrors({});
+                                      } else{
+                                        setErrors({role:"Please select an account type or your role."});
+                                        setOpen(true);
+                                      }
                                     }}
                                     variant="contained"
                                     size="large"
@@ -767,10 +793,10 @@ export default function Register() {
                                 onPlacesChanged={handlePlaceChanged}
                               >
                                 <TextField
-                                  required
                                   fullWidth
                                   id="quick_search"
-                                  label="Quick Search"
+                                  label="Address"
+                                  placeholder="Quick Search"
                                   name="quick_search"
                                   variant="outlined"
                                   InputProps={{ style: { color: "#02452d" } }}
@@ -889,6 +915,7 @@ export default function Register() {
                                   variant="outlined"
                                   onClick={() => {
                                     setCurrentPage(currentPage - 1);
+                                    setErrors({});
                                   }}
                                   size="large"
                                   sx={{
