@@ -9,6 +9,7 @@ const httpLink = new createHttpLink({
   uri: 'https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql',
 });
 // https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
+// http://localhost:4000/graphql
 
 //Setting context that resolvers use
 const authLink = setContext((_, { headers }) => {
@@ -32,7 +33,8 @@ typeof window !== "undefined"
 ? new GraphQLWsLink(createClient({
   url: 'wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql/subscriptions',
 })):null;
-// wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
+// ws://localhost:4000/graphql/subscriptions
+// wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql/subscriptions
 // The split function takes three parameters:
 //
 // * A function that's called for each operation to execute

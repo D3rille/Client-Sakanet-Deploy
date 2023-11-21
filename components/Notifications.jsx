@@ -119,7 +119,7 @@ const Notifications = ({deleteNotif, clearNotifs}) => {
                     <React.Fragment key={notif._id}>
                         <NotificationItem>
                             <LeftSection>
-                                <Avatar />
+                                <Avatar src={notif.photo}/>
                                 <UserInfo>
                                     <div>
                                         <span style={{ fontWeight: 'bold' }}>{notif.from}</span>

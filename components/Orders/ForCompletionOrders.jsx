@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Grid,
   Table,
@@ -21,6 +21,7 @@ import {timePassed} from "../../util/dateUtils";
 import SmsIcon from '@mui/icons-material/Sms';
 import {useRouter} from "next/router";
 import CustomDialog from "../popups/customDialog";
+import { AuthContext } from "../../context/auth";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "#F4F4F4",
@@ -45,6 +46,7 @@ const More = (handleClickOpen) =>{
 }
 
 export default function ForCompletionOrders({...props}) {
+  const {user} = useContext(AuthContext);
   const {orders, role, handleUpdateStatus, handleReturnStock}=props;
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState("");
@@ -99,7 +101,7 @@ export default function ForCompletionOrders({...props}) {
         <TableHead>
           <TableRow>
             <StyledOrderIdCell> Type </StyledOrderIdCell>
-            <StyledOrderIdCell>Order Id </StyledOrderIdCell>
+            <StyledOrderIdCell>{user.role == "FARMER" ? "Buyer" : "Seller"}</StyledOrderIdCell>
             <StyledTableCell>Product</StyledTableCell>
             {/* <StyledTableCell>{role=="FARMER"?"Buyer":"Seller"}</StyledTableCell> */}
             <StyledTableCell>Quantity</StyledTableCell>
@@ -142,7 +144,7 @@ export default function ForCompletionOrders({...props}) {
                   </Box>
                 )}
               </TableCell>
-              <TableCell>{order._id}</TableCell>
+              <TableCell>{user.role=="FARMER" ? order.buyer.name : order.seller.name}</TableCell>
               <TableCell>{order.marketProductName}</TableCell>
               {/* <TableCell>{role=="FARMER"?order.buyer.name:order.seller.name}</TableCell> */}
               <TableCell>{order.quantity}</TableCell>
