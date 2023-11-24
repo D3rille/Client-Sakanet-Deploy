@@ -160,30 +160,40 @@ function Orders() {
         try {
           await cancelOrder({
             variables: { orderId },
-            update: (cache) => {
-              // Check if the query result exists in the cache
-              const existingData = cache.readQuery({ query: GET_ORDERS});
-              if (!existingData || !existingData.getOrders) {
-                return;
-              }
+            refetchQueries:[
+              {
+                query:GET_ORDERS,
+                variables:{
+                  status:"Pending",
+                  limit:10,
+                  cursor:null
+                }
+              },
+            ]
+            // update: (cache) => {
+            //   // Check if the query result exists in the cache
+            //   const existingData = cache.readQuery({ query: GET_ORDERS});
+            //   if (!existingData || !existingData.getOrders) {
+            //     return;
+            //   }
       
-              // Fetch the existing data from the cache
-              const { getOrders } = existingData;
+            //   // Fetch the existing data from the cache
+            //   const { getOrders } = existingData;
       
-              // Remove the canceled order from the cache
-              const updatedOrders = getOrders.orders.filter((order) => order?._id !== orderId);
+            //   // Remove the canceled order from the cache
+            //   const updatedOrders = getOrders.orders.filter((order) => order?._id !== orderId);
       
-              // Write the updated data back to the cache
-              cache.writeQuery({
-                query: GET_ORDERS,
-                data: {
-                  getOrders: {
-                    ...getOrders,
-                    orders:updatedOrders
-                  },
-                },
-              });
-            },
+            //   // Write the updated data back to the cache
+            //   cache.writeQuery({
+            //     query: GET_ORDERS,
+            //     data: {
+            //       getOrders: {
+            //         ...getOrders,
+            //         orders:updatedOrders
+            //       },
+            //     },
+            //   });
+            // },
           });
         } catch (error) {
           // Handle any errors
