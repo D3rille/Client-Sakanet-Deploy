@@ -290,7 +290,7 @@ function MyNetwork(){
                         <RefreshIcon/>
                       </IconButton>
                     </div>
-                    <Card className={styles.contentCard} sx={{display:"flex",borderRadius:'12px',border:'0.5px solid #f1f3fa',  paddingBlock:"1em", overflowX:"scroll"}}>
+                    <Card className={styles.contentCard} sx={{display:"flex",borderRadius: "25px",border:'0.5px solid #f1f3fa',  paddingBlock:"1em", overflowX:"scroll"}}>
                       <SuggestedUsers requestConnection={requestConnection} suggestedUsersResults={suggestedUsersResults}/>
                     </Card>
                   </Grid>
@@ -303,7 +303,7 @@ function MyNetwork(){
                         <RefreshIcon/>
                       </IconButton>
                     </div>
-                    <Card className={styles.contentCard} sx={{display:"flex", borderRadius:'12px',border:'0.5px solid #f1f3fa', paddingBlock:"1em", overflowX:"scroll"}}>
+                    <Card className={styles.contentCard} sx={{display:"flex",borderRadius: "25px",border:'0.5px solid #f1f3fa', paddingBlock:"1em", overflowX:"scroll"}}>
                         <SuggestedGroups suggestedGroupsResults={suggestedGroupsResults}/>
                     </Card>
                   </Grid>)}
