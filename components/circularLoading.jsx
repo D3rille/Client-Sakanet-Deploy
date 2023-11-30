@@ -3,7 +3,7 @@ import { DotLoader } from "react-spinners";
 
 function LoadingComponent() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin:'auto',  }}>
       <DotLoader color="#2E603A" />
     </div>
   );

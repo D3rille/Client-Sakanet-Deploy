@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import styles from '../../styles/Navbar.module.css';
 import {GET_MANAGED_GROUPS} from "../../graphql/operations/poolGroup";
+import { PulseLoader } from "react-spinners";
 
 const ManagedGroups = () =>{
     // try {
@@ -32,13 +33,23 @@ const ManagedGroups = () =>{
         getManagedGroups();
     }, []);
 
-    if (loading){
-        return(
-            <div style={{display:"flex", margin:"auto"}}>
-                <CircularLoading/>
-            </div>
-        )
-    }
+  if (loading) {
+    return (
+      <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "20vh",
+          width: "100%",
+        }}
+      >
+        <PulseLoader color="#2E603A" />
+      </div>
+      </>
+    );
+  }
 
     if (error){
         <div>
@@ -47,9 +58,22 @@ const ManagedGroups = () =>{
     }
 
     if(!data || data?.getManagedGroups.length == 0){
-        return(
-            <Typography sx={{color:"#e5e5e5", padding:"1em"}}>No Groups</Typography>
-        )
+    return (
+      <div
+        style={{
+          color: "#e5e5e5",
+          marginLeft: "3rem",
+          marginTop: "5px",
+          marginBottom: "1rem",
+          display: "flex",
+          justifyContent: "left",
+          alignItems: "left",
+          fontSize: "14px",
+        }}
+      >
+        <p>No Groups</p>
+      </div>
+    );
     }
     
     if(data){
@@ -58,9 +82,13 @@ const ManagedGroups = () =>{
                 {data?.getManagedGroups.map((group)=>(
                     <div key={group._id} className={styles.grouplist} >
                         {/* `/Groups?groupId=${group._id}` */}
-                            <Link href={`/Groups/${group._id}`}>
-                                <Avatar sx={{width:'30'}} alt="Travis Howard" src={group?.profile_pic} />
-                            </Link>
+            <Link href={`/Groups/${group._id}`}>
+              <Avatar
+                sx={{ width: "32px", height: "32px" }}
+                alt="Avatar"
+                src={group?.profile_pic}
+              />
+            </Link>
                             <Link href={`/Groups/${group._id}`}>
                                 <p style={{marginLeft:'10px',padding:0}}>{group?.groupName}</p> 
                             </Link>

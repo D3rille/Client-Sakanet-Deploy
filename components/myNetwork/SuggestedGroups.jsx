@@ -6,6 +6,7 @@ import Link from "next/link";
 import styles from '../../styles/Navbar.module.css';
 import { GET_SUGGESTED_GROUPS, JOIN_POOL_GROUP } from "../../graphql/operations/poolGroup";
 import CircularLoading from "../circularLoading";
+import { PulseLoader} from 'react-spinners';
 
 export const SuggestedGroups = ({suggestedGroupsResults}) =>{
     const [joinPoolGroup] = useMutation(JOIN_POOL_GROUP);
@@ -34,7 +35,9 @@ export const SuggestedGroups = ({suggestedGroupsResults}) =>{
 
     if (loading){
         return(
-            <CircularLoading/>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',  width: "100%" }}>
+                <PulseLoader color="#2E603A" />
+            </div>
         )
     }
 
@@ -47,7 +50,7 @@ export const SuggestedGroups = ({suggestedGroupsResults}) =>{
     if(!data || data?.getSuggestedGroups.length == 0){
         return(
         <div style={{display:"flex", width:"100%", height:"100%", padding:"auto"}}>
-            <p style={{margin:"auto", color:"#c5c5c5", fontSize:"18px"}} >No Groups</p>
+            <p style={{margin:"auto", color:"#c5c5c5",}} >No Groups</p>
         </div>
         )
     }
@@ -58,7 +61,7 @@ export const SuggestedGroups = ({suggestedGroupsResults}) =>{
                 {data?.getSuggestedGroups.map((group)=>(
                     <div key={group._id} className={styles.cardprofile}>
                     <Card elevation={2} 
-                    sx={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'0px 0px 10px 0px',height:'max-Content',width:'170px',minHeight:'150px',border:'none'}}
+                    sx={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'0px 0px 10px 0px',height:'max-Content',width:'170px',minHeight:'150px',border:'none', borderRadius:'15px' }}
                     >
                     <div className={styles.backgroundimg} style={{backgroundImage:`url(${group.cover_photo})`}}>
                     <div className={styles.circular} style={{padding:'5px',borderRadius:'50%',position:'relative'}}>

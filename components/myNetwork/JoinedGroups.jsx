@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import styles from '../../styles/Navbar.module.css';
 import {GET_JOINED_GROUPS} from "../../graphql/operations/poolGroup";
+import { PulseLoader } from "react-spinners";
 
 const JoinedGroups = () =>{
     // try {
@@ -32,13 +33,23 @@ const JoinedGroups = () =>{
         getJoinedGroups()
     },[]);
 
-    if (loading){
-        return(
-            <div style={{display:"flex", margin:"auto"}}>
-                <CircularLoading/>
-            </div>
-        )
-    }
+  if (loading) {
+    return (
+      <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "20vh",
+          width: "100%",
+        }}
+      >
+        <PulseLoader color="#2E603A" />
+      </div>
+      </>
+    );
+  }
 
     if (error){
         <div>
@@ -46,10 +57,23 @@ const JoinedGroups = () =>{
         </div>
     }
 
-    if(!data || data?.getJoinedGroups.length==0){
-        return(
-                <Typography sx={{color:"#e5e5e5", padding:"1em"}}>No Groups</Typography>
-        )
+  if (!data || data?.getJoinedGroups.length == 0) {
+    return (
+      <div
+        style={{
+          color: "#e5e5e5",
+          marginLeft: "3rem",
+          marginTop: "5px",
+          marginBottom: "1rem",
+          display: "flex",
+          justifyContent: "left",
+          alignItems: "left",
+          fontSize: "14px",
+        }}
+      >
+        <p>No Groups</p>
+      </div>
+    );
     }
 
     if(data){
