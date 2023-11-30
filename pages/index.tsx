@@ -6,7 +6,8 @@ import { Inter } from 'next/font/google';
 import { AuthContext } from '@/context/auth';
 import { useState, useContext, useEffect } from 'react';
 import { Typography } from '@mui/material';
-import LinearProgress from '@mui/material/LinearProgress';
+import styles from '../styles/Splashscreen.module.css';
+import { PropagateLoader } from 'react-spinners';
 
 import Logo from "../public/images/LOGO-FINAL.png";
 
@@ -56,10 +57,17 @@ export default function Home() {
 
 function HomeScreen() {
   return (
-    <div style={{ display: "flex", paddingBlock: "10em", paddingInline: "auto", justifyContent: "center", alignItems: "center" }}>
-      <div>
-        <Image src={Logo} alt="Sakanet Logo" width="400" height="300" />
-        <LinearProgress color='success'/>
+    <div className={styles.splashContainer}>
+      <div className={styles.logo}>
+        <Image
+          src="/images/LOGO-FINAL.png"
+          alt="Our Logo"
+          width={270}
+          height={200}
+        />
+      </div>
+      <div className={styles.loader}>
+        <PropagateLoader color="#2E603A" />
       </div>
     </div>
   );
