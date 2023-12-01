@@ -341,16 +341,16 @@ const ProductsGrid = ({ ...props }) => {
   const {productData, openDetails, setOpenDetails, productStatus, currentPage, selectedCategory} = props;
   return (
     <div
-  style={{
-    display: "flex",
-    flexWrap: "wrap",
-    maxWidth: "100%",
-    gap: "16px",
-    marginTop: "5px",
-    justifyContent: 'space-between', 
-    paddingLeft: '16px', 
-    paddingRight: '16px', 
-  }}
+      style={{
+        display: "flex",
+        flexWrap:"wrap",
+        maxWidth:"100%",
+        // gridTemplateColumns: "repeat(auto-fit, minmax(1px, 1fr))",
+        gap: "16px",
+        marginTop: "5px",
+        justifyContent:'space-between',
+
+      }}
     >
       {productData?.map((product) => (
         <ProductCard 
