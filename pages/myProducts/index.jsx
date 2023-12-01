@@ -80,11 +80,12 @@ const StyledIconButton = styled(IconButton)({
 
 const triggerComponent = (handleClickOpen) => {
   return (
-    <Button onClick={()=>{
-      handleClickOpen();
-    }}>
-      More Details
-    </Button>
+<Button onClick={()=>{
+  handleClickOpen();
+}} style={{ color: "#2E603A" }}>
+  More Details
+</Button>
+
   );
 }
 
@@ -174,27 +175,39 @@ function ProductCard({ product, openDetails, setOpenDetails, productStatus, curr
               sx={{ width: 48, height: 48 }}
             />
           </Box>
-          <Box
-            sx={{
-              marginLeft: 1,
-              display: "flex",
-              flex:2,
-              flexDirection: "column",
-              height: "fit-content",
-              alignItems: "flex-start",
-            }}
-          >
-            <Typography variant="body1" sx={{ fontWeight: "bolder", fontSize:'0.9rem'}}>
-            {product.item.tagalogName && (<>{product.item.tagalogName} |{" "} </> )}{product.item.englishName}
-            </Typography>
-            <Typography
-              color="textSecondary"
-              variant="body2"
-              sx={{ fontWeight: "bolder", fontSize:'0.8rem' }}
-            >
-              Until: {formatDate(product.until, "ll")}
-            </Typography>
-          </Box>
+<Box
+  sx={{
+    marginLeft: 1,
+    display: "flex",
+    flex: 2,
+    flexDirection: "column",
+    height: "fit-content",
+    alignItems: "flex-start", 
+  }}
+>
+  <Typography 
+    variant="body1" 
+    sx={{ 
+      fontWeight: "bolder", 
+      fontSize: '0.9rem',
+      textAlign: 'left',
+    }}
+  >
+    {product.item.tagalogName && (<>{product.item.tagalogName} |{" "}</>)}{product.item.englishName}
+  </Typography>
+  <Typography
+    color="textSecondary"
+    variant="body2"
+    sx={{ 
+      fontWeight: "bolder", 
+      fontSize: '0.8rem',
+      textAlign: 'left',
+    }}
+  >
+    Until: {formatDate(product.until, "ll")}
+  </Typography>
+</Box>
+
           <Box 
             sx={{
               display:"flex",
@@ -242,7 +255,7 @@ function ProductCard({ product, openDetails, setOpenDetails, productStatus, curr
           {product.status == "open"? (
             <Box
               sx={{
-                backgroundColor: "#2E603A",
+                backgroundColor: "#FE8C47",
                 borderRadius: "8px",
                 width: "fit-content",
                 padding: "2px 8px",
@@ -328,14 +341,16 @@ const ProductsGrid = ({ ...props }) => {
   const {productData, openDetails, setOpenDetails, productStatus, currentPage, selectedCategory} = props;
   return (
     <div
-      style={{
-        display: "flex",
-        flexWrap:"wrap",
-        maxWidth:"100%",
-        // gridTemplateColumns: "repeat(auto-fit, minmax(1px, 1fr))",
-        gap: "16px",
-        marginTop: "20px",
-      }}
+  style={{
+    display: "flex",
+    flexWrap: "wrap",
+    maxWidth: "100%",
+    gap: "16px",
+    marginTop: "5px",
+    justifyContent: 'space-between', 
+    paddingLeft: '16px', 
+    paddingRight: '16px', 
+  }}
     >
       {productData?.map((product) => (
         <ProductCard 
