@@ -250,93 +250,106 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
               </ToggleButton>
             </ToggleButtonGroup>
 
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <TextField
-                  name="price"
-                  value={values.price}
-                  // onChange={(e) => setPrice(e.target.value)}
-                  onChange={onChange}
-                  fullWidth
-                  label="Price"
-                  type="number"
-                  variant="outlined"
-                  sx={{
-                    "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#2E613B",
-                    },
-                    "&.Mui-focused & .MuiInputLabel-outlined": {
-                      color: "#2E613B",
-                    },
-                  }}
-                />
-              </Grid>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid item xs={6}>
+                  <TextField
+                    name="price"
+                    value={values.price}
+                    onChange={onChange}
+                    fullWidth
+                    label="Price"
+                    type="number"
+                    variant="outlined"
+                    sx={{
+                      "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                        {
+                          borderColor: "#2E613B",
+                        },
+                      "& .MuiInputLabel-outlined.Mui-focused": {
+                        color: "#2E613B",
+                      },
+                    }}
+                  />
+                </Grid>
 
-              <Grid item xs={6}>
-                <TextField
-                  name="stocks"
-                  value={values.stocks}
-                  // onChange={(e) => setStocks(e.target.value)}
-                  onChange={onChange}
-                  fullWidth
-                  label="Stocks"
-                  type="number"
-                  variant="outlined"
-                  sx={{
-                    "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#2E613B",
-                    },
-                    "&.Mui-focused & .MuiInputLabel-outlined": {
-                      color: "#2E613B",
-                    },
-                  }}
-                />
+                <Grid item xs={6}>
+                  <TextField
+                    name="stocks"
+                    value={values.stocks}
+                    onChange={onChange}
+                    fullWidth
+                    label="Stocks"
+                    type="number"
+                    variant="outlined"
+                    sx={{
+                      "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                        {
+                          borderColor: "#2E613B",
+                        },
+                      "& .MuiInputLabel-outlined.Mui-focused": {
+                        color: "#2E613B",
+                      },
+                    }}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-            <Grid item xs={12} sx={{marginBlock:"1em"}}>
-              <Grid container spacing={2}>
-                  <Grid item xs={4}>
+              <Grid item xs={12}>
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
                     <TextField
                       name="minimumOrder"
                       value={values.minimumOrder}
-                      // onChange={(e) => setMinimumOrder(e.target.value)}
                       onChange={onChange}
-                      fullWidth
                       label="Minimum Order per unit"
                       type="number"
                       variant="outlined"
+                      fullWidth
                       sx={{
-                        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#2E613B",
-                        },
-                        "&.Mui-focused & .MuiInputLabel-outlined": {
+                        "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                          {
+                            borderColor: "#2E613B",
+                          },
+                        "& .MuiInputLabel-outlined.Mui-focused": {
                           color: "#2E613B",
                         },
                       }}
                     />
                   </Grid>
-                  <Grid item xs={2}>
-                    {data.units && (
-                      <Select
-                      name="unit"
+
+                  <Grid item xs={3}>
+                    <FormControl
                       fullWidth
-                      value={values.unit}
-                      label="Unit"
-                      onChange={onChange}
+                      variant="outlined"
+                      sx={{
+                        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#2E603A",
+                        },
+                        "&.Mui-focused & .MuiInputLabel-outlined": {
+                          color: "#2E603A",
+                        },
+                      }}
                     >
-                      {data.units.map(val=>{
-                        return(
-                          
-                            <MenuItem key ={val} value={val}>{val}</MenuItem>
-                          
-                            
-                        );
-                      })}
-                    </Select>
-                    )}
+                      <Select
+                        name="unit"
+                        value={values.unit}
+                        labelId="unit-label"
+                        onChange={onChange}
+                      >
+                        {data.units.map((val) => {
+                          return (
+                            <MenuItem key={val} value={val}>
+                              {val}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
                   </Grid>
+
                   <Grid item xs={6}>
-                  <FormLabel id="Mode-Of-Delivery">Select mode of delivery</FormLabel>
+                    <FormLabel id="Mode-Of-Delivery">
+                      Select mode of delivery
+                    </FormLabel>
                     <RadioGroup
                       row
                       aria-labelledby="Mode-Of-Delivery"
@@ -344,116 +357,135 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
                       value={values.modeOfDelivery}
                       onChange={onChange}
                     >
-                      <FormControlLabel value="pick-up" control={<Radio />} label="Pick-Up" />
-                      <FormControlLabel value="delivery" control={<Radio />} label="Delivery" />
+                      <FormControlLabel
+                        value="pick-up"
+                        control={
+                          <Radio
+                            sx={{ "&.Mui-checked": { color: "#2E603A" } }}
+                          />
+                        }
+                        label="Pick-Up"
+                      />
+                      <FormControlLabel
+                        value="delivery"
+                        control={
+                          <Radio
+                            sx={{ "&.Mui-checked": { color: "#2E603A" } }}
+                          />
+                        }
+                        label="Delivery"
+                      />
                     </RadioGroup>
                   </Grid>
+                </Grid>
               </Grid>
-
-            </Grid>
-            <TextField
-            name="areaLimit"
-              value={values.areaLimit}
-              // onChange={(e) => setAreaLimit(e.target.value)}
-              onChange={onChange}
-              fullWidth
-              label="Area Limit"
-              variant="outlined"
-              sx={{
-                marginBottom: "1rem",
-                "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#2E613B",
-                },
-                "&.Mui-focused & .MuiInputLabel-outlined": {
-                  color: "#2E613B",
-                },
-              }}
-            />
+            
+              <TextField
+                name="areaLimit"
+                value={values.areaLimit}
+                onChange={onChange}
+                fullWidth
+                label="Area Limit"
+                variant="outlined"
+                sx={{
+                  marginBottom: "1rem",
+                  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                    {
+                      borderColor: "#2E613B",
+                    },
+                  "& .MuiInputLabel-outlined.Mui-focused": {
+                    color: "#2E613B",
+                  },
+                }}
+              />
             <Grid container space={2}>
               {values.category=="Pre-Sell" && (
               <Grid item xs={5.8} sx={{marginRight:'1em'}} >
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    minDate={setMinDate()}
-                    label="Date of Harvest"
-                    sx={{
-                      width: "100%",
-                      "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#2E613B",
-                      },
-                      "&.Mui-focused & .MuiInputLabel-outlined": {
-                        color: "#2E613B",
-                      },
-                    }}
-                    value={dateOfHarvest}
-                    onAccept={(newValue) => setDateOfHarvest(newValue)}
-                  />
-                </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        minDate={setMinDate()}
+                        label="Date of Harvest"
+                        sx={{
+                          width: "100%",
+                          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                            {
+                              borderColor: "#2E613B",
+                            },
+                          "& .MuiInputLabel-outlined.Mui-focused": {
+                            color: "#2E613B",
+                          },
+                        }}
+                        value={dateOfHarvest}
+                        onAccept={(newValue) => setDateOfHarvest(newValue)}
+                      />
+                    </LocalizationProvider>
               </Grid>)}
               <Grid item xs={values.category=="Sell"?12:5.8}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    minDate={setMinDate()}
-                    label="Set Time Limit"
-                    sx={{
-                      width: "100%",
-                      "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#2E613B",
-                      },
-                      "&.Mui-focused & .MuiInputLabel-outlined": {
-                        color: "#2E613B",
-                      },
-                    }}
-                    value={selectedDate}
-                    onAccept={(newValue) => setSelectedDate(newValue)}
-                  />
-                </LocalizationProvider>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      minDate={setMinDate()}
+                      label="Set Time Limit"
+                      sx={{
+                        width: "100%",
+                        "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                          {
+                            borderColor: "#2E613B",
+                          },
+                        "& .MuiInputLabel-outlined.Mui-focused": {
+                          color: "#2E613B",
+                        },
+                      }}
+                      value={selectedDate}
+                      onAccept={(newValue) => setSelectedDate(newValue)}
+                    />
+                  </LocalizationProvider>
               </Grid>
 
             </Grid>
     
-            {values.modeOfDelivery=="pick-up" && (
-            <TextField
-              name="pickUpLocation"
-              value={values.pickUpLocation}
-              onChange={onChange}
-              fullWidth
-              label="Pick-up Location"
-              variant="outlined"
-              sx={{
-                marginBottom: "1rem",
-                "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#2E613B",
-                },
-                "&.Mui-focused & .MuiInputLabel-outlined": {
-                  color: "#2E613B",
-                },
-                marginTop:"1em"
-              }}
-            />
+              {values.modeOfDelivery == "pick-up" && (
+                <TextField
+                  name="pickUpLocation"
+                  value={values.pickUpLocation}
+                  onChange={onChange}
+                  fullWidth
+                  label="Pick-up Location"
+                  variant="outlined"
+                  sx={{
+                    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                      {
+                        borderColor: "#2E613B",
+                      },
+                    "& .MuiInputLabel-outlined.Mui-focused": {
+                      color: "#2E613B",
+                    },
+                    mt: 2,
+                  }}
+                />
             )}
     
-            <TextField
-            name="description"
-              value={values.description}
-              onChange={onChange}
-              fullWidth
-              label="Description"
-              multiline
-              rows={4}
-              // rowsMax={4}
-              variant="outlined"
-              sx={{
-                marginTop: "1rem",
-                marginBottom: "1rem",
-                "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#2E613B",
-                },
-                "&.Mui-focused & .MuiInputLabel-outlined": {
-                  color: "#2E613B",
-                },
-              }}
-            />
+
+              <TextField
+                name="description"
+                value={values.description}
+                onChange={onChange}
+                fullWidth
+                label="Description"
+                multiline
+                rows={3}
+                variant="outlined"
+                sx={{
+                  mt: 2,
+                  marginBottom: "1rem",
+                  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                    {
+                      borderColor: "#2E613B",
+                    },
+                  "& .MuiInputLabel-outlined.Mui-focused": {
+                    color: "#2E613B",
+                  },
+                }}
+              />
             {/* Image Dropzone */}
             <Box
               sx={{

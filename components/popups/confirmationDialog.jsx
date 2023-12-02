@@ -33,15 +33,18 @@ Example use of this component:
 
  */
 
-
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: '12px', 
+  },
   '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
+    padding: theme.spacing(3),
   },
   '& .MuiDialogActions-root': {
     padding: theme.spacing(1),
   },
 }));
+
 // 'message' needs to be a component
 export default function TriggeredDialog({triggerComponent, title, message, btnDisplay, callback}) {
     const buttonDisplay = [

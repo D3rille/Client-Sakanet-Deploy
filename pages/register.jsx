@@ -1,6 +1,5 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import bg from "../public/bg/welcome.jpg";
 import bgimg from "../public/bg/backimg.jpg";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";

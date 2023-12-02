@@ -218,7 +218,7 @@ function AddProducts() {
             <Grid item xs={12}>
             <Paper elevation={3} className={styles.paperContainer}
             style={{ minHeight: '80vh' }}>
-            <h1 style={{paddingTop:"1rem"}}>Select a Product</h1>
+            <h2 style={{paddingTop:"1.5rem", fontWeight:550}}>Select a Product</h2>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <ProductCategories categoryType={selectedCategory} onCategoryChange={setSelectedCategory} setCurrentPage={setCurrentPage}/>
                 </div>

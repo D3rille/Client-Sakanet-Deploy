@@ -10,23 +10,44 @@ import {useRouter} from "next/router";
 import {GET_CONNECTION_REQUESTS} from '../../graphql/operations/myNetwork';
 import { formatShortAddress } from '../../util/addresssUtils';
 import CircularLoading from '../circularLoading';
+import { PulseLoader } from "react-spinners";
 
 function Requests({acceptConnection, declineConnection}){
     const router = useRouter();
     const {data, loading, error} = useQuery(GET_CONNECTION_REQUESTS);
   
-    if (loading){return (
-      
-          <CircularLoading/> 
-      );}
+if (loading) {
+    return (
+      <>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <PulseLoader color="#2E603A" />
+        </div>
+      </>
+    );
+  }
       else if(error){
         toast.error(error);
         return(<p>Error Loading Connection Requests</p>)
       }
       if(data?.getConnectionRequests?.length==0){
         return (
-          <div style={{display:"flex", width:"100%", height:"100%", padding:"auto"}}>
-            <p style={{margin:"auto", color:"#c5c5c5", fontSize:"18px"}} >No Connection Requests</p>
+          <div 
+          style={{display:"flex", 
+          width:"100%", 
+          height:"100%", 
+          padding:"auto",
+          justifyContent: "center",
+          alignItems: "center",
+            }}>
+            <p style={{margin:"auto", color:"#c5c5c5"}}>
+            No Connection Requests</p>
           </div>
         )
       }
@@ -35,8 +56,16 @@ function Requests({acceptConnection, declineConnection}){
         <>
         {data && data?.getConnectionRequests?.map((request) =>(
           <div key={request.requesterId} className={styles.cardprofile}>
-          <Card elevation={2} sx={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'10px',height:'155px',width:'150px',border:'none'}}>
-            <div style={{border:'2px solid green',padding:'5px',borderRadius:'50%'}}>
+          <Card elevation={2} sx={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',
+          padding:'10px',
+          height:'155px',
+          width:'150px',
+          border:'none',
+          borderRadius: "15px",}}>
+            <div style={{
+              border:'2px solid green',
+              padding:'5px',
+              borderRadius:'50%'}}>
               <Avatar alt={request.requesterName} src={request.profile_pic} size="lg" />
               {/* <Avatar sx={{ width: '30', height: 'auto'}} alt={data.name} size="lg">
                   <Image src={data.profile} alt={data.name} width={30} height={30}/>

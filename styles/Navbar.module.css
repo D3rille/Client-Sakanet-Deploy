@@ -1,12 +1,12 @@
-
-.header{
+.header {
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
 
 }
-.navsection{
+
+.navsection {
     top: 0px;
     width: 95%;
     height: 8%;
@@ -18,36 +18,56 @@
     z-index: 10;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
-.searchLink{
-    color:black;
+
+.searchLink {
+    color: black;
     text-decoration: none;
     cursor: pointer;
 }
-.searchLink:hover{
+
+.searchLink:hover {
     color: #2F613A;
 }
 
 
-.logosearchbar{
+.logosearchbar {
     width: 100%;
     height: 100%;
-    padding:10px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content:flex-start;
+    justify-content: flex-start;
     align-items: left;
 }
-.tabs{
+
+.tabs {
     width: 30%;
     height: 100%;
     margin-right: 15px;
     margin-left: 20px;
 }
+
+
+.tabs .products,
+.tabs .myNetwork {
+    flex: 1;
+    text-align: center;
+}
+
+.tabs .products {
+    max-width: 100px;
+}
+
+.tabs .myNetwork {
+    max-width: 100px;
+}
+
 .tabs .active {
     background-color: #2F613A;
     color: white;
-  }
-.tabs ul{
+}
+
+.tabs ul {
     margin: 0px;
     padding: 0px;
     display: flex;
@@ -58,7 +78,8 @@
     align-self: center;
     height: 100%;
 }
-.tabs ul li{
+
+.tabs ul li {
     width: 99%;
     font-weight: 600;
     cursor: pointer;
@@ -71,13 +92,14 @@
     font-size: 15px;
 }
 
-.components .usernname{
+.components .usernname {
     display: flex;
     flex-direction: row;
     width: 100%;
     margin-left: 20px;
 }
-.icons{
+
+.icons {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -86,7 +108,7 @@
     margin-left: 40px;
 }
 
-.content{
+.content {
     position: absolute;
     top: 12%;
     width: 90%;
@@ -95,20 +117,23 @@
     align-items: top;
 
 }
-.content1{
+
+.content1 {
     width: 100%;
     height: 100%;
     height: 620px;
     margin: 0px 65px 0px 0px;
 
 }
-.contentheader{
+
+.contentheader {
     width: 100%;
     font-size: 30px;
     font-weight: 600;
     margin-bottom: 20px;
 }
-.myconnectionstitle{
+
+.myconnectionstitle {
     display: flex;
     align-items: center;
     text-align: center;
@@ -116,11 +141,13 @@
     height: 20px;
     padding-right: 10px;
 }
-.containerlist{
+
+.containerlist {
     width: 100%;
     margin: 0;
 }
-.list{
+
+.list {
     display: flex;
     margin: 10px 10px 10px 30px;
     width: 85%;
@@ -128,57 +155,69 @@
     justify-content: space-between;
     align-items: center;
 }
-.profilename{
+
+.profilename {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.details{
+
+.details {
     margin-left: 10px;
 }
-.details h2{
+
+.details h2 {
     font-size: 11px;
     margin: 0px;
     font-weight: 500;
 }
-.details p{
+
+.details p {
     font-size: 10px;
     margin: 0px;
     padding: 0;
 }
-.messageactions{
+
+.messageactions {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.messageactions .messageactionsBtn{
+
+.messageactions .messageactionsBtn {
     background-color: #07986f;
     color: white;
     cursor: pointer;
     height: 20px;
     padding: 5px;
 }
-.messageactions .messageactionsBtn p{
+
+.messageactions .messageactionsBtn p {
     font-size: 10px;
     text-transform: capitalize;
     margin-left: 20px;
 }
-.viewall{
+
+.viewall {
     color: black;
 }
-.mygroups{
+
+.mygroups {
     margin-top: 20px;
 }
-.grouplist{
+
+.grouplist {
     display: flex;
-    margin: 0px 0px 10px 30px ;
+    margin: 0px 0px 10px 30px;
     align-items: center;
 }
-.grouplist p{
+
+.grouplist p {
     font-size: 12px;
     margin-left: 10px;
 }
-.content2{
+
+.content2 {
     width: 57%;
     height: 100%;
     padding-bottom: 50px;
@@ -187,41 +226,48 @@
     justify-content: top;
     margin-top: 0px;
 }
-.contentCard{
+
+.contentCard {
     width: 93%;
-    margin: 0px 10px 30px 25px;
-    height: 230px;
+    margin: 0px 10px 30px 25px !important;
+    height: 218px !important;
 
 }
-.contentCard1{
+
+.contentCard1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 10px 0px 20px;
+    padding: 0px 10px 0px 20px !important;
 }
-/* .requestlist{
+.requestlist {
     display: flex;
-    overflow: scroll;
-
-} */
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+}
 .cardprofile{
     margin-left: 15px;
     margin-bottom: 5px;
     padding: 10px;
+    flex: 0 0 auto;
 }
-.acceptbtn{
+.acceptbtn {
     width: 80px;
-    background-color: #07986f;
+    background-color: #2E603A;
     border: none;
-    border-radius: 2px;
+    border-radius: 10px !important;
     color: white;
     padding: 5px;
     margin-right: 5px;
-    font-size: 8px;
+    font-size: 11px;
     cursor: pointer;
     border-radius: 3px;
+    margin-bottom: 3px;
+    font-weight: 550;
 }
-.xbtn{
+
+.xbtn {
     width: 30px;
     background-color: #C6C6C6;
     border: none;
@@ -230,7 +276,8 @@
     font-size: 6px;
     cursor: pointer;
     color: white;
-    border-radius: 3px;
+    border-radius: 10px !important;
+    margin-bottom: 3px;
 }
 .backgroundimg{
     width: 100%;
@@ -244,11 +291,11 @@
     background-position: center;
     margin-bottom: 25px;
 }
-.circular{
+.circular {
     display: flex;
     position: fixed;
     top: 30px;
-    border: 2px solid green;
+    border: 2px solid #2E603A;
     align-items: center;
     justify-content: center;
     width: 30%;
@@ -390,12 +437,12 @@
         flex-direction: column;
         margin-top: 40px;
     }
-    .contentCard{
-        width: 90%;
-        margin: 0px 10px 30px 20px;
-        height: 230px;
-    
-    }
+.contentCard {
+    width: 93%;
+    margin: 0px 10px 30px 25px !important;
+    height: 218px !important;
+
+}
 }
 @media (min-width: 375px) {
     .menu{
@@ -509,12 +556,12 @@
         display: flex;
         flex-direction: column;
     }
-    .contentCard{
-        width: 90%;
-        margin: 0px 10px 30px 20px;
-        height: 230px;
-    
-    }
+.contentCard {
+    width: 93%;
+    margin: 0px 10px 30px 25px !important;
+    height: 218px !important;
+
+}
 }
 @media (min-width: 425px) {
     .menu{
@@ -632,12 +679,12 @@
         display: flex;
         flex-direction: column;
     }
-    .contentCard{
-        width: 90%;
-        margin: 0px 10px 30px 20px;
-        height: 230px;
-    
-    }
+.contentCard {
+    width: 93%;
+    margin: 0px 10px 30px 25px !important;
+    height: 218px !important;
+
+}
 }
 @media (min-width: 768px) {
     .menu{
@@ -760,12 +807,12 @@
         flex-direction: column;
         margin-top: 0px;
     }
-    .contentCard{
-        width: 93%;
-        margin: 0px 10px 30px 25px;
-        height: 230px;
-    
-    }
+.contentCard {
+    width: 93%;
+    margin: 0px 10px 30px 25px !important;
+    height: 218px !important;
+
+}
 }
 @media (min-width: 1024px) {
     .logosearchbar img{
@@ -830,12 +877,12 @@
         flex-direction: column;
         margin-top: 0px;
     }
-    .contentCard{
-        width: 93%;
-        margin: 0px 10px 30px 25px;
-        height: 230px;
-    
-    }
+.contentCard {
+    width: 93%;
+    margin: 0px 10px 30px 25px !important;
+    height: 218px !important;
+
+}
 }
 @media (min-width: 1440px) {
 
@@ -867,12 +914,12 @@
         display: flex;
         margin-top: 0px;
     }
-    .contentCard{
-        width: 93%;
-        margin: 0px 10px 30px 25px;
-        height: 230px;
-    
-    }
+.contentCard {
+    width: 93%;
+    margin: 0px 10px 30px 25px !important;
+    height: 218px !important;
+
+}
 }
 
 

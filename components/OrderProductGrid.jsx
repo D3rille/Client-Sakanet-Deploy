@@ -120,8 +120,8 @@ function ProductCard({ ...props }) {
         <Button
           variant="contained"
           style={{
-            backgroundColor: "#ECEDEC",
-            color: "#2C2D2D",
+            backgroundColor: "#2F613A",
+            color: "#ECEDEC",
             flex: 1,
             fontSize: "1rem",
             borderBottomLeftRadius: "12px",

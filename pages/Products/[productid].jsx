@@ -1,6 +1,6 @@
 import * as React from "react";
-import Head from 'next/head';
-import { useState, useContext, useEffect } from "react";
+import Head from "next/head";
+import { useState, useContext, useEffect, useRef } from "react";
 import {
   Grid,
   Paper,
@@ -31,9 +31,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import styles from "../../styles/availableProducts.module.css";
 import OrderProductGrid from "../../components/OrderProductGrid";
 import PreOrderProductGrid from "../../components/PreOrderProductGrid";
-import { GET_AVAILABLE_PRODUCTS, GET_SUGGESTED_PRODUCT, GET_PRODUCT} from "../../graphql/operations/product";
+import EmptyAnimation from '../../components/EmptyAnimation';
+import {
+  GET_AVAILABLE_PRODUCTS,
+  GET_SUGGESTED_PRODUCT,
+  GET_PRODUCT,
+} from "../../graphql/operations/product";
 import { PLACE_ORDER } from "../../graphql/operations/order";
-import { ADD_TO_CART} from "../../graphql/operations/cart";
+import { ADD_TO_CART } from "../../graphql/operations/cart";
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import CircularLoading from "../../components/circularLoading";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -43,20 +48,19 @@ import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { AuthContext } from "../../context/auth";
 import PurchaseDialog from "../../components/BuyerSide/PurchaseDialog";
-import toast from 'react-hot-toast';
-
+import toast from "react-hot-toast";
 
 export default function AddProductsPage() {
   const { user } = useContext(AuthContext);
   const router = useRouter();
 
   useEffect(() => {
-    if (user.role !== 'BUYER') {
-      router.push('/404');
+    if (user.role !== "BUYER") {
+      router.push("/404");
     }
   }, [user]);
 
-  return user.role == 'BUYER' ? <Products /> : null;
+  return user.role == "BUYER" ? <Products /> : null;
 }
 
 function Products() {
@@ -66,15 +70,15 @@ function Products() {
     router.push("/Products");
   };
 
-  const [productsType, setProductsType] = React.useState("Sell"); //Order or Preorder 
+  const [productsType, setProductsType] = React.useState("Sell"); //Order or Preorder
   const [productsSortBy, setProductsSortBy] = React.useState("available"); //Available or Suggested Products
   const [deliveryFilter, setDeliveryFilter] = React.useState(""); //Delivery Filter
   const [priceRange, setPriceRange] = useState([0, 1000]); //Price Range Filter
-  const [currentLocation, setCurrentLocation] = useState("");//Area Limit Filter
+  const [currentLocation, setCurrentLocation] = useState(""); //Area Limit Filter
   const [selectedDate, setSelectedDate] = useState(null); //Date Filter
   const [currentPage, setCurrentPage] = useState(1); //Pagination
   const [filters, setFilters] = useState({
-    modeOfDelivery: "",      
+    modeOfDelivery: "",
     area_limit: "",
     maxPrice: 1000,
     minPrice: 0,
@@ -86,18 +90,15 @@ function Products() {
 
   const [purchaseModal, setPurchaseModal] = useState([false, ""]);
 
-  const productFilters = ()=>{
+  const productFilters = () => {
     setFilters({
-      modeOfDelivery: deliveryFilter,      
+      modeOfDelivery: deliveryFilter,
       area_limit: currentLocation,
       maxPrice: priceRange[1],
       minPrice: priceRange[0],
       until: selectedDate,
     });
-
-  } 
-  ;
-
+  };
   const handleProductTypeChange = (event, newType) => {
     setProductsType(newType);
   };
@@ -119,22 +120,21 @@ function Products() {
   const handleProductsSortChange = (event) => {
     setProductsSortBy(event.target.value);
   };
-  
-   const handlePageChange = (event, page) => { //Pagination
+
+  const handlePageChange = (event, page) => {
+    //Pagination
     event.preventDefault();
     if (page !== currentPage) {
       setCurrentPage(page);
     }
   };
 
-  // const resetFilters = () => {
-  //   setDeliveryFilter("");
-  //   setPriceRange([0, 1000]);
-  //   setSelectedDate(null);
-  //   setCurrentLocation("");
-  // };
 
-  const [getAvailableProducts,{data:AvailProdData, loading:AvailProdLoading, error:AvailProdError}] = useLazyQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
+  const [
+    getAvailableProducts,
+    { data: AvailProdData, loading: AvailProdLoading, error: AvailProdError },
+  ] = useLazyQuery(GET_AVAILABLE_PRODUCTS, {
+    //Available Product
     variables: {
       category: productsType,
       itemId: productId,
@@ -144,7 +144,15 @@ function Products() {
     },
   });
 
-  const [getSuggestedProducts,{data:SuggestedProdData, loading:SuggestedProdLoading, error:SuggestedProdError}] = useLazyQuery(GET_SUGGESTED_PRODUCT, { //Available Product
+  const [
+    getSuggestedProducts,
+    {
+      data: SuggestedProdData,
+      loading: SuggestedProdLoading,
+      error: SuggestedProdError,
+    },
+  ] = useLazyQuery(GET_SUGGESTED_PRODUCT, {
+    //Available Product
     variables: {
       category: productsType,
       itemId: productId,
@@ -154,92 +162,83 @@ function Products() {
     },
   });
 
-  useEffect(()=>{
-    if(productsSortBy == "available"){
+  useEffect(() => {
+    if (productsSortBy == "available") {
       getAvailableProducts();
-    } else{
+    } else {
       getSuggestedProducts();
     }
-
   }, [getAvailableProducts, getSuggestedProducts, productsSortBy]);
 
-  useEffect(()=>{
-    if(productsSortBy == "available"){
+  useEffect(() => {
+    if (productsSortBy == "available") {
       setLoading(AvailProdLoading);
       setData(AvailProdData);
-    } else{
+    } else {
       setLoading(SuggestedProdLoading);
       setData(SuggestedProdData);
     }
+  }, [
+    AvailProdData,
+    SuggestedProdData,
+    AvailProdLoading,
+    SuggestedProdLoading,
+    productsSortBy,
+  ]);
 
-  },[AvailProdData, SuggestedProdData, AvailProdLoading, SuggestedProdLoading, productsSortBy]);
-  
-  // Use different queries based on the sortBy property
-  // const { data, loading, error } = productsSortBy === 'available'
-  //   ? useQuery(GET_AVAILABLE_PRODUCTS, { //Available Product
-  //       variables: {
-  //         category: productsType,
-  //         itemId: productId,
-  //         filter: filters,
-  //         page: currentPage,
-  //         limit: 6,
-  //       },
-  //     })
-  //   : useQuery(GET_SUGGESTED_PRODUCT, { //Suggested Product
-  //       variables: {
-  //         category: productsType,
-  //         itemId: productId,
-  //         filter: filters,
-  //         page: currentPage,
-  //         limit: 6,
-  //       },
-  //     });
-
-
-  const [placeOrder, placeOrderResults] = useMutation(PLACE_ORDER,{
+  const [placeOrder, placeOrderResults] = useMutation(PLACE_ORDER, {
     //TODO: Refetch Orders
-    onCompleted:()=>{
+    onCompleted: () => {
       toast.success("successfully placed an order");
-
     },
-    onError:(error)=>{
+    onError: (error) => {
       console.log(error.message);
       toast.error(error.message);
     },
-
   });
 
   const [addToCart, addToCartResults] = useMutation(ADD_TO_CART, {
-    onCompleted:()=>{
+    onCompleted: () => {
       toast.success("Order Added to Cart.");
-    }
-  })
+    },
+  });
 
-
-
-  if (loading) return (
-    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
-      <CircularLoading/>
-    </div>
-  ); 
+  if (loading)
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularLoading />
+      </div>
+    );
+    
   // if (error) return <p>Error: {error.message}</p>;
-  
-  if(data && !loading){
+
+  if (data && !loading) {
     let products;
     let totalProduct;
 
-    if (productsSortBy === 'available') {
+    if (productsSortBy === "available") {
       products = data?.getAvailableProducts?.product;
       totalProduct = data?.getAvailableProducts?.totalProduct;
-    } else if (productsSortBy === 'suggested') {
+    } else if (productsSortBy === "suggested") {
       products = data?.getSuggestedProducts?.product;
       totalProduct = data?.getSuggestedProducts?.totalProduct;
     }
+<<<<<<< HEAD
   
      const totalPages = Math.ceil(totalProduct/ 6);
+=======
+
+    const totalPages = Math.ceil(totalProduct / 10);
+>>>>>>> e782a9738401267b3af982ac0678b73e885f04d8
 
     return (
-    
       <Grid container className={styles.gridContainer}>
         <Head>
           <title>Products</title>
@@ -248,108 +247,107 @@ function Products() {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <Grid item xs={12}>
-        
           <Paper elevation={3} className={styles.paperContainer}>
-          <h1 style={{paddingTop:"1rem"}}>Seller Offers</h1>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "1rem 2rem",
-            }}
-          >
-            <IconButton
-              onClick={goBack}
-              sx={{
-                color: "#2F613A",
-                backgroundColor: "transparent",
-                fontSize: "1rem",
-              }}
-            >
-              <ArrowBackIcon /> Go Back
-            </IconButton>
-          
+            <h2 style={{ paddingTop: "1.5rem", fontWeight: 550 }}>
+              Seller Offers
+            </h2>
             <div
               style={{
                 display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
+                padding: "1rem 2rem",
               }}
             >
-              
+              <IconButton
+                onClick={goBack}
+                sx={{
+                  color: "#2F613A",
+                  backgroundColor: "transparent",
+                  fontSize: "1rem",
+                }}
+              >
+                <ArrowBackIcon /> Go Back
+              </IconButton>
+
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "flex-end",
                   alignItems: "center",
-                  borderRadius: "10px",
-                  marginRight: "2rem",
                 }}
               >
-                <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
-                  Sort by:
-                </Typography>
-                <Select
-                  value={productsSortBy}
-                  onChange={handleProductsSortChange}
-                  displayEmpty
+                <div
                   style={{
-                    height: "40px",
-                    minWidth: "160px",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
                     borderRadius: "10px",
-                    backgroundColor: "#FEFEFF",
-                  }}
-                  IconComponent={ArrowDropDownIcon}
-                  sx={{
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#2E603A',
-                    },
+                    marginRight: "2rem",
                   }}
                 >
-                  <MenuItem value={"available"}>Available Sellers</MenuItem>
-                  <MenuItem value={"suggested"}>Suggested Sellers</MenuItem>
-                </Select>
+                  <Typography style={{ marginRight: "10px", fontSize: "15px" }}>
+                    Sort by:
+                  </Typography>
+                  <Select
+                    value={productsSortBy}
+                    onChange={handleProductsSortChange}
+                    displayEmpty
+                    style={{
+                      height: "40px",
+                      minWidth: "160px",
+                      borderRadius: "10px",
+                      backgroundColor: "#FEFEFF",
+                    }}
+                    IconComponent={ArrowDropDownIcon}
+                    sx={{
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#2E603A",
+                      },
+                    }}
+                  >
+                    <MenuItem value={"available"}>Available Sellers</MenuItem>
+                    <MenuItem value={"suggested"}>Suggested Sellers</MenuItem>
+                  </Select>
+                </div>
+
+                <ToggleButtonGroup
+                  sx={{
+                    "& .Mui-selected": {
+                      bgcolor: "#C2E7CB",
+                    },
+                  }}
+                  color="primary"
+                  value={productsType}
+                  exclusive
+                  onChange={handleProductTypeChange}
+                  aria-label="Product Type"
+                >
+                  <ToggleButton
+                    value="Sell"
+                    sx={{
+                      color: "#2F613A",
+                      "&.Mui-selected": {
+                        color: "#2F613A",
+                      },
+                    }}
+                  >
+                    ORDER
+                  </ToggleButton>
+                  <ToggleButton
+                    value="Pre-Sell"
+                    sx={{
+                      color: "#2F613A",
+                      "&.Mui-selected": {
+                        color: "#2F613A",
+                      },
+                    }}
+                  >
+                    PRE-ORDER
+                  </ToggleButton>
+                </ToggleButtonGroup>
               </div>
-          
-              <ToggleButtonGroup
-                sx={{
-                  "& .Mui-selected": {
-                    bgcolor: "#C2E7CB",
-                  },
-                }}
-                color="primary"
-                value={productsType}
-                exclusive
-                onChange={handleProductTypeChange}
-                aria-label="Product Type"
-              >
-                <ToggleButton
-                  value="Sell"
-                  sx={{
-                    color: "#2F613A",
-                    "&.Mui-selected": {
-                      color: "#2F613A",
-                    },
-                  }}
-                >
-                  ORDER
-                </ToggleButton>
-                <ToggleButton
-                  value="Pre-Sell"
-                  sx={{
-                    color: "#2F613A",
-                    "&.Mui-selected": {
-                      color: "#2F613A",
-                    },
-                  }}
-                >
-                  PRE-ORDER
-                </ToggleButton>
-              </ToggleButtonGroup>
             </div>
-          </div>
-  
-  
+
             {/* Content Section */}
             <div
               style={{
@@ -390,7 +388,9 @@ function Products() {
                       <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
                     }
                     label={
-                      <Typography sx={{ fontSize: "12px" }}>Delivery</Typography>
+                      <Typography sx={{ fontSize: "12px" }}>
+                        Delivery
+                      </Typography>
                     }
                   />
                   <FormControlLabel
@@ -398,7 +398,9 @@ function Products() {
                     control={
                       <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
                     }
-                    label={<Typography sx={{ fontSize: "12px" }}>All</Typography>}
+                    label={
+                      <Typography sx={{ fontSize: "12px" }}>All</Typography>
+                    }
                   />
                 </RadioGroup>
                 <Divider sx={{ marginBottom: "1rem" }} />
@@ -424,7 +426,9 @@ function Products() {
                     },
                   }}
                 />
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
                   <TextField
                     variant="outlined"
                     size="small"
@@ -433,9 +437,12 @@ function Products() {
                     onChange={(e) => handleInputChange(0, e)}
                     style={{ width: "45%" }}
                     sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&:hover fieldset": { borderColor: "#2F603B" },
-                        "&.Mui-focused fieldset": { borderColor: "#2F603B" },
+                      "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                        {
+                          borderColor: "#2E613B",
+                        },
+                      "& .MuiInputLabel-outlined.Mui-focused": {
+                        color: "#2E613B",
                       },
                     }}
                   />
@@ -447,9 +454,12 @@ function Products() {
                     onChange={(e) => handleInputChange(1, e)}
                     style={{ width: "45%" }}
                     sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&:hover fieldset": { borderColor: "#2F603B" },
-                        "&.Mui-focused fieldset": { borderColor: "#2F603B" },
+                      "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                        {
+                          borderColor: "#2E613B",
+                        },
+                      "& .MuiInputLabel-outlined.Mui-focused": {
+                        color: "#2E613B",
                       },
                     }}
                   />
@@ -458,18 +468,29 @@ function Products() {
                 <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
                   Area Limit
                 </Typography>
-  
+
                 <TextField
-                    placeholder="Enter location: ex. Quezon"
-                    variant="outlined"
-                    size="small"
-                    style={{ borderColor: "#2E603A", width: "100%" }}
-                    value={currentLocation}
-                    onChange={(e) => setCurrentLocation(e.target.value)}
-                  />
-  
+                  placeholder="Enter location: ex. Quezon"
+                  variant="outlined"
+                  size="small"
+                  value={currentLocation}
+                  onChange={(e) => setCurrentLocation(e.target.value)}
+                  sx={{
+                    borderColor: "#2E603A",
+                    width: "100%",
+                    marginBottom: "1rem",
+                    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                      {
+                        borderColor: "#2E613B",
+                      },
+                    "& .MuiInputLabel-outlined.Mui-focused": {
+                      color: "#2E613B",
+                    },
+                  }}
+                />
+
                 <Divider sx={{ marginTop: "1rem" }} />
-  
+
                 <Typography
                   sx={{
                     fontSize: "14px",
@@ -479,25 +500,38 @@ function Products() {
                 >
                   Time Limit
                 </Typography>
-  
+
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label="Set Time Limit"
                     sx={{
                       width: "100%",
+                      "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                        {
+                          borderColor: "#2E613B",
+                        },
+                      "& .MuiInputLabel-outlined.Mui-focused": {
+                        color: "#2E613B",
+                      },
                     }}
                     value={selectedDate}
-                    onAccept={(newValue) => setSelectedDate(newValue.toISOString())} // This triggers after user selects a date                  
+                    onAccept={(newValue) =>
+                      setSelectedDate(newValue.toISOString())
+                    } // This triggers after user selects a date
                   />
                 </LocalizationProvider>
-  
+
                 <Button
                   variant="contained"
                   color="primary"
                   sx={{
                     backgroundColor: "#2F603B",
+                    "&:hover": {
+                      backgroundColor: "#286652",
+                    },
                     marginTop: "2rem",
                     width: "100%",
+                    borderRadius: "10px",
                   }}
                   // onClick={resetFilters}
                   onClick={productFilters}
@@ -506,99 +540,83 @@ function Products() {
                 </Button>
               </Paper>
               <div className={styles.parentContainer}>
-                {/* <Paper elevation={3} className={styles.innerPaperRight}>
-                  <div className={styles.logosearchbar}>
-                    <TextField
-                      size="small"
-                      type="text"
-                      fullWidth
-                      className={styles.searchicon}
-                      sx={{
-                        borderRadius: "30px",
-                        backgroundColor: "#FFFEFE",
-                        justifyItems: "right",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "transparent",
-                            borderRadius: "30px",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "transparent",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "transparent",
-                          },
-                          "& .MuiOutlinedInput-input": {
-                            padding: "10px 10px 10px 15px",
-                          },
-                        },
-                      }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <SearchIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      placeholder="Search"
-                    />
-                  </div>
-                </Paper> */}
-                
-                <div className={styles.productGridContainer}>
-    {productsType === "Sell" ? <OrderProductGrid products = {products}  setPurchaseModal={setPurchaseModal}/> : 
-  <PreOrderProductGrid products = {products}  setPurchaseModal={setPurchaseModal} />}
-  
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "1rem",
-        marginBottom: "2rem",
-      }}
-    >
-      <Pagination
-        count={totalPages}
-        page={currentPage}
-        onChange={handlePageChange}
-        variant="outlined"
-        sx={{
-          "& .MuiPaginationItem-root": {
-            color: "#2F603B",
-          },
-          "& .MuiPaginationItem-page.Mui-selected": {
-            backgroundColor: "#2F603B",
-            color: "#fff",
-            "&:hover": {
-              backgroundColor: "#2F603B",
-            },
-          },
-          "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible": {
-            backgroundColor: "#2F603B",
-          },
-        }}
+
+<div className={styles.productGridContainer}>
+  {products && products.length > 0 ? (
+    productsType === "Sell" ? (
+      <OrderProductGrid
+        products={products}
+        setPurchaseModal={setPurchaseModal}
       />
+    ) : (
+      <PreOrderProductGrid
+        products={products}
+        setPurchaseModal={setPurchaseModal}
+      />
+    )
+  ) : (
+    <EmptyAnimation />
+  )}
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginTop: "1rem",
+                      marginBottom: "2rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        minHeight: "30vh",
+                      }}
+                    >
+                      <div style={{ flex: 1 }}></div>
+                      <div>
+                        <Pagination
+                          count={totalPages}
+                          page={currentPage}
+                          onChange={handlePageChange}
+                          variant="outlined"
+                          sx={{
+                            "& .MuiPaginationItem-root": {
+                              color: "#2F603B",
+                            },
+                            "& .MuiPaginationItem-page.Mui-selected": {
+                              backgroundColor: "#2F603B",
+                              color: "#fff",
+                              "&:hover": {
+                                backgroundColor: "#2F603B",
+                              },
+                            },
+                            "& .MuiPaginationItem-page.Mui-selected.Mui-focusVisible":
+                              {
+                                backgroundColor: "#2F603B",
+                              },
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </Paper>
           <PurchaseDialog
-          placeOrderResults = {placeOrderResults}
-          purchaseModal = {purchaseModal}
-          closePurchaseModal = {()=>{
-            let id = purchaseModal[1];
-            setPurchaseModal([false, id])
-          }} 
-          placeOrder={placeOrder} 
-          addToCart={addToCart}
-          addToCartResults={addToCartResults}
+            placeOrderResults={placeOrderResults}
+            purchaseModal={purchaseModal}
+            closePurchaseModal={() => {
+              let id = purchaseModal[1];
+              setPurchaseModal([false, id]);
+            }}
+            placeOrder={placeOrder}
+            addToCart={addToCart}
+            addToCartResults={addToCartResults}
           />
         </Grid>
       </Grid>
     );
   }
-
-  
-  
 }

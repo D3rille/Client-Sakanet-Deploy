@@ -16,6 +16,8 @@ import { useMutation } from "@apollo/client";
 import { GET_MY_PROFILE } from "../../graphql/operations/profile";
 import { UPDATE_DISPLAY_NAME, ADD_DESCRIPTION} from "../../graphql/operations/settings";
 import toast from "react-hot-toast";
+import { FiEdit } from "react-icons/fi";
+import { BsUpload } from 'react-icons/bs';
 
 
 const ProfileContainer = styled("div")({
@@ -55,8 +57,9 @@ const NameField = styled(TextField)({
 const StyledButton = styled(Button)({
   backgroundColor: "#2E603A",
   "&:hover": {
-    backgroundColor: "#FE8C47",
+    backgroundColor: "#286652",
   },
+  borderRadius:'12px'
 });
 
 const StyledDivider = styled(Divider)({
@@ -283,10 +286,11 @@ const Profile = ({profile}) => {
             height: "100%",
           }}
         >
-          <h3>Profile Picture</h3>
+          <h4>Profile Picture</h4>
           <StyledButton
             onClick= {() => handleProfilePicUpload(profilePicture)} //Image upload 
             variant="contained"
+            startIcon={<BsUpload />}
             style={{
               width: "150px",
               margin: "auto 0",
@@ -298,7 +302,7 @@ const Profile = ({profile}) => {
             Upload New
           </StyledButton>
           <Typography variant="caption">
-            This setting will change your profile photo.
+            This setting will change your profile&lsquo;s photo.
           </Typography>
         </div>
       </div>
@@ -349,10 +353,11 @@ const Profile = ({profile}) => {
             height: "100%",
           }}
         >
-          <h3>Cover Photo</h3>
+          <h4>Cover Photo</h4>
           <StyledButton
             onClick={() => handleCoverPhotoUpload(coverPhoto)} // Cover Photo upload logic here
             variant="contained"
+            startIcon={<BsUpload />}
             style={{
               width: "150px",
               margin: "auto 0",
@@ -364,7 +369,7 @@ const Profile = ({profile}) => {
             Upload New
           </StyledButton>
           <Typography variant="caption">
-            This setting will change your profile cover photo.
+            This setting will change your profile&lsquo;s cover photo.
           </Typography>
         </div>
       </div>
@@ -374,7 +379,7 @@ const Profile = ({profile}) => {
        {/* Display Name */}
        <div style={{ marginTop: "1rem" }}>
         <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-          <h3 style={{marginRight: "0.5em"}}>Display Name:</h3> 
+          <h4 style={{marginRight: "0.5em"}}>Display Name:</h4> 
           {!isEditing && nameDisplay && (<Typography variant="h6">
             {nameDisplay}
           </Typography>)}
@@ -400,7 +405,7 @@ const Profile = ({profile}) => {
       </div>
 
       <div>
-        <h3>Profile Description</h3>
+        <h4 style={{marginBottom:'10px'}}>Profile Description</h4>
         {!isEditing && (<Typography variant="caption">
           {profile_description}
         </Typography>)}
@@ -428,6 +433,7 @@ const Profile = ({profile}) => {
         {!isEditing && (
           <StyledButton 
             variant="contained" 
+            startIcon={<FiEdit style={{ color: "white" }} />}
             style={{marginBottom: '1rem',}}
             onClick={()=>{
               setIsEditing(true);
@@ -437,6 +443,7 @@ const Profile = ({profile}) => {
           </StyledButton>
         )}
         {isEditing && (<div style={{display:"flex", flexDirection:"row"}}>
+        <StyledButton variant="contained" onClick={handleSave} style={{marginBottom: '1rem',}}>Save Changes</StyledButton>
           <StyledButton 
             variant="outlined" 
             color="error" 
@@ -447,7 +454,7 @@ const Profile = ({profile}) => {
             >
             Cancel
           </StyledButton>
-          <StyledButton variant="contained" onClick={handleSave} style={{marginBottom: '1rem',}}>Save Changes</StyledButton>
+          
         </div>)}
       </SaveButtonContainer>
     </ProfileContainer>

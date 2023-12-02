@@ -88,14 +88,17 @@ function ProductCard({ product }) {
 const ProductsGrid = ( { productData }) => {
 
   return (
-  <div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "16px",
-    marginTop: "20px",
-  }}
->
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(4, 1fr)",
+        gap: "16px",
+        marginTop: "5px",
+        maxWidth: '1304px',  
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      }}
+    >
   {productData?.map((product) => (
     <ProductCard key={product._id} product={product} />
   ))}
@@ -219,7 +222,7 @@ const [searchProduct,{data:searchData, error:searchError, loading:searchLoading}
         <Grid item xs={12}>
           <Paper elevation={3} className={styles.paperContainer}
           style={{ minHeight: '80vh' }}>
-          <h1 style={{paddingTop:"1rem"}}>Market Products</h1>
+          <h2 style={{paddingTop:"1.5rem", fontWeight:550}}>Market Products</h2>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <ProductCategories categoryType={selectedCategory} onCategoryChange={setSelectedCategory} setCurrentPage={setCurrentPage}/>
               <ProductsToggleButton productsType={selectedProductType} onProductTypeChange={handleProductTypeChange}/>
