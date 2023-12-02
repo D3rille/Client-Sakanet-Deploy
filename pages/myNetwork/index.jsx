@@ -151,15 +151,16 @@ function MyNetwork(){
               </div>
 
               {user?.role == "FARMER" && (
-                <div style={{ minHeight: "15%", maxheight: "32%" }}>
+                <div style={{ minHeight: "15%", maxheight: "32%", marginBottom:'5px' }}>
                   <div
                     style={{
                       display: "flex",
                       flexDirection: "row",
                       alignItems: "center",
+                      marginBottom:'10px'
                     }}
                   >
-                    <div style={{ marginLeft: "0.5em", marginRight: "0.5em" }}>
+                    <div style={{ marginLeft: "0.5em", marginRight: "0.5em", }}>
                       <Image
                         src={groupicon}
                         alt="Group"
@@ -169,7 +170,7 @@ function MyNetwork(){
                     </div>
                     <p
                       className={styles.title}
-                      style={{ marginLeft: "10px", fontWeight: 500 }}
+                      style={{ marginLeft: "10px", fontWeight: 500, }}
                     >
                       {" "}
                       Groups you manage
@@ -201,12 +202,13 @@ function MyNetwork(){
               )}
 
               {user?.role == "FARMER" && (
-                <div style={{ minHeight: "15%", maxheight: "32%" }}>
+                <div style={{ minHeight: "15%", maxheight: "32%", marginBottom:'5px' }}>
                   <div
                     style={{
                       display: "flex",
                       flexDirection: "row",
                       alignItems: "center",
+                      marginBottom:'10px'
                     }}
                   >
                     <div style={{ marginLeft: "0.5em", marginRight: "0.5em" }}>

@@ -62,7 +62,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const Navbar = () => {
-  const { newNotifCount, profile, newConvoCount } = useSubs();
+  const { newNotifCount, profile, newConvoCount, } = useSubs();
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
   const drawerWidth = 240;
@@ -205,7 +205,8 @@ const Navbar = () => {
 
   const { data: getCartItemsData, loading: getCartItemsLoading } =
     useQuery(GET_CART_ITEMS);
-
+    let cartItemsCount = getCartItemsData?.getCartItems?.length;
+    
   // if (loading) return <p>Loading...</p>;
   // if (error) return <p>Error: {error.message}</p>;
 
@@ -387,7 +388,15 @@ const Navbar = () => {
                   router.push("/Chats");
                 }}
               >
-                <Badge badgeContent={newConvoCount} color="primary">
+                <Badge
+                  badgeContent={newConvoCount}
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      backgroundColor: "#2E603A",
+                      color: "white",
+                    },
+                  }}
+                >
                   <Image
                     sx={{
                       cursor: "pointer",
@@ -404,7 +413,17 @@ const Navbar = () => {
 
               {user.role === "BUYER" && (
                 <IconButton onClick={handleCartModalOpen}>
-                  <Image src={CartIcon} alt="Cart" width={32} height={32} />
+                  <Badge
+                    badgeContent={cartItemsCount}
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        backgroundColor: "#2E603A",
+                        color: "#F6F6F6",
+                      },
+                    }}
+                  >
+                    <Image src={CartIcon} alt="Cart" width={32} height={32} />
+                  </Badge>
                 </IconButton>
               )}
 
