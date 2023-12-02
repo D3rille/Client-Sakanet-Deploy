@@ -6,9 +6,9 @@ import { createClient } from 'graphql-ws';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = new createHttpLink({
-  uri: 'https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com',
+  uri: 'https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql',
 });
-// https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com
+// https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql
 // http://localhost:4000/graphql
 
 //Setting context that resolvers use
