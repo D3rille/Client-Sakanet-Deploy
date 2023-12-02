@@ -57,7 +57,6 @@ const AccountVerification = ({profile}) => {
     refetchQueries: [GET_MY_PROFILE]
   });
   const [updateVerificationStatus] = useMutation(UPDATE_VERIFICATION_STATUS, {
-<<<<<<< HEAD
     onError:(error)=>{
       toast.error(error.message)
     }
@@ -76,9 +75,6 @@ const AccountVerification = ({profile}) => {
     onError:(error)=>{
       toast.error(error.message)
     }
-=======
-    refetchQueries: [GET_MY_PROFILE]
->>>>>>> e782a9738401267b3af982ac0678b73e885f04d8
   });
 
   // const { loading, error, data } = useQuery(GET_MY_PROFILE);
@@ -274,18 +270,7 @@ const AccountVerification = ({profile}) => {
                   Person with Disabilities Card, or Other valid government-issued ID with Photo
                   Ensure that the entire document is visible and well-lit for proper verification. Thank you!
                   </Typography>
-                  <StyledButton
-                    onClick={() => uploadID(uploadedID)}
-                    variant="contained"
-                    style={{
-                      width: "150px",
-                      // margin: "auto 0",
-                      marginLeft:"auto",
-                      marginBottom: "5px",
-                      marginTop: "7px",
-                    }}
-                  >
-<<<<<<< HEAD
+                  
                     <h3>Verify Your Account</h3>
                     <Typography variant="caption">
                     Please upload a clear and legible image of a valid Philippine ID. 
@@ -316,13 +301,8 @@ const AccountVerification = ({profile}) => {
                       Verify
                     </StyledButton>
                   </div>
-=======
-                    Verify
-                  </StyledButton>
->>>>>>> e782a9738401267b3af982ac0678b73e885f04d8
                 </div>
               </div>
-            </div>
           )}
         </div>
       ) : null}

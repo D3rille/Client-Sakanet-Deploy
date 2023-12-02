@@ -107,25 +107,6 @@ const Settings = () => {
     setValue(newValue);
   };
 
-  return (
-    <GridContainer container>
-      <Grid item xs={12}>
-        <StyledPaperContainer elevation={3}>
-          <InnerPaperLeft
-            elevation={3}
-            sx={{ borderRadius: "20px", padding: "1rem" }}
-          >
-            <HeaderContainer>
-              <Typography variant="h6" style={{ fontWeight: "bolder" }}>
-                SETTINGS
-              </Typography>
-              <Typography variant="caption" display="block" gutterBottom>
-                This page allows you to customize what you have made
-              </Typography>
-              <StyledDivider />
-            </HeaderContainer>
-
-<<<<<<< HEAD
     return (
         <GridContainer container>
             <Head>
@@ -229,92 +210,6 @@ const Settings = () => {
             </Grid>
         </GridContainer>
     );
-=======
-            <Tabs
-              orientation="vertical"
-              value={value}
-              onChange={handleChange}
-              aria-label="Vertical tabs"
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-              TabIndicatorProps={{ style: { backgroundColor: "#2E603A" } }}
-            >
-              <StyledTab
-                icon={<PersonIcon />}
-                label={
-                  <div>
-                    Profile
-                    <div style={{ fontSize: "0.8em", color: "grey" }}>
-                      Customize your profile.
-                    </div>
-                  </div>
-                }
-              />
-              <StyledTab
-                icon={<LocationOnIcon />}
-                label={
-                  <div>
-                    Address
-                    <div style={{ fontSize: "0.8em", color: "grey" }}>
-                      Change your business address or personal address..
-                    </div>
-                  </div>
-                }
-              />
-              <StyledTab
-                icon={<LockIcon />}
-                label={
-                  <div>
-                    Password and Email
-                    <div style={{ fontSize: "0.8em", color: "grey" }}>
-                      Change your email and your password.
-                    </div>
-                  </div>
-                }
-              />
-              <StyledTab
-                icon={<PaymentIcon />}
-                label={
-                  <div>
-                    Payment Channels
-                    <div style={{ fontSize: "0.8em", color: "grey" }}>
-                      Customize your payment channels.
-                    </div>
-                  </div>
-                }
-              />
-              <StyledTab
-                icon={<VerifiedIcon />}
-                label={
-                  <div>
-                    Account Verification
-                    <div style={{ fontSize: "0.8em", color: "grey" }}>
-                      Check your Verification Update.
-                    </div>
-                  </div>
-                }
-              />
-            </Tabs>
-          </InnerPaperLeft>
-          <ParentContainer>
-            <InnerPaperRight elevation={3}>
-              {profile && value === 0 && <Profile profile={profile?.profile} />}
-              {profile && value === 1 && (
-                <Address address={profile?.profile?.address} />
-              )}
-              {profile && value === 2 && <EmailAndPassword />}
-              {profile && value === 3 && <PaymentChannels />}
-              {profile && value === 4 && (
-                <Verification profile={profile?.profile} />
-              )}
-            </InnerPaperRight>
-          </ParentContainer>
-        </StyledPaperContainer>
-      </Grid>
-    </GridContainer>
-  );
->>>>>>> e782a9738401267b3af982ac0678b73e885f04d8
 };
 
 export default Settings;

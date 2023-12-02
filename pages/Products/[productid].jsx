@@ -230,13 +230,8 @@ function Products() {
       products = data?.getSuggestedProducts?.product;
       totalProduct = data?.getSuggestedProducts?.totalProduct;
     }
-<<<<<<< HEAD
   
-     const totalPages = Math.ceil(totalProduct/ 6);
-=======
-
-    const totalPages = Math.ceil(totalProduct / 10);
->>>>>>> e782a9738401267b3af982ac0678b73e885f04d8
+    const totalPages = Math.ceil(totalProduct/ 6);
 
     return (
       <Grid container className={styles.gridContainer}>
