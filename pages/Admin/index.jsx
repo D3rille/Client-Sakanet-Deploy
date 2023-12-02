@@ -38,7 +38,7 @@ import toast from "react-hot-toast";
 import client from "../../graphql/apollo-client";
 import { AuthContext } from '../../context/auth';
 import {useAuthorizeRoute} from "../../util/hooks";
-import { GET_USER_INFO, VERIFY_USER, UNVERIFY_USER } from "../../graphql/operations/admin";
+import { GET_USER_INFO, VERIFY_USER, UNVERIFY_USER, DELETE_USER } from "../../graphql/operations/admin";
 import CircularLoading from "../../components/circularLoading";
 import { formatWideAddress } from "../../util/addresssUtils";
 import {formatDate} from "../../util/dateUtils";
@@ -159,6 +159,7 @@ const [currentUser, setCurrentUser] = useState({})
 const [findUserInfo, {data:findUserInfoData, loading:findUserInfoLoading, error:findUserInfoError}] = useLazyQuery(GET_USER_INFO);
 const [verifyUser] = useMutation(VERIFY_USER);
 const [unverifyUser] = useMutation(UNVERIFY_USER);
+const [deleteUser] = useMutation(DELETE_USER);
 
 const handleFindUserInfo = () => {
   try {
@@ -213,6 +214,22 @@ const handleKeyDown = (event) => {
       handleFindUserInfo();
   }
 };
+
+const handleDeleteUser = async(userId, role) =>{
+ await deleteUser({
+    variables:{
+      userId,
+      role
+    },
+    refetchQueries:[GET_USER_INFO],
+    onCompleted:()=>{
+      toast.success("User Deleted");
+    },
+    onError:(error)=>{
+      toast.error("Something went wrong: " + error);
+    }
+  })
+}
 
 if(findUserInfoLoading){
   return(
@@ -363,6 +380,7 @@ return (
       user={currentUser} 
       handleVerifyUser={()=>handleVerifyUser(currentUser?._id)}
       handleUnverifyUser={()=>handleUnverifyUser(currentUser?._id)}
+      handleDeleteUser={handleDeleteUser}
       />
     )}
   </div>

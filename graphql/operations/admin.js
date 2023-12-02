@@ -52,3 +52,9 @@ mutation RejectVerification($userId: String) {
   rejectVerification(userId: $userId)
 }
 `;
+
+export const DELETE_USER = gql`
+mutation DeleteUser($userId: String, $role: String) {
+  deleteUser(userId: $userId, role: $role)
+}
+`;

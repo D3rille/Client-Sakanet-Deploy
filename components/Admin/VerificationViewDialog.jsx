@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState} from "react";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import ListItemText from '@mui/material/ListItemText';
@@ -18,13 +19,15 @@ import toast from "react-hot-toast";
 
 import { formatWideAddress } from '../../util/addresssUtils';
 import {GET_USER_INFO, REJECT_VERIFICATION} from "../../graphql/operations/admin";
+import CustomDialog from "../popups/customDialog";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 //Full screen dialog
-export default function VerificationViewDialog({open, setOpen, user, handleVerifyUser, handleUnverifyUser}) {
+export default function VerificationViewDialog({open, setOpen, user, handleVerifyUser, handleUnverifyUser, handleDeleteUser}) {
+  const [openDialog, setOpenDialog] = useState("");
   const [rejectVerification] = useMutation(REJECT_VERIFICATION);
   const handleRejectVerification = () => {
     rejectVerification({
@@ -69,7 +72,9 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Close
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleClose}>
+            <Button autoFocus color="inherit" onClick={()=>{
+              setOpenDialog("delete");
+            }}>
               Delete Account
             </Button>
           </Toolbar>
@@ -167,6 +172,16 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
                 )}
                 
             </div>
+            {openDialog=="delete" && (
+            <CustomDialog
+              title={"Delete User"}
+              message={"Are your sure you want to delete this user's account? This action once done is irreversible. Proceed?"}
+              btnDisplay={0}
+              openDialog={Boolean(openDialog)}
+              setOpenDialog={setOpenDialog}
+              callback={()=>handleDeleteUser(user?._id, user?.role).then(()=>handleClose())}
+            />
+            )}
         </div>
       </Dialog>
     </div>

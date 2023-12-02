@@ -44,7 +44,7 @@ const TopBuyersStats = ({data}) => {
             },
             title: {
               display: true,
-              text: 'Top Products Based on Sales'
+              text: 'Top Buyers'
             }
         },
     };
