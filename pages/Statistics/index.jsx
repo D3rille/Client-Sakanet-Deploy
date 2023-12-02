@@ -21,11 +21,13 @@ import toast from "react-hot-toast";
 import {useRouter} from "next/router";
 import Head from 'next/head';
 
-import { GET_TOTAL_STATS, GET_SALES_OR_ORDERS_STATS } from '../../graphql/operations/statistics';
+import { GET_TOTAL_STATS, GET_SALES_OR_ORDERS_STATS, GET_TOP_PRODUCTS, GET_TOP_BUYERS } from '../../graphql/operations/statistics';
 import CircularLoading from "../../components/circularLoading";
 import {AuthContext} from "../../context/auth";
 import SalesOrOrdersStats from '../../components/Statistics/SalesOrOrdersStats';
 import { formatToCurrency } from '../../util/currencyFormatter';
+import TopProductsStats from '../../components/Statistics/TopProductsStats';
+import TopBuyersStats from '../../components/Statistics/TopBuyersStats';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -79,15 +81,8 @@ function Statistics(){
         }
     });
 
-    // const {data:getSalesOrdersData, loading:getSalesOrdersLoading, refetch:refetchGetSalesOrders} = useQuery(GET_DAILY_SALES_STATS, {
-    //     variables:{
-    //         showStatOf:showStatOf
-    //     },
-    //     onError:(error)=>{
-    //         toast.error(error.message);
-    //         console.error(error);
-    //     }
-    // });
+    const {data:topProductsData, loading:topProductsLoading, error:topProductsError} = useQuery(GET_TOP_PRODUCTS);
+    const {data:topBuyersData, loading:topBuyersLoading, error:topBuyersError} = useQuery(GET_TOP_BUYERS);
 
 
     useEffect(()=>{
@@ -278,6 +273,33 @@ function Statistics(){
                     </Box>
                 </Paper>
                 
+            </Box>
+            <Box style={{display:"flex"}}>
+                <Box style={{flex:1, backgroundColor:"white", marginInline:"1em"}}>
+                    {topProductsLoading && (
+                        <div style={{display:"flex", margin:"auto"}}>
+                            <CircularLoading/>
+                        </div>
+                    )}
+
+                    {topProductsData && !topProductsLoading && (
+                        <TopProductsStats data={topProductsData?.getTopProducts}/>
+                    )}
+                </Box>
+                <Box style={{flex:1, backgroundColor:"white", marginInline:"1em"}}>
+                    {topBuyersLoading && (
+                        <div style={{display:"flex", margin:"auto"}}>
+                            <CircularLoading/>
+                        </div>
+                    )}
+
+                    {topBuyersData && !topBuyersLoading  && (
+                        
+                        <TopBuyersStats data={topBuyersData?.getTopBuyers}/>
+                        
+                    )}
+                </Box>
+
             </Box>
         </Box>);
     }

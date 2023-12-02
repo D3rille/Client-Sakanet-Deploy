@@ -236,7 +236,7 @@ function Products() {
       totalProduct = data?.getSuggestedProducts?.totalProduct;
     }
   
-     const totalPages = Math.ceil(totalProduct/ 10);
+     const totalPages = Math.ceil(totalProduct/ 6);
 
     return (
     

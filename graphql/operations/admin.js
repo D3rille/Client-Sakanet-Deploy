@@ -9,6 +9,7 @@ export const GET_USER_INFO = gql`
             profile_pic
             firstName
             lastName
+            middleName
             displayName
             description
             date_joined

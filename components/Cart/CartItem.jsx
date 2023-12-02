@@ -76,6 +76,13 @@ const CartItem = ({...props}) => {
                   color="textSecondary"
                   sx={{ marginTop: 0 }}
                 >
+                  Unit: {product.unit}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ marginTop: 0 }}
+                >
                   Seller: {product.seller.name}
                 </Typography>
                 <Typography

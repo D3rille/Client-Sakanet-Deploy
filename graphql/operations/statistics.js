@@ -12,7 +12,7 @@ export const GET_TOTAL_STATS = gql`
     }
  `;
 
- export const GET_SALES_OR_ORDERS_STATS = gql`
+export const GET_SALES_OR_ORDERS_STATS = gql`
     query GetSalesOrOrdersStats($showStatOf: String, $timeInterval: String) {
         getSalesOrOrdersStats(showStatOf: $showStatOf, timeInterval: $timeInterval) {
             _id {
@@ -25,6 +25,24 @@ export const GET_TOTAL_STATS = gql`
         }
     }
  `;
+
+export const GET_TOP_PRODUCTS = gql`
+    query GetTopProducts {
+    getTopProducts {
+        _id
+        totalAmount
+    }
+    }
+ `;
+
+export const GET_TOP_BUYERS = gql`
+query GetTopBuyers {
+    getTopBuyers {
+            _id
+            totalExpense
+        }
+    }
+`;
 
 
 

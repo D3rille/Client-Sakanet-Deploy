@@ -37,7 +37,6 @@ const SalesOrOrdersStats = ({ data, showStatOf, timeInterval }) => {
         labels = data.map(item=>item._id.year);
     }
 
-    console.log(labels);
     const dataset1 = {
         label: showStatOf == "sales" ? 'Total Sales' : "Total Orders",
         data: data.map(item => item.totalValue),

@@ -191,7 +191,7 @@ const Settings = () => {
                                     </div>
                                 } 
                             />
-                            <StyledTab 
+                            {profile?.profile?.role == "FARMER" && (<StyledTab 
                                 icon={<PaymentIcon />} 
                                 label={
                                     <div>
@@ -201,7 +201,7 @@ const Settings = () => {
                                         </div>
                                     </div>
                                 } 
-                            />
+                            />)}
                             <StyledTab 
                                 icon={<VerifiedIcon />} 
                                 label={
@@ -220,7 +220,8 @@ const Settings = () => {
                             {profile && value === 0 && <Profile profile={profile?.profile} />}
                             {profile && value === 1 && <Address address={profile?.profile?.address}/>}
                             {profile && value === 2 && <EmailAndPassword user={profile?.profile} />}
-                            {profile && value === 3 && <PaymentChannels />}
+                            {profile?.profile?.role == "FARMER" && value === 3 && <PaymentChannels />}
+                            {profile?.profile?.role != "FARMER" && value === 3 && <Verification profile={profile?.profile} />}
                             {profile && value === 4 && <Verification profile = {profile?.profile} />}
                         </InnerPaperRight>
                     </ParentContainer>

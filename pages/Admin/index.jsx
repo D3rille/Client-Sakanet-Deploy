@@ -35,6 +35,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useLazyQuery, useMutation } from "@apollo/client";
 import toast from "react-hot-toast";
 
+import client from "../../graphql/apollo-client";
 import { AuthContext } from '../../context/auth';
 import {useAuthorizeRoute} from "../../util/hooks";
 import { GET_USER_INFO, VERIFY_USER, UNVERIFY_USER } from "../../graphql/operations/admin";
@@ -125,6 +126,7 @@ function TopBar() {
         <Button 
         onClick={()=>{
             logout();
+            client.clearStore();
         }}
         color="inherit"
         >Logout</Button>

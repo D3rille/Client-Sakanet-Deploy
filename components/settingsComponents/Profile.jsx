@@ -293,6 +293,7 @@ const Profile = ({profile}) => {
               marginBottom: "5px",
               marginTop: "7px",
             }}
+            disabled = {profilePicture == null}
           >
             Upload New
           </StyledButton>
@@ -358,6 +359,7 @@ const Profile = ({profile}) => {
               marginBottom: "5px",
               marginTop: "7px",
             }}
+            disabled={coverPhoto == null}
           >
             Upload New
           </StyledButton>

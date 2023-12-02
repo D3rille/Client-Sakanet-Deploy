@@ -372,11 +372,11 @@ function MyProfile() {
                                 </Typography>
                               </div>
                               <div style={{display:"flex",flex:1, justifyContent:"end"}}>
-                                <IconButton>
-                                  <ArrowBackIosIcon
-                                    onClick={handlePreviousReview}
-                                    disabled={currentReviewIndex === 0}
-                                  />
+                                <IconButton
+                                  onClick={handlePreviousReview}
+                                  disabled={currentReviewIndex === 0}
+                                >
+                                  <ArrowBackIosIcon/>
                                 </IconButton>
                                 <IconButton
                                   onClick={handleNextReview}

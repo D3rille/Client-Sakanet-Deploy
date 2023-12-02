@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers";
+import { useRouter } from "next/router";
 
 import { UPLOAD_NAME_AND_BIRTHDATE } from "../../graphql/operations/verification";
 
@@ -48,6 +49,7 @@ const NameField = styled(TextField)({
 });
 
 const AccountVerification = ({profile}) => {
+  const router = useRouter();
   const [uploadedID, setUploadedID] = useState(null);
   const [verificationStatus, setVerificationStatus] = useState("Not Verified");
   const [firstName, setFirstName] = useState("");
@@ -73,6 +75,9 @@ const AccountVerification = ({profile}) => {
       birthDate: new Date(birthDate).toISOString()
     },
     refetchQueries:[GET_MY_PROFILE],
+    onCompleted:()=>{
+      router.reload();
+    },
     onError:(error)=>{
       toast.error(error.message)
     }
@@ -96,8 +101,11 @@ const AccountVerification = ({profile}) => {
             variables: {
               verification_photo: secureUrl,
             },
+            onCompleted:()=>{
+              // toast.success("Verfication Photo Uploaded");
+              uploadNameAndBirthDate();
+            }
           });
-          toast.success("Verfication Photo Uploaded");
         } catch (error) {
           toast.error('Error uploading image and storing URL:', error);
         }
@@ -289,7 +297,7 @@ const AccountVerification = ({profile}) => {
                     <StyledButton
                       onClick={() => {
                         uploadID(uploadedID);
-                        uploadNameAndBirthDate();
+                        // uploadNameAndBirthDate();
                       }}
                       variant="contained"
                       style={{

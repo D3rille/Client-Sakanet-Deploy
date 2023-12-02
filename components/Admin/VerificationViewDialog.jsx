@@ -106,7 +106,7 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
                   <TextField  
                   fullWidth
                     label="First Name"
-                    defaultValue={user?.firstName ?? ""}
+                    defaultValue={user?.firstName ?? "n/a"}
                     sx={{marginTop:"0.5em"}}
                     InputProps={{
                       readOnly: true,
@@ -115,7 +115,7 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
                   <TextField
                   fullWidth
                     label="Last Name"
-                    defaultValue={user?.lastName ?? ""}
+                    defaultValue={user?.lastName ?? "n/a"}
                     sx={{marginTop:"0.5em"}}
                     InputProps={{
                       readOnly: true,
@@ -126,7 +126,7 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
                 fullWidth
                   label="Middle Name"
                   sx={{marginTop:"0.5em"}}
-                  defaultValue={user?.middleName ?? ""}
+                  defaultValue={user?.middleName ?? "n/a"}
                   InputProps={{
                     readOnly: true,
                   }}
@@ -159,7 +159,13 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
                 )}
               </div>
               </div>
-                <img src={user?.verification_photo ?? ""} alt="Verification photo" style={{width:"60%", border:"1px solid black"}}/>
+                {user?.verification_photo ? (<img src={user?.verification_photo ?? ""} alt="Verification photo" style={{width:"60%", border:"1px solid black"}}/>)
+                :(
+                <div style={{display:"flex", width:"60%", border:"1px solid black", alignItems:"center", justifyContent:"center"}}>
+                  <Typography style={{textAlign:"center"}}>No Verification Photo</Typography>
+                </div>
+                )}
+                
             </div>
         </div>
       </Dialog>

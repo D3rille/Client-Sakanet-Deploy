@@ -73,7 +73,7 @@ const Navbar = () => {
   const [focus, setFocus] = useState(true);
   const [getSuggestions, {loading:searchLoading, data:searchData}] = useLazyQuery(SEARCH_USERS);
 
-  const profile_pic = profile?.profile_pic;
+  const profile_pic = profile?.profile?.profile_pic;
   const handleQueryChange=(event)=>{
     const newQuery = event.target.value;
     setQuery(newQuery);
