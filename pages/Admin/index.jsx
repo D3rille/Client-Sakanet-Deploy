@@ -216,7 +216,7 @@ const handleKeyDown = (event) => {
 
 if(findUserInfoLoading){
   return(
-    <div style={{display:"flex", margin:"auto"}}>
+    <div style={{position:"absolute", top:"50%", left:"50%"}}>
       <CircularLoading/>
     </div>
     

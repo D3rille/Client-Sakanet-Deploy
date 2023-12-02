@@ -292,7 +292,7 @@ const Profile = ({profile}) => {
             variant="contained"
             startIcon={<BsUpload />}
             style={{
-              width: "150px",
+              width: "12em",
               margin: "auto 0",
               marginBottom: "5px",
               marginTop: "7px",
@@ -359,7 +359,7 @@ const Profile = ({profile}) => {
             variant="contained"
             startIcon={<BsUpload />}
             style={{
-              width: "150px",
+              width: "12em",
               margin: "auto 0",
               marginBottom: "5px",
               marginTop: "7px",

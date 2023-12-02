@@ -3,7 +3,7 @@ import { TextField, Divider, Button, Typography, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import { useDropzone } from "react-dropzone";
 import { uploadVerificationID } from "../../util/imageUtils";
-import { UPDATE_VERIFICATION_STATUS, UPLOAD_VERIFICATION_PHOTO } from "../../graphql/operations/verification";
+import { UPDATE_VERIFICATION_STATUS, UPLOAD_VERIFICATION_PHOTO, UPLOAD_NAME_AND_BIRTHDATE } from "../../graphql/operations/verification";
 import { GET_MY_PROFILE } from "../../graphql/operations/profile";
 import { useMutation, useQuery } from "@apollo/client";
 import VerifiedIcon from '@mui/icons-material/Verified';
@@ -50,6 +50,9 @@ const NameField = styled(TextField)({
 const AccountVerification = ({profile}) => {
   const router = useRouter();
   const [uploadedID, setUploadedID] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [middleName, setMiddleName] = useState("");
   const [verificationStatus, setVerificationStatus] = useState("Not Verified");
   const [birthDate, setBirthDate] = useState(null);
 
@@ -77,6 +80,8 @@ const AccountVerification = ({profile}) => {
     }
   });
 
+
+  let canSave = firstName && lastName && middleName && uploadedID && birthDate;
   // const { loading, error, data } = useQuery(GET_MY_PROFILE);
 
   // if (loading) return <p>Loading...</p>;
@@ -159,61 +164,78 @@ const AccountVerification = ({profile}) => {
             
       {!is_verified ? (
         <div>
-          <div style={{width:"100%", paddingBottom:"0.5em"}}>
-            <h3 style={{textAlign:"center"}}>Account Verification</h3>
-          </div>
-          <div>
-            <Typography variant="caption">
-              Enter your first name and last name.
-            </Typography>
-            {/* <h3 style={{ marginBottom: "10px" }}>Profile Name</h3>   */}
-            
-            <div style={{marginBottom:'0.7rem'}}>
-              <NameField
-                variant="outlined"
-                placeholder="First name"
-                style={{ marginRight: "1rem" }}
-                InputProps={{
-                  style: {
-                    borderColor: "#2E603A",
-                    width:'200px'
-                  },
-                }}
-              />
-              <NameField
-                variant="outlined"
-                placeholder="Last name"
-                InputProps={{
-                  style: {
-                    borderColor: "#2E603A",
-                    width:'200px'
-                  },
-                }}
-              />
-            </div>
-            <Typography variant="caption" sx={{paddingTop:1}}>
-              Enter your birthdate.
-            </Typography>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box display="flex" justifyContent="space-between" mt={1}>
-              <DatePicker
-                label="BirthDate"
-                sx={{ width: '50%', '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#2E603A' } }}
-                value={birthDate}
-                onChange={(newValue) => setBirthDate(newValue)}
-                slotProps={{ textField: { variant: 'outlined' } }}
-              />
-            </Box>
-            </LocalizationProvider>
-            
-          </div>
-          <StyledDivider />
           {verification_status === "pending" && verification_status != ""  && verification_status != null  ? (
             <div>
               <Typography variant="caption">You have a pending verification request.</Typography>
             </div>
           ) : (
             <div>
+              <div style={{width:"100%", paddingBottom:"0.5em"}}>
+                <h3 style={{textAlign:"center"}}>Account Verification</h3>
+              </div>
+              <div>
+              <Typography variant="caption">
+                Enter your first name and last name.
+              </Typography>
+              {/* <h3 style={{ marginBottom: "10px" }}>Profile Name</h3>   */}
+              
+              <div style={{marginBottom:'0.7rem'}}>
+                <NameField
+                  variant="outlined"
+                  placeholder="First name"
+                  value={firstName}
+                  onChange={(e)=>setFirstName(e.target.value)}
+                  style={{ marginRight: "1rem" }}
+                  InputProps={{
+                    style: {
+                      borderColor: "#2E603A",
+                      width:'200px'
+                    },
+                  }}
+                />
+                <NameField
+                  variant="outlined"
+                  placeholder="Last name"
+                  value={lastName}
+                  onChange={(e)=>setLastName(e.target.value)}
+                  style={{ marginRight: "1rem" }}
+                  InputProps={{
+                    style: {
+                      borderColor: "#2E603A",
+                      width:'200px'
+                    },
+                  }}
+                />
+                <NameField
+                  variant="outlined"
+                  placeholder="Middle Name"
+                  value={middleName}
+                  onChange={(e)=>setMiddleName(e.target.value)}
+                  InputProps={{
+                    style: {
+                      borderColor: "#2E603A",
+                      width:'200px'
+                    },
+                  }}
+                />
+              </div>
+              <Typography variant="caption" sx={{paddingTop:1}}>
+                Enter your birthdate.
+              </Typography>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Box display="flex" justifyContent="space-between" mt={1}>
+                <DatePicker
+                  label="BirthDate"
+                  sx={{ width: '50%', '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#2E603A' } }}
+                  value={birthDate}
+                  onChange={(newValue) => setBirthDate(newValue)}
+                  slotProps={{ textField: { variant: 'outlined' } }}
+                />
+              </Box>
+              </LocalizationProvider>
+              
+            </div>
+            <StyledDivider />
               <div style={{ display: "flex", alignItems: "flex-start", marginTop: "20px" }}>
                 <div
                   style={{
@@ -258,19 +280,6 @@ const AccountVerification = ({profile}) => {
                     height: "100%",
                   }}
                 >
-                  <h4>Upload your valid ID</h4>
-                  <Typography variant="caption">
-                  Please upload a clear and legible image of a valid Philippine ID. 
-                  Accepted file formats include JPEG, PNG, and PDF. This may include 
-                  documents such as a passport, Philippine Identification, Social Security System ID,
-                  Government Service Insurance System E-Card, Driver’s License, National Bureau of Investigation Clearance,
-                  Police Clearance, Firearms’ License to Own and Possess ID, Professional Regulation Commission ID,
-                  Integrated Bar of the Philippines ID, Overseas Workers Welfare Administration ID, Bureau of Internal Revenue ID,
-                  Voter’s ID, Senior Citizen’s Card, Unified Multi-purpose Identification Card, 
-                  Person with Disabilities Card, or Other valid government-issued ID with Photo
-                  Ensure that the entire document is visible and well-lit for proper verification. Thank you!
-                  </Typography>
-                  
                     <h3>Verify Your Account</h3>
                     <Typography variant="caption">
                     Please upload a clear and legible image of a valid Philippine ID. 

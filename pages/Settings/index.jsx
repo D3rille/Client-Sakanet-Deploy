@@ -99,7 +99,11 @@ const Settings = () => {
   const [value, setValue] = React.useState(0);
   const { loading, error, data } = useQuery(GET_MY_PROFILE);
 
-  if (loading) return <CircularLoading />;
+  if (loading) return (
+    <div style={{position:"absolute", top:"50%", left:"50%" }}>
+      <CircularLoading />
+    </div>
+  );
   if (error) return <p>Error: {error.message}</p>;
 
   const { profile_pic, cover_photo } = data.getMyProfile.profile;
