@@ -20,6 +20,7 @@ import { useQuery } from "@apollo/client";
 import { GET_MY_PROFILE } from "../../graphql/operations/profile";
 import { useSubs } from "../../context/SubscriptionProvider";
 import CircularLoading from "../../components/circularLoading";
+import Head from "next/head";
 
 const GridContainer = styled(Grid)({
   background: "#F4F4F4",
