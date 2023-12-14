@@ -79,7 +79,7 @@ const EmailInput = ({handleChange, variables}) => {
           Forgot Your Password?
         </Typography>
         <Typography variant="body1" align="center" paragraph>
-          To reset your password, enter your email below. We'll send you a 4-digit code
+          To reset your password, enter your email below. We will send you a 4-digit code
           in your email.
         </Typography>
 

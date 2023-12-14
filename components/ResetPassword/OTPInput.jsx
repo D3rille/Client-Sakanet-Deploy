@@ -5,31 +5,10 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 export default function EmailVerification({handleChange, variables}) {
-  const [timerCount, setTimer] = useState(60);
   const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
-  const [disable, setDisable] = useState(true);
 
   const OTP = variables.otp
-  useEffect(() => {
-    let interval = setInterval(() => {
-      setTimer((lastTimerCount) => {
-        lastTimerCount <= 1 && clearInterval(interval);
-        if (lastTimerCount <= 1) setDisable(false);
-        if (lastTimerCount <= 0) return lastTimerCount;
-        return lastTimerCount - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [disable]);
-
-  const resendOTP = () => {
-    if (disable) return;
-
-    alert("Resending OTP...");
-    setDisable(true);
-    setTimer(60);
-  };
+  
 
   const verifyOTP = () => {
     const enteredOTP = OTPinput.join("");
@@ -107,19 +86,6 @@ export default function EmailVerification({handleChange, variables}) {
           </Box>
 
           <Box mt={2} display="flex" justifyContent="center" alignItems="center">
-            <Typography variant="body2" color="textSecondary">
-              Didn't receive code?{" "}
-              <span
-                style={{
-                  color: disable ? "gray" : "blue",
-                  cursor: disable ? "none" : "pointer",
-                  textDecoration: disable ? "none" : "underline",
-                }}
-                onClick={resendOTP}
-              >
-                {disable ? `Resend OTP in ${timerCount}s` : "Resend OTP"}
-              </span>
-            </Typography>
           </Box>
         </form>
       </Box>
