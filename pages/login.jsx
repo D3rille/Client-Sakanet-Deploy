@@ -328,6 +328,18 @@ export default function Login() {
                         </Grid>
                         <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
                             <Stack direction="row" spacing={2} justifyContent="center" textAlign="center" >
+
+                            <Typography
+                                variant="body1"
+                                component="span"
+                                style={{ marginTop: "10px", color: "#FF9A01", cursor: "pointer" }}
+                                onClick={() => {
+                                  router.push( "/forgotpassword");
+                                }}
+                            >
+                                Forgot Password?
+                            </Typography>
+                            
                             <Typography
                                 variant="body1"
                                 component="span"

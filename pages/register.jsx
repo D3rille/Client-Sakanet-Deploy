@@ -29,13 +29,14 @@ import Image from "next/image";
 
 import { useState, useContext, forwardRef, useRef } from "react";
 import { REGISTER_USER, VALIDATE_REG_PERSONAL_INFO } from "../graphql/operations/auth"; //imported the mutation
-import { useMutation } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import toast, { Toaster } from "react-hot-toast";
 import CircularLoading from "../components/circularLoading";
 import { useRouter } from "next/router";
 import { useForm } from "../util/hooks";
 import { AuthContext } from "../context/auth";
-
+import OTPInputRegister from "../components/Register/OTPInputRegister"
+import { GET_OTP } from "../graphql/operations/email";
 import {
   Autocomplete,
   LoadScript,
@@ -119,6 +120,10 @@ export default function Register() {
   const [cityOrMunicipality, setCityOrMunicipality] = useState("");
   const [barangay, setBarangay] = useState("");
   const [street, setStreet] = useState("");
+  const [getOtp] = useLazyQuery(GET_OTP);
+  const [otp, setOtp] = useState("");
+
+
 
   //Google Map Autocomplete Code
   const handlePlaceChanged = () => {
@@ -257,6 +262,70 @@ export default function Register() {
   function TransitionLeft(props) {
     return <Slide {...props} direction="left" />;
   }
+
+  const sendOTP = () => {
+
+    getOtp({
+      variables: { email: values.account_email},
+      onCompleted: (data) => handleSuccess(data),
+      onError: (error) => handleError(error),
+    });
+  };
+
+  const handleSuccess = (data) => {
+      const otp = data?.generateOTP;
+
+      if (otp) {
+        setOtp(otp)
+      } else {
+        console.error("Empty OTP received");
+      }
+    };
+
+  const handleError = (error) => {
+    toast.error("Error fetching OTP. Please try again later.");
+  };
+
+  const validateAddress = () => {
+    const missingFields = [];
+
+    if (!region) {
+      missingFields.push('Region');
+    }
+
+    if (!province) {
+      missingFields.push('Province');
+    }
+
+    if (!cityOrMunicipality) {
+      missingFields.push('City or Municipality');
+    }
+
+    if (!barangay) {
+      missingFields.push('Barangay');
+    }
+
+    if (!street) {
+      missingFields.push('Street');
+    }
+
+    if (missingFields.length > 0) {
+      // Display individual error toasts for each missing field
+      missingFields.forEach(field => {
+        toast.error(`${field} is required`);
+      });
+      return;
+    
+
+    // Validation passed
+    toast.success('Form submitted successfully');
+
+    // You can perform further actions here, like submitting the form
+  };
+  setCurrentPage(currentPage + 1);
+
+  };
+
 
   if (loading) {
     // if still loading, show circular loading
@@ -935,8 +1004,12 @@ export default function Register() {
                               </Grid>
                               <Grid item xs={6} style={{ textAlign: "center" }}>
                                 <Button
-                                  type="submit"
+                                  type="button"
                                   variant="contained"
+                                  onClick={() => {
+                                    validateAddress()
+                                    sendOTP();
+                                  }}
                                   size="large"
                                   sx={{
                                     mt: "15px",
@@ -983,6 +1056,10 @@ export default function Register() {
                             </Stack>
                           </Grid>
                         </Grid>
+
+                        {/* PAGE 4  OTP Input*/}
+                      {currentPage === 4 && <OTPInputRegister otp={otp} registerUser={registerUser}/>}
+
                       </Box>
                     </Container>
                   </ThemeProvider>
