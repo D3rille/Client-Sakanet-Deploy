@@ -113,14 +113,31 @@ const ChatInfoPanel = ({...props}) => {
     const [updateGroupProfilePic] = useMutation(UPDATE_GROUP_PROFILE_PIC); //Mutation for Changing Profile Picture
 
     // Chat Group Image Upload
-    const handleDrop = (acceptedFiles) => {
+    const handleDrop = (acceptedFiles, rejectedFiles) => {
+        if (rejectedFiles.some((file) => file.errors.some((err) => err.code === "too-many-files"))) {
+            toast.error(`Error: Too many files. Please upload only one file.`);
+          } else if (rejectedFiles.length > 0) {
+            rejectedFiles.forEach((file) => {
+              file.errors.forEach((err) => {
+                if (err.code === "file-too-large") {
+                  toast.error(`Error: File size is over 10 MB`);
+                }
+        
+                if (err.code === "file-invalid-type") {
+                  toast.error(`Error: File type must be .jpeg, .jpg or .png`);
+                }
+              });
+            });
+          } else {
         setFile(acceptedFiles[0]);
+          }
       };
 
     const groupChatProps = useDropzone({
         onDrop: handleDrop,
         accept:  {'image/jpeg': ['.jpeg', '.png']},
         maxFiles:1,
+        maxSize: 10 * 1024 * 1024,
       });
 
     const [file,setFile] = useState(null);
@@ -434,8 +451,9 @@ const ChatInfoPanel = ({...props}) => {
                 <DialogTitle>Change Chat Photo</DialogTitle>
                 <DialogContent>
                     <Typography variant="caption">
-                        Replace Current Group Chat Photo. Maximum should be 10 mb.
+                        Accepted Files(.jpg, .jpeg, .png). Maximum should be 10 mb.
                     </Typography>
+                    
 
                     <Box
                         sx={{
