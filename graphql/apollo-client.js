@@ -6,7 +6,7 @@ import { createClient } from 'graphql-ws';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = new createHttpLink({
-  uri: 'https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql',
+  uri: 'http://localhost:4000/graphql',
 });
 // https://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql
 // http://localhost:4000/graphql
@@ -31,7 +31,7 @@ const authLink = setContext((_, { headers }) => {
 const wsLink = 
 typeof window !== "undefined"
 ? new GraphQLWsLink(createClient({
-  url: 'wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql/subscriptions',
+  url: 'ws://localhost:4000/graphql/subscriptions',
 })):null;
 // ws://localhost:4000/graphql/subscriptions
 // wss://shrieking-alien-62479-c8880a5b9ebb.herokuapp.com/graphql/subscriptions

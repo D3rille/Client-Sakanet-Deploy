@@ -35,6 +35,58 @@ export const GET_USER_INFO = gql`
     }
 `;
 
+export const GET_PENDING_VERIFICATIONS = gql`
+    query GetPendingVerifications {
+    getPendingVerifications {
+        _id
+        profile_pic
+        firstName
+        middleName
+        lastName
+        birthdate
+        displayName
+        description
+        date_joined
+        cover_photo
+        username
+        address {
+        street
+        barangay
+        cityOrMunicipality
+        province
+        region
+        }
+        account_email
+        account_mobile
+        emails
+        mobile_nums
+        is_verified
+        verification_photo
+        verification_status
+        lastOpenedConvo
+        role
+        rating
+    }
+    }
+`;
+
+export const GET_ALL_CROPS = gql`
+    query GetAllCrops($type: String) {
+        getAllCrops(type: $type) {
+            _id
+            name {
+            english
+            tagalog
+            }
+            photo
+            type
+            farmGatePrice
+            priceChange
+            units
+        }
+    }
+`;
+
 export const VERIFY_USER  = gql`
     mutation VerifyUser($userId: String) {
         verifyUser(userId: $userId)
@@ -56,5 +108,11 @@ mutation RejectVerification($userId: String) {
 export const DELETE_USER = gql`
 mutation DeleteUser($userId: String, $role: String) {
   deleteUser(userId: $userId, role: $role)
+}
+`;
+
+export const UPDATE_FARMGATE_PRICE = gql`
+mutation UpdateFarmGatePrice($cropId: String, $newPrice: Float) {
+  updateFarmGatePrice(cropId: $cropId, newPrice: $newPrice)
 }
 `;

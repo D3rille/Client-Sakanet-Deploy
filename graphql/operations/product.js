@@ -13,7 +13,7 @@ export const GET_ALL_MARKET_PRODUCTS = gql`
       photo
       type
       units
-      averagePrice
+      farmGatePrice
       priceChange
     }
     totalProduct
@@ -34,7 +34,7 @@ query GetAvailableMarketProducts($type: String, $limit: Int, $page: Int) {
       photo
       type
       units
-      averagePrice
+      farmGatePrice
       priceChange
     }
     totalProduct
@@ -197,7 +197,7 @@ export const SEARCH_ALL_PRODUCT = gql`
     photo
     type
     units
-    averagePrice
+    farmGatePrice
     priceChange
   }
 }
@@ -214,7 +214,7 @@ export const SEARCH_AVAILABLE_PRODUCT = gql`
     photo
     type
     units
-    averagePrice
+    farmGatePrice
     priceChange
   }
 }
