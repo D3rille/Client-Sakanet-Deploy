@@ -161,7 +161,7 @@ function Admin(){
                         <div>
                             <h3>Farm-gate Prices</h3>
                             <div style={{ fontSize: '0.8em', color: 'grey' }}>
-                                Update platform's suggested farm-gate prices.
+                                Update suggested farm-gate prices.
                             </div>
                         </div>
                     } 
