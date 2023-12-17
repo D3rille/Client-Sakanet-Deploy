@@ -36,86 +36,95 @@ import CircularLoading from "../../components/circularLoading";
 import { formatWideAddress } from "../../util/addresssUtils";
 import { formatToCurrency } from "../../util/currencyFormatter";
 import {formatDate} from "../../util/dateUtils";
-import FarmGateUpdate from "./farmGateUpdate";
+import { AuthContext } from "../../context/auth";
 
 const StyledGrid = styled(Grid)({
-  background: '#F4F4F4',
-});
+    background: '#F4F4F4',
+  });
+  
+  const StyledPaper = styled(Paper)({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    backgroundColor: '#F9F8F8',
+    textAlign: 'center',
+    width: '95%',
+    marginLeft: '1em',
+    marginRight: '1em',
+    marginBlock: '3rem',
+    borderRadius: '20px',
+    overflow: 'hidden',
+    minHeight: '100vh'
+  });
+  
+  const SearchPanel = styled(Box)({
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "#F9FAFC",
+    borderRadius: "5px",
+    // marginLeft: "1.5rem",
+    // marginRight: "1.5rem",
+    // marginBottom: "0.5rem",
+    border: "1px solid #DBE4EC",
+  });
+  
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    backgroundColor: "#F4F4F4",
+  }));
+  
+  const StyledOrderIdCell = styled(StyledTableCell)({
+    width: "20%",
+  });
+  
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({}));
+  
+  const StyledTab = styled(Tab)({
+    textTransform: "none",
+    textAlign: "left",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    "&.Mui-selected": {
+      color: "#2E603A",
+    },
+    "& .MuiSvgIcon-root": {
+      color: "inherit",
+      marginRight: "0.5rem",
+    },
+  });
+  
+  const More = (handleClickOpen) =>{
+    return(
+      <IconButton
+        onClick={()=>{
+          handleClickOpen();
+        }}
+      >
+        <MoreVertIcon/>
+      </IconButton>
+    );
+  } 
 
-const StyledPaper = styled(Paper)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'stretch',
-  backgroundColor: '#F9F8F8',
-  textAlign: 'center',
-  width: '95%',
-  marginLeft: '1em',
-  marginRight: '1em',
-  marginBlock: '3rem',
-  borderRadius: '20px',
-  overflow: 'hidden',
-  minHeight: '100vh'
-});
+export default function FarmGatePricesPage(){
+    const {user} = useContext(AuthContext);
+    const router = useRouter();
 
-const SearchPanel = styled(Box)({
-  display: "flex",
-  alignItems: "center",
-  backgroundColor: "#F9FAFC",
-  borderRadius: "5px",
-  // marginLeft: "1.5rem",
-  // marginRight: "1.5rem",
-  // marginBottom: "0.5rem",
-  border: "1px solid #DBE4EC",
-});
+    useEffect(() => {
+        if (!user) {
+          router.push('/404');
+        }
+      }, [user]);
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: "#F4F4F4",
-}));
+      return user ? <FarmGatePrices/> : null;
+}
 
-const StyledOrderIdCell = styled(StyledTableCell)({
-  width: "20%",
-});
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({}));
-
-const StyledTab = styled(Tab)({
-  textTransform: "none",
-  textAlign: "left",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "flex-start",
-  "&.Mui-selected": {
-    color: "#2E603A",
-  },
-  "& .MuiSvgIcon-root": {
-    color: "inherit",
-    marginRight: "0.5rem",
-  },
-});
-
-
-
-
-export default function FarmGatePrices(){
+function FarmGatePrices(){
     const [cropList, setCropList] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState("");
     const [searchFocus, setSearchFocus] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [category, setCategory] = useState("");
-    const [crop, setCrop] = useState({});
 
     const [getAllCrops, {data:cropsData, loading:cropsLoading, error:cropsError}] = useLazyQuery(GET_ALL_CROPS);
-    const [updateFarmGate] = useMutation(UPDATE_FARMGATE_PRICE, {
-        onError:(error)=>{
-            toast.error(error.message)
-        },
-        onCompleted:(data)=>{
-            setIsModalOpen("");
-            toast.success("Successfull updated farm-gate price")
-        },
-        refetchQueries:[GET_ALL_CROPS]
-       
-    });
 
     const [searchAllProduct,{data:cropSearchData, loading:cropSearchLoading}] = useLazyQuery(SEARCH_ALL_PRODUCT, {
         variables:{
@@ -163,7 +172,7 @@ export default function FarmGatePrices(){
     }
 
     return (
-    <div>
+    <div style={{display:"flex", justifyContent:"center", paddingTop:"2em   "}}>
         <StyledPaper elevation={3}>
             <Box sx={{ display:"flex", flexDirection:"row", textAlign: 'left', margin:"3em"}}>
             <Box sx={{flex:1}}>
@@ -177,9 +186,10 @@ export default function FarmGatePrices(){
                     onClick = {()=>{
                         searchAllProduct()
                     }}
+                    color="success"
                     sx={{
-                    paddingInline:"1em",
-                    marginInline:"0.5em"
+                        paddingInline:"1em",
+                        marginInline:"0.5em"
                     }}
                 >
                     Search
@@ -265,15 +275,13 @@ export default function FarmGatePrices(){
                 }}
             >
                 
-                <Table>
+                <Table stickyHeader>
                 <TableHead>
                     <TableRow>
-                    <TableCell sx={{fontWeight:"bold"}}></TableCell>
-                    <TableCell sx={{fontWeight:"bold"}}> id</TableCell>
+                    <TableCell sx={{fontWeight:"bold"}}>Photo</TableCell>
                     <TableCell sx={{fontWeight:"bold"}}>Name</TableCell>
                     <TableCell sx={{fontWeight:"bold"}}>Type</TableCell>
                     <TableCell sx={{fontWeight:"bold"}}>Price / kg</TableCell>
-                    <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody >
@@ -282,28 +290,21 @@ export default function FarmGatePrices(){
                 return(
                     <StyledTableRow key={crop._id}>
                         <TableCell>
-                            <Avatar src ={crop?.photo ?? ""} width={50} height={50}/>
+                            <Avatar src ={crop?.photo ?? ""} style={{width:"70px", height:"70px"}}/>
                         </TableCell>
-                        <TableCell>{crop._id}</TableCell>
-                        <TableCell>{
-                            crop?.name?.tagalog ? `${crop?.name?.english} | ${crop?.name?.tagalog}` : crop?.name?.english
-                        }</TableCell>
-                        <TableCell>{crop.type}</TableCell>
+                        
+                        <TableCell>
+                            <Typography>
+                                {crop?.name?.tagalog ? `${crop?.name?.english} | ${crop?.name?.tagalog}` : crop?.name?.english}
+                            </Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography>
+                                {crop.type}
+                            </Typography>
+                        </TableCell>
                         <TableCell>{formatToCurrency(crop.farmGatePrice)}</TableCell>
                         <TableCell> 
-                        <IconButton
-                            onClick={()=>{
-                                setIsModalOpen("update");
-                                setCrop({
-                                    cropId:crop._id,
-                                    photo:crop.photo,
-                                    name: crop?.name?.tagalog ? `${crop?.name?.english} | ${crop?.name?.tagalog}` : crop?.name?.english,
-                                    currentPrice:crop.farmGatePrice
-                                });
-                            }}
-                        >
-                            <MoreVertIcon/>
-                        </IconButton>
                         </TableCell>
                     </StyledTableRow>
                     )})}
@@ -312,20 +313,7 @@ export default function FarmGatePrices(){
                 </Table>
             </TableContainer>)}
             </StyledPaper>
-
-        {crop && isModalOpen=="update" && (
-            <FarmGateUpdate
-                crop={crop}
-                open={Boolean(isModalOpen)}
-                setOpen={setIsModalOpen}
-                callback={updateFarmGate}
-            />
-        )}
     </div>
   
     );
-
 }
-
-
-

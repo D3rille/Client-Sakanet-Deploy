@@ -15,8 +15,8 @@ mutation UpdateVerificationStatus($verification_status: String!) {
 `;
 
 export const UPLOAD_NAME_AND_BIRTHDATE = gql`
-mutation UploadNameAndBirthdate($firstName: String, $lastName: String, $middleName: String, $birthDate: String) {
-  uploadNameAndBirthdate(firstName: $firstName, lastName: $lastName, middleName: $middleName, birthDate: $birthDate)
+mutation UploadNameAndBirthdate($firstName: String, $lastName: String, $middleName: String, $birthDate: String, $suffix: String) {
+  uploadNameAndBirthdate(firstName: $firstName, lastName: $lastName, middleName: $middleName, birthDate: $birthDate, suffix: $suffix)
 }
 `;
 

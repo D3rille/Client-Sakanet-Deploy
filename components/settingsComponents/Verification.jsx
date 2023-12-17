@@ -37,7 +37,7 @@ const StyledDivider = styled(Divider)({
 const NameField = styled(TextField)({
   "& input": {
     height: "40px",
-    padding: "0 14px",
+    // padding: "0 14px",
   },
   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
     borderColor: "#2E603A",
@@ -53,6 +53,7 @@ const AccountVerification = ({profile}) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
+  const [suffix, setSuffix] = useState("");
   const [verificationStatus, setVerificationStatus] = useState("Not Verified");
   const [birthDate, setBirthDate] = useState(null);
 
@@ -69,7 +70,8 @@ const AccountVerification = ({profile}) => {
       firstName,
       lastName,
       middleName,
-      birthDate: new Date(birthDate).toISOString()
+      birthDate: new Date(birthDate).toISOString(),
+      suffix
     },
     refetchQueries:[GET_MY_PROFILE],
     onCompleted:()=>{
@@ -81,14 +83,10 @@ const AccountVerification = ({profile}) => {
   });
 
 
-  let canSave = firstName && lastName && middleName && uploadedID && birthDate;
-  // const { loading, error, data } = useQuery(GET_MY_PROFILE);
-
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error.message}</p>;
+  const nameSuffixRegex = /^(jr|sr|Jr|Sr|jr\.|sr\.|Jr\.|Sr\.|I{1,3}|[A-Z]\.)$/;
+  let canSave = (firstName && lastName && uploadedID && birthDate) && (suffix ? nameSuffixRegex.test(suffix):true);
 
 
-  // const { verification_photo, is_verified, verification_status } = data.getMyProfile.profile;
   const { verification_photo, is_verified, verification_status } = profile;
 
   const handleIDUpload = (acceptedFiles) => {
@@ -179,10 +177,12 @@ const AccountVerification = ({profile}) => {
               </Typography>
               {/* <h3 style={{ marginBottom: "10px" }}>Profile Name</h3>   */}
               
-              <div style={{marginBottom:'0.7rem'}}>
+              <div style={{marginBottom:'0.7rem', marginTop:"0.7em"}}>
                 <NameField
                   variant="outlined"
-                  placeholder="First name"
+                  placeholder="Juan"
+                  label="First Name*"
+                  size="small"
                   value={firstName}
                   onChange={(e)=>setFirstName(e.target.value)}
                   style={{ marginRight: "1rem" }}
@@ -195,10 +195,12 @@ const AccountVerification = ({profile}) => {
                 />
                 <NameField
                   variant="outlined"
-                  placeholder="Last name"
+                  placeholder="Dela Cruz"
+                  label="Last Name*"
                   value={lastName}
                   onChange={(e)=>setLastName(e.target.value)}
                   style={{ marginRight: "1rem" }}
+                  size="small"
                   InputProps={{
                     style: {
                       borderColor: "#2E603A",
@@ -208,13 +210,30 @@ const AccountVerification = ({profile}) => {
                 />
                 <NameField
                   variant="outlined"
-                  placeholder="Middle Name"
+                  label="Middle Name"
+                  placeholder="Reyes"
                   value={middleName}
+                  style={{ marginRight: "1rem" }}
                   onChange={(e)=>setMiddleName(e.target.value)}
+                  size="small"
                   InputProps={{
                     style: {
                       borderColor: "#2E603A",
                       width:'200px'
+                    },
+                  }}
+                />
+                <NameField
+                  variant="outlined"
+                  label="Suffix"
+                  placeholder="Jr"
+                  value={suffix}
+                  onChange={(e)=>setSuffix(e.target.value)}
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderColor: "#2E603A",
+                      width:'100px'
                     },
                   }}
                 />
@@ -225,7 +244,7 @@ const AccountVerification = ({profile}) => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
               <Box display="flex" justifyContent="space-between" mt={1}>
                 <DatePicker
-                  label="BirthDate"
+                  label="BirthDate*"
                   sx={{ width: '50%', '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#2E603A' } }}
                   value={birthDate}
                   onChange={(newValue) => setBirthDate(newValue)}

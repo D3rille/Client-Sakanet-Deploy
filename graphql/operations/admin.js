@@ -10,6 +10,7 @@ export const GET_USER_INFO = gql`
             firstName
             lastName
             middleName
+            suffix
             displayName
             description
             date_joined
@@ -43,6 +44,7 @@ export const GET_PENDING_VERIFICATIONS = gql`
         firstName
         middleName
         lastName
+        suffix
         birthdate
         displayName
         description

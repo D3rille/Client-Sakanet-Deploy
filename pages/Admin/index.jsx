@@ -159,7 +159,7 @@ function Admin(){
                     icon={<PriceChangeIcon />} 
                     label={
                         <div>
-                            <h3>Price Suggestions</h3>
+                            <h3>Farm-gate Prices</h3>
                             <div style={{ fontSize: '0.8em', color: 'grey' }}>
                                 Update platform's suggested farm-gate prices.
                             </div>

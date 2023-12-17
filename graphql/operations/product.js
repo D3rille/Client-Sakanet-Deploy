@@ -320,6 +320,7 @@ export const GET_MARKET_PRODUCT = gql`
       photo
       type
       units
+      farmGatePrice
     }
   }
 `;

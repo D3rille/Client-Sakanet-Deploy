@@ -107,7 +107,7 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
                     }}
                   />
                 </div>
-                <div style={{display:"flex"}}>
+                <div style={{display:"flex", flexDirection:"row", gap:"8px"}}>
                   <TextField  
                   fullWidth
                     label="First Name"
@@ -127,15 +127,26 @@ export default function VerificationViewDialog({open, setOpen, user, handleVerif
                     }}
                   />
                 </div>
-                <TextField
-                fullWidth
-                  label="Middle Name"
-                  sx={{marginTop:"0.5em"}}
-                  defaultValue={user?.middleName ?? "n/a"}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
+                <div style={{display:"flex", flexDirection:"row", gap:"8px"}}>
+                  <TextField
+                  fullWidth
+                    label="Middle Name"
+                    sx={{flex:2, marginTop:"0.5em"}}
+                    defaultValue={user?.middleName ?? "n/a"}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <TextField
+                  fullWidth
+                    label="Suffix"
+                    sx={{flex:1, marginTop:"0.5em"}}
+                    defaultValue={user?.suffix ?? "n/a"}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                </div>
                 <TextField
                 fullWidth
                   label="Address"

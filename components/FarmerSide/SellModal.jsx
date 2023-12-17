@@ -28,6 +28,7 @@ import CircularLoading from "../circularLoading";
 import {  uploadUserProductPhoto } from "../../util/imageUtils";
 import { useForm } from "../../util/hooks";
 import { useDropzone } from 'react-dropzone';
+import {formatToCurrency} from "../../util/currencyFormatter";
 
 
 
@@ -260,6 +261,7 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
                     label="Price"
                     type="number"
                     variant="outlined"
+                    helperText={`Farm-gate Price: ${formatToCurrency(data?.farmGatePrice)}/kg`}
                     sx={{
                       "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
                         {

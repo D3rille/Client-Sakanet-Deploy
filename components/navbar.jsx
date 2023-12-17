@@ -40,6 +40,7 @@ import InsertChartIcon from "@mui/icons-material/InsertChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useSubs } from "../context/SubscriptionProvider.js";
 import Popover from "@mui/material/Popover";
 import Badge from "@mui/material/Badge";
@@ -541,6 +542,18 @@ const Navbar = () => {
                     Statistics
                   </MenuItem>
                 )}
+
+                <MenuItem
+                  onClick={() => {
+                    setAnchorEl(null);
+                    router.push("/FarmGatePrices");
+                  }}
+                >
+                  <ListItemIcon>
+                    <LocalOfferIcon fontSize="small" />
+                  </ListItemIcon>
+                  Farm-Gate Prices
+                </MenuItem>
 
                 <MenuItem
                   onClick={() => {
