@@ -163,23 +163,57 @@ const EditGroupInfo = ({isOpen, setIsOpen, data}) => {
             console.error(error);
         }
     }
-    const handleProfilePictureDrop = (acceptedFiles) => {
+    const handleProfilePictureDrop = (acceptedFiles, rejectedFiles) => {
+      if (rejectedFiles.some((file) => file.errors.some((err) => err.code === "too-many-files"))) {
+        toast.error(`Error: Too many files. Please upload only one file.`);
+      } else if (rejectedFiles.length > 0) {
+        rejectedFiles.forEach((file) => {
+          file.errors.forEach((err) => {
+            if (err.code === "file-too-large") {
+              toast.error(`Error: File size is over 10 MB`);
+            }
+    
+            if (err.code === "file-invalid-type") {
+              toast.error(`Error: File type must be .jpeg, .jpg or .png`);
+            }
+          });
+        });
+      } else {
       setProfilePicture(acceptedFiles[0]);
+      }
     };
 
-    const handleCoverPhotoDrop = (acceptedFiles) => {
+    const handleCoverPhotoDrop = (acceptedFiles, rejectedFiles) => {
+      if (rejectedFiles.some((file) => file.errors.some((err) => err.code === "too-many-files"))) {
+        toast.error(`Error: Too many files. Please upload only one file.`);
+      } else if (rejectedFiles.length > 0) {
+        rejectedFiles.forEach((file) => {
+          file.errors.forEach((err) => {
+            if (err.code === "file-too-large") {
+              toast.error(`Error: File size is over 10 MB`);
+            }
+    
+            if (err.code === "file-invalid-type") {
+              toast.error(`Error: File type must be .jpeg, .jpg or .png`);
+            }
+          });
+        });
+      } else {
       setCoverPhoto(acceptedFiles[0]);
+      }
     };
 
     const profilePictureDropzone = useDropzone({
       accept: {'image/jpeg': ['.jpeg', '.png']},
       maxFiles:1,
+      maxSize: 10 * 1024 * 1024,
       onDrop: handleProfilePictureDrop,
     });
 
     const coverPhotoDropzone = useDropzone({
       accept:  {'image/jpeg': ['.jpeg', '.png']},
       maxFiles:1,
+      maxSize: 10 * 1024 * 1024,
       onDrop: handleCoverPhotoDrop,
     });
 

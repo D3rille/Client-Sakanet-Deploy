@@ -29,6 +29,7 @@ import {  uploadUserProductPhoto } from "../../util/imageUtils";
 import { useForm } from "../../util/hooks";
 import { useDropzone } from 'react-dropzone';
 import {formatToCurrency} from "../../util/currencyFormatter";
+import toast from 'react-hot-toast';
 
 
 
@@ -50,8 +51,24 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
   const [file, setFile] = useState(null); //Product Picture
   const [dateOfHarvest, setDateOfHarvest] = useState(null);
 
-  const handleDrop = (acceptedFiles) => {
+  const handleDrop = (acceptedFiles, rejectedFiles) => {
+    if (rejectedFiles.some((file) => file.errors.some((err) => err.code === "too-many-files"))) {
+      toast.error(`Error: Too many files. Please upload only one file.`);
+    } else if (rejectedFiles.length > 0) {
+      rejectedFiles.forEach((file) => {
+        file.errors.forEach((err) => {
+          if (err.code === "file-too-large") {
+            toast.error(`Error: File size is over 10 MB`);
+          }
+  
+          if (err.code === "file-invalid-type") {
+            toast.error(`Error: File type must be .jpeg, .jpg or .png`);
+          }
+        });
+      });
+    } else {
     setFile(acceptedFiles[0]);
+    }
   };
 
   const handleClose = () => {
@@ -67,6 +84,7 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
     onDrop: handleDrop,
     accept:  {'image/jpeg': ['.jpeg', '.png']},
     maxFiles:1,
+    maxSize: 10 * 1024 * 1024,
   });
 
 
@@ -524,7 +542,7 @@ export default function SellModal({ isOpen, onClose, data, loading, error, creat
                 </Typography>
               )}
             </Box>
-
+                
 
             <Box
               sx={{
