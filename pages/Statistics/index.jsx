@@ -20,14 +20,20 @@ import { useQuery, useLazyQuery } from '@apollo/client';
 import toast from "react-hot-toast";
 import {useRouter} from "next/router";
 import Head from 'next/head';
-
-import { GET_TOTAL_STATS, GET_SALES_OR_ORDERS_STATS, GET_TOP_PRODUCTS, GET_TOP_BUYERS } from '../../graphql/operations/statistics';
+import { 
+    GET_TOTAL_STATS, 
+    GET_SALES_OR_ORDERS_STATS, 
+    GET_TOP_PRODUCTS, 
+    GET_TOP_BUYERS,
+    GET_SALES_REPORT
+} from '../../graphql/operations/statistics';
 import CircularLoading from "../../components/circularLoading";
 import {AuthContext} from "../../context/auth";
 import SalesOrOrdersStats from '../../components/Statistics/SalesOrOrdersStats';
 import { formatToCurrency } from '../../util/currencyFormatter';
 import TopProductsStats from '../../components/Statistics/TopProductsStats';
 import TopBuyersStats from '../../components/Statistics/TopBuyersStats';
+import SalesReportTable from '../../components/Statistics/SalesReportTable';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -55,9 +61,9 @@ function Statistics(){
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [timeInterval, setTimeInterval] = useState("daily");
+    const [timeIntervalOnReport, setTimeIntervalOnReport] = useState("daily");
     const [showStatOf, setShowStatOf] = useState("sales");
 
-    console.log(timeInterval);
 
     const [getTotalStats, {data:getTotalStatsData, loading:getTotalStatsLoading}] = useLazyQuery(GET_TOTAL_STATS, {
         variables:{
@@ -83,6 +89,11 @@ function Statistics(){
 
     const {data:topProductsData, loading:topProductsLoading, error:topProductsError} = useQuery(GET_TOP_PRODUCTS);
     const {data:topBuyersData, loading:topBuyersLoading, error:topBuyersError} = useQuery(GET_TOP_BUYERS);
+    const {data:salesReportData, loading:salesReportLoading, error:salesReportError} = useQuery(GET_SALES_REPORT,{
+        variables:{
+            timeInterval:timeIntervalOnReport
+        }
+    });
 
 
     useEffect(()=>{
@@ -117,6 +128,8 @@ function Statistics(){
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+            
+            {/* Date Filter for totals */}
             <Box sx={{display:"flex", flexDirection:"row", paddingBlock:"1em", width:"30%", alignItems:"center"}}>
                 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -221,6 +234,36 @@ function Statistics(){
                 </Grid>
 
             </Grid>
+
+            {/* Top Buyers and Products */}
+            <Box style={{display:"flex", paddingBlock:"1em", alignItems:"center"}}>
+                <Box style={{flex:1, backgroundColor:"white", marginRight:"1em"}}>
+                    {topProductsLoading && (
+                        <div style={{display:"flex", margin:"auto"}}>
+                            <CircularLoading/>
+                        </div>
+                    )}
+
+                    {topProductsData && !topProductsLoading && (
+                        <TopProductsStats data={topProductsData?.getTopProducts}/>
+                    )}
+                </Box>
+                <Box style={{flex:1, backgroundColor:"white"}}>
+                    {topBuyersLoading && (
+                        <div style={{display:"flex", margin:"auto"}}>
+                            <CircularLoading/>
+                        </div>
+                    )}
+
+                    {topBuyersData && !topBuyersLoading  && (
+                        
+                        <TopBuyersStats data={topBuyersData?.getTopBuyers}/>
+                        
+                    )}
+                </Box>
+
+            </Box>
+            {/* Total Sales and Order graph */}
             <Box>
                 <Paper elevation={4} sx={{backgroundColor:"white", padding:"3em", marginBlock:"2em"}}>
                     <Box sx={{display:"flex",  flexDirection:"row", alignItems:"center", width:"100%"}}>
@@ -272,34 +315,46 @@ function Statistics(){
                         )}
                     </Box>
                 </Paper>
-                
             </Box>
-            <Box style={{display:"flex"}}>
-                <Box style={{flex:1, backgroundColor:"white", marginInline:"1em"}}>
-                    {topProductsLoading && (
-                        <div style={{display:"flex", margin:"auto"}}>
-                            <CircularLoading/>
-                        </div>
-                    )}
 
-                    {topProductsData && !topProductsLoading && (
-                        <TopProductsStats data={topProductsData?.getTopProducts}/>
-                    )}
-                </Box>
-                <Box style={{flex:1, backgroundColor:"white", marginInline:"1em"}}>
-                    {topBuyersLoading && (
-                        <div style={{display:"flex", margin:"auto"}}>
-                            <CircularLoading/>
-                        </div>
-                    )}
-
-                    {topBuyersData && !topBuyersLoading  && (
-                        
-                        <TopBuyersStats data={topBuyersData?.getTopBuyers}/>
-                        
-                    )}
-                </Box>
-
+            {/* Sales Report Table */}
+            <Box>
+                <Paper elevation={4} sx={{backgroundColor:"white", padding:"3em", marginBlock:"2em"}}>
+                    <Box sx={{display:"flex",  flexDirection:"row", alignItems:"center", width:"100%"}}>
+                        <Box sx={{display:"flex", flexDirection:"row", flex:1, alignItems:"center"}}>
+                            <Typography variant='h4'>
+                                Sales Report
+                            </Typography>
+                            
+                        </Box>
+                        <Box sx={{display:"flex",flex:1,  justifyContent:"end"}}>
+                            <ToggleButtonGroup
+                                color="success"
+                                value={timeIntervalOnReport}
+                                exclusive
+                                onChange={(event)=>{
+                                    setTimeIntervalOnReport(event.target.value)
+                                }}
+                                aria-label="Platform"
+                            >
+                                <ToggleButton value="daily" >Daily</ToggleButton>
+                                <ToggleButton value="weekly">Weekly</ToggleButton>
+                                <ToggleButton value="monthly">Monthly</ToggleButton>
+                                <ToggleButton value="annual">Annual</ToggleButton>
+                            </ToggleButtonGroup>
+                        </Box>
+                    </Box>
+                    <Box>
+                        {salesReportLoading && (
+                            <div style={{display:"flex", margin:"auto"}}>
+                                <CircularLoading/>
+                            </div>
+                        )}
+                        {salesReportData && !salesReportLoading && (
+                            <SalesReportTable data={salesReportData.getSalesReport} timeInterval={timeIntervalOnReport}/>
+                        )}
+                    </Box>
+                </Paper>
             </Box>
         </Box>);
     }

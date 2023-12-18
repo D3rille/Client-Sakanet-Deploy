@@ -44,6 +44,26 @@ query GetTopBuyers {
     }
 `;
 
+export const GET_SALES_REPORT = gql`
+query GetSalesReport($timeInterval: String) {
+  getSalesReport(timeInterval: $timeInterval) {
+    _id {
+      productId
+      marketProductName
+      year
+      month
+      day
+      isoWeek
+    }
+    totalValue
+    totalQuantity
+    unit
+    numOrders
+    startOfWeek
+    endOfWeek
+  }
+}
+`;
 
 
 

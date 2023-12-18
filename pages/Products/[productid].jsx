@@ -77,14 +77,16 @@ function Products() {
   const [currentLocation, setCurrentLocation] = useState(""); //Area Limit Filter
   const [selectedDate, setSelectedDate] = useState(null); //Date Filter
   const [currentPage, setCurrentPage] = useState(1); //Pagination
+  const [sortPrice, setSortPrice] = useState(1);
+  //-1 - descending, 1 - ascending
   const [filters, setFilters] = useState({
     modeOfDelivery: "",
     area_limit: "",
     maxPrice: 1000,
     minPrice: 0,
     until: null,
+    sortPrice:1
   });
-
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -97,6 +99,7 @@ function Products() {
       maxPrice: priceRange[1],
       minPrice: priceRange[0],
       until: selectedDate,
+      sortPrice: sortPrice
     });
   };
   const handleProductTypeChange = (event, newType) => {
@@ -399,6 +402,41 @@ function Products() {
                   />
                 </RadioGroup>
                 <Divider sx={{ marginBottom: "1rem" }} />
+                  <Typography>
+                    Sort by Price:
+                  </Typography>
+                  <RadioGroup
+                    aria-label="sort-by"
+                    name="sortBy"
+                    value={sortPrice}
+                    onChange={(e)=>setSortPrice(parseInt(e.target.value))}
+                    // flexDirection="column"
+                    sx={{ marginLeft: "1rem", marginBottom: "1rem" }}
+                  >
+                    <FormControlLabel
+                      value={1}
+                      control={
+                        <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
+                      }
+                      label={
+                        <Typography sx={{ fontSize: "12px" }}>
+                          Lowest to Highest
+                        </Typography>
+                      }
+                    />
+                    <FormControlLabel
+                      value={-1}
+                      control={
+                        <Radio sx={{ "&.Mui-checked": { color: "#2F603B" } }} />
+                      }
+                      label={
+                        <Typography sx={{ fontSize: "12px" }}>Highest to Lowest</Typography>
+                      }
+                    />
+                  </RadioGroup>
+
+                <Divider sx={{ marginBottom: "1rem" }} />
+
                 <Typography sx={{ fontSize: "14px", marginBottom: "1rem" }}>
                   Price Range
                 </Typography>
