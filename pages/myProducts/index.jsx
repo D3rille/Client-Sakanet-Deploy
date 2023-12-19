@@ -30,6 +30,10 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Pagination from "@mui/material/Pagination";
 import FarmerSideToggleButton from "../../components/FarmerSide/FarmerSideToggleButton";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import {
   GET_MY_PRODUCTS,
   SEARCH_MY_PRODUCTS,
@@ -46,6 +50,7 @@ import EditProductModal from "../../components/FarmerSide/EditProductModal";
 import CustomDialog from "../../components/popups/customDialog";
 import EmptyAnimation from "../../components/EmptyAnimation";
 import { AuthContext } from "../../context/auth";
+import ProductListView from "../../components/FarmerSide/ProductListView";
 
 const StyledIconButton = styled(IconButton)({
   background: "#2E603A",
@@ -77,6 +82,22 @@ const StyledIconButton = styled(IconButton)({
     },
   },
 });
+
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    margin: theme.spacing(0.5),
+    border: 0,
+    '&.Mui-disabled': {
+      border: 0,
+    },
+    '&:not(:first-of-type)': {
+      borderRadius: theme.shape.borderRadius,
+    },
+    '&:first-of-type': {
+      borderRadius: theme.shape.borderRadius,
+    },
+  },
+}));
 
 const triggerComponent = (handleClickOpen) => {
   return (
@@ -414,7 +435,8 @@ function MyProducts() {
   const [filter, setFilter] = useState("");
   const [searchFocus, setSearchFocus] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
-  // const [productId, setProductId] = useState("");
+  const [view, setView] = useState("grid"); // list | grid
+
 
   const handleFilterChange = (event) => {
     event.preventDefault();
@@ -437,6 +459,11 @@ function MyProducts() {
     setSelectedCategory(newType);
     setCurrentPage(1);
   };
+
+  const handleViewChange = (event,newView) =>{
+    event.preventDefault()
+    setView(newView);
+  }
 
   const { loading, error, data } = useQuery(GET_MY_PRODUCTS, {
     variables: {
@@ -537,8 +564,10 @@ function MyProducts() {
                   display: "flex",
                   flex: 1,
                   justifyContent: "space-evenly",
+                  alignItems:"center"
                 }}
               >
+                {/* Crop type dropdown */}
                 <Select
                   value={productStatus}
                   onChange={handleProductStatChange}
@@ -560,6 +589,34 @@ function MyProducts() {
                   <MenuItem value={"open"}>Open</MenuItem>
                   <MenuItem value={"closed"}>Closed</MenuItem>
                 </Select>
+
+                {/* Grid | List View */}
+                <Paper
+                  elevation={0}
+                  sx={{
+                    marginTop:"2em",
+                    height:"55px",
+                    display: 'flex',
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <ToggleButtonGroup
+                    value={view}
+                    exclusive
+                    onChange={handleViewChange}
+                    aria-label="text alignment"
+                  >
+                    <ToggleButton value="grid" aria-label="left aligned">
+                      <ViewModuleIcon />
+                    </ToggleButton>
+                    <ToggleButton value="list" aria-label="centered">
+                      <FormatListBulletedIcon />
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Paper>
+
+                {/* Sell | Presell toggle buttons */}
                 <FarmerSideToggleButton
                   productsCategory={selectedCategory}
                   onProductCategoryChange={handleProductCategoryChange}
@@ -622,7 +679,7 @@ function MyProducts() {
                 >
                   <CircularLoading />
                 </div>
-              ) : productData && productData.length > 0 ? (
+              ) : productData && productData.length > 0 && view == "grid" ? (
                 <ProductsGrid
                   productData={productData}
                   openDetails={openDetails}
@@ -631,7 +688,14 @@ function MyProducts() {
                   currentPage={currentPage}
                   selectedCategory={selectedCategory}
                 />
-              ) : (
+              ) : productData && productData.length > 0 && view == "list" ? (
+                <ProductListView 
+                  data = {productData} 
+                  productStatus={productStatus} 
+                  selectedCategory={selectedCategory} 
+                  currentPage={currentPage}
+                />
+              ):(
                 <EmptyAnimation />
               )}
             </div>
