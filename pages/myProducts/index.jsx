@@ -462,7 +462,9 @@ function MyProducts() {
 
   const handleViewChange = (event,newView) =>{
     event.preventDefault()
-    setView(newView);
+    if(newView != null){
+      setView(newView);
+    }
   }
 
   const { loading, error, data } = useQuery(GET_MY_PRODUCTS, {
@@ -601,7 +603,7 @@ function MyProducts() {
                     flexWrap: 'wrap',
                   }}
                 >
-                  <ToggleButtonGroup
+                  <StyledToggleButtonGroup
                     value={view}
                     exclusive
                     onChange={handleViewChange}
@@ -613,7 +615,7 @@ function MyProducts() {
                     <ToggleButton value="list" aria-label="centered">
                       <FormatListBulletedIcon />
                     </ToggleButton>
-                  </ToggleButtonGroup>
+                  </StyledToggleButtonGroup>
                 </Paper>
 
                 {/* Sell | Presell toggle buttons */}
