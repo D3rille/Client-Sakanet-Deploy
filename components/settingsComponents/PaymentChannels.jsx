@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  TextField,
-  Divider,
-  Button,
-  Typography,
-  IconButton,
-  Modal,
-} from "@mui/material";
+import { Typography, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { styled } from "@mui/system";
-import {useSubs} from "../../context/SubscriptionProvider";
-
+import { useSubs } from "../../context/SubscriptionProvider";
 import PaymentModal from "./PaymentModal";
 
 const PaymentChannelsContainer = styled("div")({
@@ -76,48 +68,36 @@ const PaymentBox = styled("div")({
   cursor: "pointer",
   width: "300px",
 });
-
 const PaymentChannels = () => {
-  const {profile} = useSubs();
+  const { profile } = useSubs();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentChannels, setPaymentChannels] = useState([]);
   const [channelToEdit, setChannelToEdit] = useState(null);
-  // const [editingIndex, setEditingIndex] = useState(null);
 
-  useEffect(()=>{
-    if(profile){
+  useEffect(() => {
+    if (profile) {
       setPaymentChannels(profile?.profile?.payment_channels);
     }
-  }, [profile])
+  }, [profile]);
 
   const onBoxClick = (channel) => {
     setChannelToEdit(channel);
     setIsModalOpen(true);
   };
 
-  // const addOrEditPaymentChannel = (channel, details) => {
-  //   if (editingIndex !== null) {
-  //     const updatedChannels = [...paymentChannels];
-  //     updatedChannels[editingIndex] = { channel, details };
-  //     setPaymentChannels(updatedChannels);
-  //     setEditingIndex(null);
-  //   } else {
-  //     setPaymentChannels((prev) => [...prev, { channel, details }]);
-  //   }
-  //   setIsModalOpen(false);
-  // };
+  const handleNameChange = (name) => {
+    if (channelToEdit) {
+      setPaymentChannels(
+        paymentChannels.map((item) =>
+          item._id === channelToEdit._id ? { ...item, name } : item
+        )
+      );
+    } else {
+      setChannelToEdit({ name });
+    }
+  };
 
-  // const onRemove = () => {
-  //   if (editingIndex !== null) {
-  //     const updatedChannels = [...paymentChannels];
-  //     updatedChannels.splice(editingIndex, 1);
-  //     setPaymentChannels(updatedChannels);
-  //     setEditingIndex(null);
-  //     setIsModalOpen(false);
-  //   }
-  // };
-
-  if(profile){
+  if (profile) {
     return (
       <PaymentChannelsContainer>
         <HeaderContainer>
@@ -129,27 +109,27 @@ const PaymentChannels = () => {
             <HoverText className="hover-text">ADD PAYMENT CHANNEL</HoverText>
           </StyledIconButton>
         </HeaderContainer>
-  
+
         {paymentChannels.map((item, index) => (
           <PaymentBox key={index} onClick={() => onBoxClick(item)}>
-          <Typography variant="body1" style={{ fontWeight: "bolder", color:'#2E603A', textTransform: "uppercase" }}>
-            {item.channel}
-          </Typography>
-          <Typography variant="body2">{item.details}</Typography>
-        </PaymentBox>
+            <Typography variant="body1" style={{ fontWeight: "bolder", color: '#2E603A', textTransform: "uppercase" }}>
+              {item.name}
+            </Typography>
+            <Typography variant="body1" style={{ fontWeight: "bolder", color: '#2E603A', textTransform: "uppercase" }}>
+              {item.channel}
+            </Typography>
+            <Typography variant="body2">{item.details}</Typography>
+          </PaymentBox>
         ))}
-  
+
         <PaymentModal
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
             setChannelToEdit(null);
           }}
-          // onSave={addOrEditPaymentChannel}
-          channelToEdit ={channelToEdit}
-            // editingIndex !== null ? paymentChannels[editingIndex]: null
-          
-          // onRemove={onRemove}
+          channelToEdit={channelToEdit}
+          onNameChange={handleNameChange}
         />
       </PaymentChannelsContainer>
     );

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import { styled } from "@mui/system";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import {useMutation} from "@apollo/client";
-import toast from  "react-hot-toast";
+import { useMutation } from "@apollo/client";
+import toast from "react-hot-toast";
 
 import { ADD_PAYMENT_CHANNEL, DELETE_PAYMENT_CHANNEL, EDIT_PAYMENT_CHANNEL } from "../../graphql/operations/settings";
 import { GET_MY_PROFILE } from "../../graphql/operations/profile";
@@ -19,7 +19,7 @@ const ModalContent = styled("div")({
   borderRadius: "20px",
   padding: "30px",
   width: "600px",
-  height: "350px",
+  height: "380px",
   position: "relative",
   outline: "none",
 });
@@ -44,7 +44,6 @@ const CloseButton = styled('div')({
 }
 
 const StyledInput = styled("input")({
-  margin: "20px 0",
   width: "100%",
   padding: "10px",
   borderRadius: "5px",
@@ -117,11 +116,13 @@ const PaymentModal = ({
   onClose,
   onSave,
   channelToEdit,
+  onNameChange,
   // channelId,
   // paymentChannel: propChannel,
   // details: propDetails,
   // onRemove,
 }) => {
+  const [name, setName] = useState('');
   const channelId = channelToEdit?._id ?? "";
   const propChannel = channelToEdit?.channel ?? "";
   const propDetails = channelToEdit?.details ?? "";
@@ -130,19 +131,20 @@ const PaymentModal = ({
 
   const [addPaymentChannel] = useMutation(ADD_PAYMENT_CHANNEL);
 
-  const handleAddPaymentChannel = async() =>{
+
+  const handleAddPaymentChannel = async () => {
     addPaymentChannel({
-      variables:{
-        paymentChannel:{
-          channel:paymentChannel,
+      variables: {
+        paymentChannel: {
+          channel: paymentChannel,
           details
         },
       },
-      refetchQueries:[GET_MY_PROFILE],
-      onCompleted:()=>{
+      refetchQueries: [GET_MY_PROFILE],
+      onCompleted: () => {
         toast.success("Payment successfully added.");
       },
-      onError:(error)=>{
+      onError: (error) => {
         toast.error(error.message);
       }
     });
@@ -150,7 +152,7 @@ const PaymentModal = ({
 
   const [deletePaymentChannel] = useMutation(DELETE_PAYMENT_CHANNEL);
 
-  const handleDeleteChannel = async() => {
+  const handleDeleteChannel = async () => {
     deletePaymentChannel({
       variables: {
         channelId
@@ -160,10 +162,10 @@ const PaymentModal = ({
         const existingData = cache.readQuery({
           query: GET_MY_PROFILE,
         });
-  
+
         const existingChannels = existingData?.getMyProfile?.profile.payment_channels;
         const updatedChannels = existingChannels.filter((channel) => channel._id !== channelId);
-  
+
         // Write the updated data back to the cache
         cache.writeQuery({
           query: GET_MY_PROFILE,
@@ -187,20 +189,20 @@ const PaymentModal = ({
   };
 
   const [editPaymentChannel] = useMutation(EDIT_PAYMENT_CHANNEL);
-  const handleEditPaymentChannel = async() =>{
+  const handleEditPaymentChannel = async () => {
     editPaymentChannel({
-      variables:{
+      variables: {
         "channelId": channelId,
         "paymentChannel": {
           "channel": paymentChannel,
           "details": details
         }
       },
-      refetchQueries:[GET_MY_PROFILE],
-      onCompleted:()=>{
+      refetchQueries: [GET_MY_PROFILE],
+      onCompleted: () => {
         toast.success("Channel edited.");
       },
-      onError:(error)=>{
+      onError: (error) => {
         toast.error(error.message);
       }
     })
@@ -217,13 +219,24 @@ const PaymentModal = ({
     <StyledModal open={isOpen} onClose={onClose}>
       <ModalContent>
         <Header>
-          <h6 style={{ fontSize: "18px" }}>Payment Channel</h6>
+          <h6 style={{ fontSize: "18px", marginBottom: '1rem' }}>Payment Channel</h6>
         </Header>
+        <StyledInput
+          type="text"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            onNameChange(e.target.value);
+          }}
+          placeholder="Name"
+          style={{ marginBottom: '10px' }}
+        />
         <StyledInput
           type="text"
           value={paymentChannel}
           onChange={(e) => setPaymentChannel(e.target.value)}
           placeholder="Type of Payment Channel"
+          style={{ marginBottom: '10px' }}
         />
         <DetailsTextarea
           value={details}
@@ -231,8 +244,8 @@ const PaymentModal = ({
           placeholder="Details"
         />
         <Footer>
-          {channelToEdit && (<RemoveButton onClick={()=>{
-            handleDeleteChannel().then(()=>{
+          {channelToEdit && (<RemoveButton onClick={() => {
+            handleDeleteChannel().then(() => {
               setPaymentChannel("");
               setDetails("");
               onClose();
@@ -245,7 +258,7 @@ const PaymentModal = ({
             <ActionButton
               variant="cancel"
               onClick={() => {
-                onClose();             
+                onClose();
                 setPaymentChannel("");
                 setDetails("");
               }}
@@ -257,7 +270,7 @@ const PaymentModal = ({
               variant="save"
               onClick={() => {
                 // onSave(paymentChannel, details);
-                handleEditPaymentChannel().then(()=>{
+                handleEditPaymentChannel().then(() => {
                   setPaymentChannel("");
                   setDetails("");
                   onClose();
@@ -272,7 +285,7 @@ const PaymentModal = ({
               variant="save"
               onClick={() => {
                 // onSave(paymentChannel, details);
-                handleAddPaymentChannel().then(()=>{
+                handleAddPaymentChannel().then(() => {
                   setPaymentChannel("");
                   setDetails("");
                   onClose();
