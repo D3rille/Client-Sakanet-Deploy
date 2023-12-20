@@ -16,6 +16,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import { NativeSelect } from '@mui/material';
 import { useQuery, useLazyQuery } from '@apollo/client';
 import toast from "react-hot-toast";
 import {useRouter} from "next/router";
@@ -34,6 +35,7 @@ import { formatToCurrency } from '../../util/currencyFormatter';
 import TopProductsStats from '../../components/Statistics/TopProductsStats';
 import TopBuyersStats from '../../components/Statistics/TopBuyersStats';
 import SalesReportTable from '../../components/Statistics/SalesReportTable';
+import SalesOrOrdersTable from '../../components/Statistics/SalesOrOrdersStatTable';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -78,7 +80,6 @@ function Statistics(){
    
     const {data:getSalesOrdersData, loading:getSalesOrdersLoading, refetch:refetchGetSalesOrders} = useQuery(GET_SALES_OR_ORDERS_STATS, {
         variables:{
-            showStatOf: showStatOf,
             timeInterval: timeInterval
         },
         onError:(error)=>{
@@ -267,23 +268,29 @@ function Statistics(){
             <Box>
                 <Paper elevation={4} sx={{backgroundColor:"white", padding:"3em", marginBlock:"2em"}}>
                     <Box sx={{display:"flex",  flexDirection:"row", alignItems:"center", width:"100%"}}>
-                        <Box sx={{display:"flex", flexDirection:"row", flex:1, alignItems:"center"}}>
+                        <Box sx={{flex:1, alignItems:"center"}}>
                             <Typography variant='h4'>
-                                Statistics
+                                Sales Over Time
                             </Typography>
 
-                            <Box sx={{marginInline:"1em"}}>
-                                <Select
+                            <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+                                <Typography sx={{marginRight:"0.5em"}}>
+                                    Show: 
+                                </Typography>
+                                <NativeSelect
                                     value={showStatOf}
-                                    
+                                    sx={{borderColor:"green"}}
+                                    variant="filled"
                                     onChange={(e)=>{
                                         setShowStatOf(e.target.value);
                                     }}
                                 >
-                                    <MenuItem value={"sales"}>Sales</MenuItem>
-                                    <MenuItem value={"orders"}>Orders</MenuItem>
+                                    <option value="sales">Sales</option>
+                                    <option value="orders">Orders</option>
+                                    <MenuItem value="sales">Sales</MenuItem>
+                                    <MenuItem value="orders">Orders</MenuItem>
                                 
-                                </Select>
+                                </NativeSelect>
                             </Box>
                             
                         </Box>
@@ -304,14 +311,21 @@ function Statistics(){
                             </ToggleButtonGroup>
                         </Box>
                     </Box>
-                    <Box>
+                    <Box sx={{display:"flex", flexDirection:'row'}}>
                         {getSalesOrdersLoading && (
                             <div style={{display:"flex", margin:"auto"}}>
                                 <CircularLoading/>
                             </div>
                         )}
                         {getSalesOrdersData && !getSalesOrdersLoading && (
-                            <SalesOrOrdersStats data={getSalesOrdersData?.getSalesOrOrdersStats} showStatOf={showStatOf} timeInterval={timeInterval}/>
+                            <>
+                                <Box sx={{flex:1, paddingInline:"1em"}}>
+                                    <SalesOrOrdersStats data={getSalesOrdersData?.getSalesOrOrdersStats} showStatOf={showStatOf} timeInterval={timeInterval}/>
+                                </Box>
+                                <Box sx={{flex:1}}>
+                                    <SalesOrOrdersTable data={getSalesOrdersData?.getSalesOrOrdersStats} timeInterval={timeInterval}/>
+                                </Box>
+                            </>
                         )}
                     </Box>
                 </Paper>
@@ -323,7 +337,7 @@ function Statistics(){
                     <Box sx={{display:"flex",  flexDirection:"row", alignItems:"center", width:"100%"}}>
                         <Box sx={{display:"flex", flexDirection:"row", flex:1, alignItems:"center"}}>
                             <Typography variant='h4'>
-                                Sales Report
+                                Sales per Product Over Time
                             </Typography>
                             
                         </Box>

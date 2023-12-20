@@ -13,15 +13,18 @@ export const GET_TOTAL_STATS = gql`
  `;
 
 export const GET_SALES_OR_ORDERS_STATS = gql`
-    query GetSalesOrOrdersStats($showStatOf: String, $timeInterval: String) {
-        getSalesOrOrdersStats(showStatOf: $showStatOf, timeInterval: $timeInterval) {
+    query GetSalesOrOrdersStats($timeInterval: String) {
+        getSalesOrOrdersStats(timeInterval: $timeInterval) {
             _id {
             year
             week
             month
             day
             }
-            totalValue
+            totalSales
+            numOfOrders
+            totalQuantity
+            unit
         }
     }
  `;

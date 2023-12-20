@@ -31,32 +31,40 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-export default function SalesReportTable({data, timeInterval}){
+export default function SalesOrOrdersTable({data, timeInterval}){
     const months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
-    function setDate(data){
+    function setDate(item){
         let setDate;
-        if(timeInterval == "daily"){
-            setDate = `${data._id.year} - ${data._id.month} - ${data._id.day}`;
-        } else if(timeInterval == 'weekly'){
-            setDate = `${data.startOfWeek} to ${data.endOfWeek}`
+        if(timeInterval == "daily" ){
+            setDate = `${item._id.year} - ${item._id.month} - ${item._id.day}`;
+        } else if(timeInterval == "weekly"){
+            setDate = `${item._id.year} - Week ${item._id.week}`;
         } else if(timeInterval == "monthly"){
-            setDate = `${months[data._id.month]} - ${data._id.year}`
+            setDate = `${months[item._id.month]} ${item._id.year}`;
         } else if(timeInterval == "annual"){
-            setDate = data._id.year
+            setDate = item._id.year;
         }
 
         return setDate
     }
     
     return (
-        <TableContainer component={Paper} sx={{marginTop:"1em", maxHeight:"50em"}}>
+        <TableContainer component={Paper} sx={{
+            marginTop:"1em", 
+            maxHeight:"22em", 
+            overflow: "auto",
+            '&::-webkit-scrollbar': {
+            width: '6px', // Change the width of the scrollbar as per your requirement
+            },
+            '&::-webkit-scrollbar-thumb': {
+                borderRadius: '6px', // Round the corners of the thumb
+            },
+        }}>
           <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <StyledTableRow>
-                <StyledTableCell>Product Id</StyledTableCell>
-                <StyledTableCell >Product Name</StyledTableCell>
-                <StyledTableCell >Date</StyledTableCell>
+                <StyledTableCell>Date</StyledTableCell>
                 <StyledTableCell >No. of Orders</StyledTableCell>
                 <StyledTableCell >Total Qty</StyledTableCell>
                 <StyledTableCell >Total Sales</StyledTableCell>
@@ -69,13 +77,11 @@ export default function SalesReportTable({data, timeInterval}){
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {row._id.productId}
+                    {setDate(row)}
                   </TableCell>
-                  <TableCell >{row._id.marketProductName}</TableCell>
-                  <TableCell >{setDate(row)}</TableCell>
-                  <TableCell>{row.numOrders}</TableCell>
+                  <TableCell >{row.numOfOrders}</TableCell>
                   <TableCell >{`${row.totalQuantity} ${row.unit}`}</TableCell>
-                  <TableCell >{formatToCurrency(row.totalValue, 2)}</TableCell> 
+                  <TableCell >{formatToCurrency(row.totalSales, 2)}</TableCell> 
                 </StyledTableRow>
               ))}
             </TableBody>

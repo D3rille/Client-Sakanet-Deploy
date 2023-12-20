@@ -199,7 +199,7 @@ export default function FarmGatePrices(){
                         }
                     }}
                     onKeyDown={handleKeyDown}
-                    placeholder="Search Username or Id"
+                    placeholder="Search crop"
                     fullWidth
                     style={{ paddingLeft: "8px", color: "#AEBAC6", height:"100%" }}
                     />

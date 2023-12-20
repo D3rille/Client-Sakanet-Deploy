@@ -39,7 +39,7 @@ const SalesOrOrdersStats = ({ data, showStatOf, timeInterval }) => {
 
     const dataset1 = {
         label: showStatOf == "sales" ? 'Total Sales' : "Total Orders",
-        data: data.map(item => item.totalValue),
+        data: showStatOf == "sales" ? data.map(item => item.totalSales) : data.map(item=>item.numOfOrders),
         borderColor: '#186F65',//'rgb(255, 99, 132)'
         backgroundColor: '#186F65',//'rgba(255, 99, 132, 0.5)',
     };

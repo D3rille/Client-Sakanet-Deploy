@@ -209,7 +209,7 @@ function FarmGatePrices(){
                         }
                     }}
                     onKeyDown={handleKeyDown}
-                    placeholder="Search Username or Id"
+                    placeholder="Search product"
                     fullWidth
                     style={{ paddingLeft: "8px", color: "#AEBAC6", height:"100%" }}
                     />
