@@ -235,132 +235,130 @@ export default function Login() {
                     borderBottomRightRadius: "20px",
                 }}
                 >
-                <ThemeProvider theme={theme}>
-                    <Container>
-                    <Box height={35} />
-                    <Box sx={center}>
-                      <Avatar sx={{ ml: "40px", mb: "4px", bgcolor: "#ffffff", width: 56, height: 56, position: 'relative' }}>
-                        <Image src={Logo} alt="Logo" layout="fill" objectFit="cover" />
-                      </Avatar>
-                      <Typography variant="h5" justifyContent="center"
-                        style={{ marginLeft: "35px", fontWeight: 'bold', color: "#013208", marginTop: "10px" }}>
-                        LOGIN
-                      </Typography>
-                    </Box>
-                    <Box
-                        component="form"
-                        noValidate
-                        onSubmit={onSubmit}
-                        sx={{ mt: 2 }}
-                    >
-                        <Grid container spacing={1}>
-                        <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                            <TextField
-                            required
-                            fullWidth
-                            id="email"
-                            label="Username/Email/Phone Number"
-                            name="loginCred"
-                            value={values.loginCred}
-                            onChange={onChange}
-                            autoComplete="email"
-                            variant="outlined"
-                            InputProps={{ style: { color: '#02452d' } }}
-                            InputLabelProps={{ style: { color: '#02452d' } }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                          <TextField
-                              required
-                              fullWidth
-                              name="password"
-                              label="Password"
-                              type={showPassword ? "text" : "password"}
-                              id="password"
-                              value={values.password}
-                              onChange={onChange}
-                              autoComplete="new-password"
-                              variant="outlined"
-                              InputProps={{
-                                style: { color: "#02452d" },
-                                endAdornment: values.password && (
-                                  <InputAdornment position="end">
+<ThemeProvider theme={theme}>
+    <Container>
+        <Box height={35} />
+        <Box sx={center}>
+            <Avatar sx={{ ml: "40px", mb: "4px", bgcolor: "#ffffff", width: 56, height: 56, position: 'relative' }}>
+                <Image src={Logo} alt="Logo" layout="fill" objectFit="cover" />
+            </Avatar>
+            <Typography variant="h5" justifyContent="center"
+                style={{ marginLeft: "35px", fontWeight: 'bold', color: "#013208", marginTop: "10px" }}>
+                LOGIN
+            </Typography>
+        </Box>
+        <Box
+            component="form"
+            noValidate
+            onSubmit={onSubmit}
+            sx={{ mt: 2 }}
+        >
+            <Grid container spacing={1}>
+                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                    <TextField
+                        required
+                        fullWidth
+                        id="email"
+                        label="Username/Email/Phone Number"
+                        name="loginCred"
+                        value={values.loginCred}
+                        onChange={onChange}
+                        autoComplete="email"
+                        variant="outlined"
+                        InputProps={{ style: { color: '#02452d' } }}
+                        InputLabelProps={{ style: { color: '#02452d' } }}
+                    />
+                </Grid>
+                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                    <TextField
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        value={values.password}
+                        onChange={onChange}
+                        autoComplete="new-password"
+                        variant="outlined"
+                        InputProps={{
+                            style: { color: "#02452d" },
+                            endAdornment: values.password && (
+                                <InputAdornment position="end">
                                     <IconButton
-                                      aria-label="toggle password visibility"
-                                      onClick={handleClickShowPassword}
-                                      edge="end"
-                                      style={{ color: "#2E603A" }}
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        edge="end"
+                                        style={{ color: "#2E603A" }}
                                     >
-                                      {showPassword ? (
-                                        <VisibilityOff />
-                                      ) : (
-                                        <Visibility />
-                                      )}
+                                        {showPassword ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
                                     </IconButton>
-                                  </InputAdornment>
-                                ),
-                              }}
-                              InputLabelProps={{ style: { color: "#02452d" } }}
-                            />
-                          
-                        </Grid>
-
-                        <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
-                            <Button
-                            type="submit"
-                            variant="contained"
-                            fullWidth={true}
-                            size="large"
-                            sx={{
-                                mt: "10px",
-                                mr: "20px",
-                                borderRadius: 28,
-                                color: "#ffffff",
-                                minWidth: "170px",
-                                backgroundColor: "#02452d",
-                                "&:hover": {
-                                  backgroundColor: "#286652",
-                                },
-                            }}
-                            >
-                            Login
-                            </Button>
-                        </Grid>
-                        <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
-                            <Stack direction="row" spacing={2} justifyContent="center" textAlign="center" >
-
-                            <Typography
-                                variant="body1"
-                                component="span"
-                                style={{ marginTop: "10px", color: "#FF9A01", cursor: "pointer" }}
-                                onClick={() => {
-                                  router.push( "/forgotpassword");
-                                }}
-                            >
-                                Forgot Password?
-                            </Typography>
-                            
-                            <Typography
-                                variant="body1"
-                                component="span"
-                                style={{ marginTop: "10px", color: "#013208",  }}
-                            >
-                                Not registered yet?{" "}
-                                <span
+                                </InputAdornment>
+                            ),
+                        }}
+                        InputLabelProps={{ style: { color: "#02452d" } }}
+                    />
+                </Grid>
+                <Grid item xs={12} sx={{ ml: "3em", mr: "3em", textAlign: "right" }}>
+                    <Typography
+                        variant="body1"
+                        style={{ color: "#FF9A01", cursor: "pointer", fontSize:'0.9em' }}
+                        onClick={() => {
+                            router.push("/forgotpassword");
+                        }}
+                    >
+                        Forgot Password?
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth={true}
+                        size="large"
+                        sx={{
+                            mt: "10px",
+                            mr: "20px",
+                            borderRadius: 28,
+                            color: "#ffffff",
+                            minWidth: "170px",
+                            backgroundColor: "#02452d",
+                            "&:hover": {
+                                backgroundColor: "#286652",
+                            },
+                        }}
+                    >
+                        Login
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                    <Stack direction="row" spacing={2} justifyContent="center" textAlign="center">
+                        <Typography
+                            variant="body1"
+                            component="span"
+                            style={{ marginTop: "10px", color: "#013208", fontSize:'0.9em' }}
+                        >
+                            Not registered yet?{" "}
+                            <span
                                 style={{ color: "#FF9A01", cursor: "pointer" }}
                                 onClick={() => {
                                     router.push("/register");
                                 }}
-                                >
+                            >
                                 Create an Account
-                                </span>
-                            </Typography>
-                            </Stack>
-                        </Grid>
-                        </Grid>
-                    </Box>
-                    </Container>
-                </ThemeProvider>
+                            </span>
+                        </Typography>
+                    </Stack>
+                </Grid>
+            </Grid>
+        </Box>
+    </Container>
+</ThemeProvider>
+
                 </Box>
             </Grid>
             </Grid>

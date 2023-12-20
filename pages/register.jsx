@@ -23,6 +23,9 @@ import {
   FormLabel,
   RadioGroup,
   useForkRef,
+  Checkbox,
+  Link,
+  Modal
 } from "@mui/material";
 import Logo from "../public/bg/LOGO-ONLY-FINAL.png";
 import Image from "next/image";
@@ -42,6 +45,7 @@ import {
   LoadScript,
   StandaloneSearchBox,
 } from "@react-google-maps/api";
+import DataPrivacyModal from '../components/Register/DataPrivacyModal';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -91,7 +95,7 @@ const boxstyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "75%",
-  height: "82%",
+  height: "85%",
   // my:"auto",
   // mx:"auto",
   // width:"75%",
@@ -122,6 +126,43 @@ export default function Register() {
   const [street, setStreet] = useState("");
   const [getOtp] = useLazyQuery(GET_OTP);
   const [otp, setOtp] = useState("");
+
+  
+  // Privacy Policy Modal
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleCheckboxClick = () => {
+    if (!isModalOpen) {
+      setIsCheckboxChecked(!isCheckboxChecked);
+    }
+  };
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '100%',
+    maxWidth: 800, 
+    bgcolor: 'white',
+    boxShadow: 24,
+    p: 4,
+    overflowX: 'auto',
+    maxHeight: '80vh',
+    borderRadius:'20px',
+    paddingLeft: 8,
+    paddingRight:8
+  };
 
 
 
@@ -360,7 +401,7 @@ export default function Register() {
         overflow: "auto",
       }}
     >
-      <Box sx={{ ...boxstyle, height: "70vh" }}>
+      <Box sx={{ ...boxstyle, height: "75vh" }}>
       {currentPage == 1 && (<Collapse in={open}>
           <Alert
             severity="error"
@@ -430,7 +471,7 @@ export default function Register() {
                 marginTop: "15px",
                 marginLeft: "15px",
                 marginRight: "15px",
-                height: "66vh",
+                height: "71vh",
                 color: "#f5f5f5",
                 borderRadius: "20px",
               }}
@@ -440,7 +481,7 @@ export default function Register() {
             <Box
               style={{
                 backgroundSize: "cover",
-                height: "70vh",
+                height: "71vh",
                 backgroundColor: "#ffffff",
                 borderTopRightRadius: "20px",
                 borderBottomRightRadius: "20px",
@@ -594,6 +635,53 @@ export default function Register() {
                             />
                           </Grid>
 
+                          {/* Data Privacy */}
+
+                          
+                            <Grid item xs={12} sx={{ ml: "3em", mr: "3em" }}>
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    sx={{
+                                      color: '#2E603A',
+                                      '&.Mui-checked': {
+                                        color: '#2E603A',
+                                      },
+                                    }}
+                                    checked={isCheckboxChecked}
+                                    onClick={handleCheckboxClick}
+                                    disabled={isModalOpen}
+                                  />
+                                }
+                                label={
+                                  <span>
+                                    I have read and agree to SakaNet's{" "}
+                                    <Link onClick={handleOpenModal} style={{ cursor: 'pointer', color: '#2E603A', fontWeight: 'bold' }}>
+                                      Data Privacy Policy
+                                    </Link>
+                                  </span>
+                                }
+                                sx={{
+                                  color: "#02452d",
+                                  '& .MuiFormControlLabel-label': {
+                                    fontSize: '0.8em',
+                                  },
+                                }}
+                              />
+                            </Grid>
+                            <Modal
+                              open={isModalOpen}
+                              onClose={handleCloseModal}
+                              aria-labelledby="modal-title"
+                              aria-describedby="modal-description"
+                              sx={{ overflow: 'scroll' }}
+                            >
+                              <Box sx={modalStyle}>
+                                <DataPrivacyModal />
+                              </Box>
+                            </Modal>
+                          
+
                           {/* Next Button */}
                           <Grid item xs={12} sx={{ ml: "5em", mr: "5em" }}>
                             <Button
@@ -606,7 +694,7 @@ export default function Register() {
                               }}
                               size="large"
                               sx={{
-                                mt: "15px",
+                                
                                 mr: "20px",
                                 borderRadius: 28,
                                 color: "#ffffff",
