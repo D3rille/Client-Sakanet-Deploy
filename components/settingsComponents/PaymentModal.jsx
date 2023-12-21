@@ -19,7 +19,8 @@ const ModalContent = styled("div")({
   borderRadius: "20px",
   padding: "30px",
   width: "600px",
-  height: "380px",
+  minHeight: "30em",
+  maxHeight:"40em",
   position: "relative",
   outline: "none",
 });
@@ -116,18 +117,21 @@ const PaymentModal = ({
   onClose,
   onSave,
   channelToEdit,
-  onNameChange,
+  // onNameChange,
   // channelId,
   // paymentChannel: propChannel,
   // details: propDetails,
   // onRemove,
 }) => {
-  const [name, setName] = useState('');
   const channelId = channelToEdit?._id ?? "";
   const propChannel = channelToEdit?.channel ?? "";
   const propDetails = channelToEdit?.details ?? "";
+  const propName = channelToEdit?.accountName ?? "";
   const [paymentChannel, setPaymentChannel] = useState(propChannel);
   const [details, setDetails] = useState(propDetails);
+  const [name, setName] = useState(propName);
+
+  console.log(name)
 
   const [addPaymentChannel] = useMutation(ADD_PAYMENT_CHANNEL);
 
@@ -136,6 +140,7 @@ const PaymentModal = ({
     addPaymentChannel({
       variables: {
         paymentChannel: {
+          accountName:name,
           channel: paymentChannel,
           details
         },
@@ -194,6 +199,7 @@ const PaymentModal = ({
       variables: {
         "channelId": channelId,
         "paymentChannel": {
+          "accountName":name,
           "channel": paymentChannel,
           "details": details
         }
@@ -211,7 +217,8 @@ const PaymentModal = ({
   useEffect(() => {
     setPaymentChannel(propChannel);
     setDetails(propDetails);
-  }, [propChannel, propDetails]);
+    setName(propName);
+  }, [propChannel, propDetails, propName]);
 
   const canSave = paymentChannel.trim() !== "" && details.trim() !== "";
 
@@ -221,24 +228,30 @@ const PaymentModal = ({
         <Header>
           <h6 style={{ fontSize: "18px", marginBottom: '1rem' }}>Payment Channel</h6>
         </Header>
+        <label htmlFor="accountName">Account Name:</label>
         <StyledInput
           type="text"
           value={name}
+          id="accountName"
           onChange={(e) => {
             setName(e.target.value);
-            onNameChange(e.target.value);
+            // onNameChange(e.target.value);
           }}
           placeholder="Name"
           style={{ marginBottom: '10px' }}
         />
+        <label htmlFor="paymentChannel">Payment Channel:</label>
         <StyledInput
           type="text"
+          id="paymentChannel"
           value={paymentChannel}
           onChange={(e) => setPaymentChannel(e.target.value)}
           placeholder="Type of Payment Channel"
           style={{ marginBottom: '10px' }}
         />
+         <label htmlFor="details">Details:</label>
         <DetailsTextarea
+          id="details"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
           placeholder="Details"
@@ -285,13 +298,17 @@ const PaymentModal = ({
               variant="save"
               onClick={() => {
                 // onSave(paymentChannel, details);
-                handleAddPaymentChannel().then(() => {
-                  setPaymentChannel("");
-                  setDetails("");
-                  onClose();
-                });
+                if(!canSave){
+                  toast.error("Please provide all the necessary information.")
+                } else{
+                  handleAddPaymentChannel().then(() => {
+                    setPaymentChannel("");
+                    setDetails("");
+                    onClose();
+                  });
+                }
               }}
-              disabled={!canSave}
+              // disabled={!canSave}
             >
               Add Payment Channel
             </ActionButton>)}

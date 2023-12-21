@@ -158,7 +158,7 @@ function ProductCard({
           Product Type: {product.item.product_type}
         </Typography>
         <Typography align="left">
-          Minimum_Order: {product.minimum_order}
+          Minimum_Order: {product.minimum_order} {product.unit}
         </Typography>
         <Typography align="left">Area Limit: {product.area_limit}</Typography>
         <Typography align="left">
@@ -310,7 +310,7 @@ function ProductCard({
           )}
         </Box>
         <Typography gutterBottom align="left" sx={{ fontWeight: "bold" }}>
-          Available Stocks: {product.stocks}
+          Available Stocks: {product.stocks} {product.unit}
         </Typography>
         <Typography align="left">
           Mode of Delivery: {product.modeOfDelivery}

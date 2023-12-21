@@ -543,11 +543,11 @@ export default function PurchaseDialog({...props}) {
                         </TableRow>
                         <TableRow className={styles.alternateRow}>
                             <TableCell>Stocks</TableCell>
-                            <TableCell>{product.stocks}</TableCell>
+                            <TableCell>{product.stocks} {product.unit}</TableCell>
                         </TableRow>
                         <TableRow className={styles.alternateRow}>
                             <TableCell>Minimum Order</TableCell>
-                            <TableCell>{product.minimum_order}</TableCell>
+                            <TableCell>{product.minimum_order} {product.unit}</TableCell>
                         </TableRow>
                         <TableRow className={styles.alternateRow}>
                             <TableCell>Seller Address</TableCell>

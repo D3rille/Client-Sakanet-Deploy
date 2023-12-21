@@ -152,7 +152,7 @@ export default function AcceptedOrders({...props}) {
                 <TableCell>{user.role=="FARMER" ? order.buyer.name : order.seller.name}</TableCell>
                 <TableCell>{order.marketProductName}</TableCell>
                 {/* <TableCell>{role=="FARMER"?order.buyer.name:order.seller.name}</TableCell> */}
-                <TableCell>{order.quantity}</TableCell>
+                <TableCell>{order.quantity} {order.unit}</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>₱{order.totalPrice}</TableCell>
                 <TableCell>
                   <div>

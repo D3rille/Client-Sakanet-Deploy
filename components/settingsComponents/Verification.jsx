@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Divider, Button, Typography, Box } from "@mui/material";
+import { TextField, Divider, Button, Typography, Box, List, ListItem, Link } from "@mui/material";
 import { styled } from "@mui/system";
 import { useDropzone } from "react-dropzone";
 import { uploadVerificationID } from "../../util/imageUtils";
@@ -12,6 +12,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useRouter } from "next/router";
+
+import VerificationPrivacyPolicy from "./VerificationDataPrivacyPolicy";
 
 
 const VerificationContainer = styled("div")({
@@ -56,6 +58,7 @@ const AccountVerification = ({profile}) => {
   const [suffix, setSuffix] = useState("");
   const [verificationStatus, setVerificationStatus] = useState("Not Verified");
   const [birthDate, setBirthDate] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [uploadVerificatonPhoto] = useMutation(UPLOAD_VERIFICATION_PHOTO, {
     refetchQueries: [GET_MY_PROFILE]
@@ -188,6 +191,16 @@ const AccountVerification = ({profile}) => {
               <div style={{width:"100%", paddingBottom:"0.5em"}}>
                 <h3 style={{textAlign:"center"}}>Account Verification</h3>
               </div>
+              <Typography variant="body2">
+                We would be collecting your data in order to verify your account. For more information regarding the 
+                terms of use and data privacy regarding verification. Please read our 
+                <Link
+                sx={{marginInline:"0.3rem"}}
+                  onClick={()=>setIsDialogOpen(true)}
+                >
+                    Data Privacy Policy
+                </Link>
+              </Typography>
               <div>
               <Typography variant="caption">
                 Enter your first name and last name.
@@ -320,16 +333,106 @@ const AccountVerification = ({profile}) => {
                 >
                     <h3>Verify Your Account</h3>
                     <Typography variant="caption">
-                    Please upload a clear and legible image of a valid Philippine ID. 
-                    Accepted file formats include JPEG, PNG, and PDF. This may include 
-                    documents such as a passport, Philippine Identification, Social Security System ID,
-                    Government Service Insurance System E-Card, Driver’s License, National Bureau of Investigation Clearance,
-                    Police Clearance, Firearms’ License to Own and Possess ID, Professional Regulation Commission ID,
-                    Integrated Bar of the Philippines ID, Overseas Workers Welfare Administration ID, Bureau of Internal Revenue ID,
-                    Voter’s ID, Senior Citizen’s Card, Unified Multi-purpose Identification Card, 
-                    Person with Disabilities Card, or Other valid government-issued ID with Photo
-                    Ensure that the entire document is visible and well-lit for proper verification. Thank you!
+                      Please upload a clear and legible image of a valid Philippine ID. 
+                      Accepted file formats include JPEG, PNG, and PDF. This may include 
+                      documents such as:
                     </Typography>
+                    <Box sx={{display:"flex", flexDirection:"row"}}>
+                      <List sx={{flex:1}}>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -Passport
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -Philippine Identification
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -Social Security System ID
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -Government Service Insurance System E-Card
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -Driver’s License
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -National Bureau of Investigation Clearance
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption"> 
+                            -Police Clearance
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -Firearms’ License to Own and Possess ID
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                            -Professional Regulation Commission ID
+                          </Typography>
+                        </ListItem>
+                        
+                      </List>
+
+                      <List sx={{flex:1}}>
+                        
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -Integrated Bar of the Philippines ID
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -Overseas Workers Welfare Administration ID
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -Bureau of Internal Revenue ID
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -Voter’s ID
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -Senior Citizen’s Card
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -Unified Multi-purpose Identification Card
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -Person with Disabilities Card
+                          </Typography>
+                        </ListItem>
+                        <ListItem disablePadding>
+                          <Typography variant="caption">
+                          -or Other valid government-issued ID with Photo
+                          </Typography>
+                        </ListItem>
+                        
+                      </List>
+                    </Box>
+                     
                     <StyledButton
                       onClick={() => {
                         uploadID(uploadedID);
@@ -354,8 +457,8 @@ const AccountVerification = ({profile}) => {
         </div>
       ) : null}
 
+      {isDialogOpen && (<VerificationPrivacyPolicy open={isDialogOpen} setOpen={setIsDialogOpen}/>)}
 
-      
     </VerificationContainer>
   );
 };

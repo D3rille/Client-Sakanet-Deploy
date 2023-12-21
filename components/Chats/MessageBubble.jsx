@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Avatar, styled, Typography } from '@mui/material';
+import { Box, Avatar, styled, Typography,  Divider } from '@mui/material';
 import { formatDate } from '../../util/dateUtils';
 
 
@@ -50,7 +50,7 @@ const SystemMessage =  ({message}) =>{
 }
 
 const MessageBubble = ({ msg, currentUser, isGroup }) => {
-    const {createdAt, username, sender, message, profile_pic} = msg;
+    const {createdAt, username, sender, message, profile_pic, payment_channels} = msg;
     var myMessage;
     if(sender==""){
         return(
@@ -74,7 +74,27 @@ const MessageBubble = ({ msg, currentUser, isGroup }) => {
                     </Box>)}
                     <Box position="relative">
                         <StyledBubble sender={myMessage}>
-                            {message}
+                            <Typography sx={{marginBottom:payment_channels.length>0 ? "1em":"0"}}>
+                                {message}
+                            </Typography>
+                            {payment_channels && payment_channels?.length > 0 && payment_channels?.map((channel, index)=>(
+                                <>
+                                    <Box>
+                                        <Typography>
+                                            {`[${channel.channel}]`}
+                                        </Typography>
+                                        <Typography>
+                                            {`>>${channel.accountName}`}
+                                        </Typography>
+                                        <Typography>
+                                            {channel.details}
+                                        </Typography>
+                                    </Box>
+                                    {index != payment_channels.length -1 && (<Divider sx={{borderColor:"white", marginBlock:"1em"}}/>)}
+                                </>
+
+                                )
+                            )}
                             
                         </StyledBubble>
                     </Box>

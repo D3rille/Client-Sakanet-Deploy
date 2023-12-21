@@ -655,8 +655,11 @@ export default function Register() {
                                 }
                                 label={
                                   <span>
-                                    I have read and agree to SakaNet's{" "}
-                                    <Link onClick={handleOpenModal} style={{ cursor: 'pointer', color: '#2E603A', fontWeight: 'bold' }}>
+                                    I have read and agree to SakaNet&apos;s{" "}
+                                    <Link
+                                      onClick={handleOpenModal}
+                                      style={{ cursor: 'pointer', color: '#2E603A', fontWeight: 'bold', textDecoration: 'underline' }}
+                                    >
                                       Data Privacy Policy
                                     </Link>
                                   </span>

@@ -85,17 +85,17 @@ const PaymentChannels = () => {
     setIsModalOpen(true);
   };
 
-  const handleNameChange = (name) => {
-    if (channelToEdit) {
-      setPaymentChannels(
-        paymentChannels.map((item) =>
-          item._id === channelToEdit._id ? { ...item, name } : item
-        )
-      );
-    } else {
-      setChannelToEdit({ name });
-    }
-  };
+  // const handleNameChange = (name) => {
+  //   if (channelToEdit) {
+  //     setPaymentChannels(
+  //       paymentChannels.map((item) =>
+  //         item._id === channelToEdit._id ? { ...item, name } : item
+  //       )
+  //     );
+  //   } else {
+  //     setChannelToEdit({ name });
+  //   }
+  // };
 
   if (profile) {
     return (
@@ -110,17 +110,24 @@ const PaymentChannels = () => {
           </StyledIconButton>
         </HeaderContainer>
 
+        {!paymentChannels || paymentChannels?.length == 0 && (
+          <Typography sx={{margin:"auto", color:"#c5c5c5"}} variant="h5" >
+            No Payment Channel Information Set
+          </Typography>
+        )}
+        <div style={{display: "flex", flexWrap: "wrap", gap:"1em",overFlowY:"auto"}}>
         {paymentChannels.map((item, index) => (
-          <PaymentBox key={index} onClick={() => onBoxClick(item)}>
-            <Typography variant="body1" style={{ fontWeight: "bolder", color: '#2E603A', textTransform: "uppercase" }}>
-              {item.name}
-            </Typography>
-            <Typography variant="body1" style={{ fontWeight: "bolder", color: '#2E603A', textTransform: "uppercase" }}>
-              {item.channel}
-            </Typography>
-            <Typography variant="body2">{item.details}</Typography>
-          </PaymentBox>
+            <PaymentBox key={index} onClick={() => onBoxClick(item)}>
+              <Typography variant="body1" style={{ fontWeight: "bolder", color: '#2E603A', textTransform: "uppercase" }}>
+                {item.accountName}
+              </Typography>
+              <Typography variant="body1" style={{ fontWeight: "bolder", color: '#2E603A', textTransform: "uppercase" }}>
+                {item.channel}
+              </Typography>
+              <Typography variant="body2">{item.details}</Typography>
+            </PaymentBox>
         ))}
+        </div>
 
         <PaymentModal
           isOpen={isModalOpen}
@@ -129,7 +136,7 @@ const PaymentChannels = () => {
             setChannelToEdit(null);
           }}
           channelToEdit={channelToEdit}
-          onNameChange={handleNameChange}
+          // onNameChange={handleNameChange}
         />
       </PaymentChannelsContainer>
     );
