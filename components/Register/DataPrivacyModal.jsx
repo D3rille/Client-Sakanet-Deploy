@@ -219,10 +219,10 @@ const DataPrivacyModal = () => {
             </Typography>
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li>
-                <i> Mobile Device Access. </i>We may request access or permission to certain features from your mobile device, including your mobile device's storage, and other features. If you wish to change our access or permissions, you may do so in your device's settings.
+            <i> Mobile Device Access. </i>We may request access or permission to certain features from your mobile device, including your mobile device&apos;s storage, and other features. If you wish to change our access or permissions, you may do so in your device&apos;s settings.
             </li>
             <li>
-                <i>Push Notifications. </i> We may request to send you push notifications regarding your account or certain features of the application(s). If you wish to opt out from receiving these types of communications, you may turn them off in your device's settings.
+            <i>Push Notifications. </i> We may request to send you push notifications regarding your account or certain features of the application(s). If you wish to opt out from receiving these types of communications, you may turn them off in your device&apos;s settings.
             </li>
             </Typography>
             <Typography variant="body2" paragraph>
@@ -235,7 +235,7 @@ const DataPrivacyModal = () => {
             Information automatically collected
             </Typography>
             <Typography variant="subtitle2" gutterBottom style={{ fontStyle: 'italic', marginBottom: '1rem' }}>
-            <b> In Short: </b>Some information — such as your Internet Protocol (IP) address and/or browser and device characteristics — is collected automatically when you visit our Services.
+            <b> In Short: </b>Some information &mdash; such as your Internet Protocol (IP) address and/or browser and device characteristics &mdash; is collected automatically when you visit our Services.
             </Typography>
             <Typography variant="body2" style={{ marginBottom: '1rem' }}>
             We automatically collect certain information when you visit, use, or navigate the Services. This information does not reveal your specific identity (like your name or contact information) but may include device and usage information, such as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device name, country, location, information about how and when you use our Services, and other technical information. This information is primarily needed to maintain the security and operation of our Services, and for our internal analytics and reporting purposes.
@@ -248,13 +248,13 @@ const DataPrivacyModal = () => {
             </Typography>
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li style={{ marginBottom: '1rem' }}>
-                <i>Log and Usage Data. </i>Log and usage data is service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services and which we record in log files. Depending on how you interact with us, this log data may include your IP address, device information, browser type, and settings and information about your activity in the Services (such as the date/time stamps associated with your usage, pages and files viewed, searches, and other actions you take such as which features you use), device event information (such as system activity, error reports (sometimes called "crash dumps"), and hardware settings).
+            <i>Log and Usage Data. </i>Log and usage data is service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services and which we record in log files. Depending on how you interact with us, this log data may include your IP address, device information, browser type, and settings and information about your activity in the Services (such as the date/time stamps associated with your usage, pages and files viewed, searches, and other actions you take such as which features you use), device event information (such as system activity, error reports (sometimes called "crash dumps"), and hardware settings).
             </li>
             <li style={{ marginBottom: '1rem' }}>
-                <i>Device Data. </i>We collect device data such as information about your computer, phone, tablet, or other device you use to access the Services. Depending on the device used, this device data may include information such as your IP address (or proxy server), device and application identification numbers, location, browser type, hardware model, Internet service provider and/or mobile carrier, operating system, and system configuration information.
+            <i>Device Data. </i>We collect device data such as information about your computer, phone, tablet, or other device you use to access the Services. Depending on the device used, this device data may include information such as your IP address (or proxy server), device and application identification numbers, location, browser type, hardware model, Internet service provider and/or mobile carrier, operating system, and system configuration information.
             </li>
             <li style={{ marginBottom: '1rem' }}>
-                <i>Location Data. </i> We collect location data such as information about your device's location, which can be either precise or imprecise. How much information we collect depends on the type and settings of the device you use to access the Services. For example, we may use GPS and other technologies to collect geolocation data that tells us your current location (based on your IP address). You can opt out of allowing us to collect this information either by refusing access to the information or by disabling your Location setting on your device. However, if you choose to opt out, you may not be able to use certain aspects of the Services.
+            <i>Location Data. </i> We collect location data such as information about your device&apos;s location, which can be either precise or imprecise. How much information we collect depends on the type and settings of the device you use to access the Services. For example, we may use GPS and other technologies to collect geolocation data that tells us your current location (based on your IP address). You can opt out of allowing us to collect this information either by refusing access to the information or by disabling your Location setting on your device. However, if you choose to opt out, you may not be able to use certain aspects of the Services.
             </li>
             </Typography>
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section2}>
@@ -268,129 +268,106 @@ const DataPrivacyModal = () => {
             </Typography>
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li>
-                To facilitate account creation and authentication and otherwise manage user accounts. We may process your information so you can create and log in to your account, as well as keep your account in working order.
+            To facilitate account creation and authentication and otherwise manage user accounts. We may process your information so you can create and log in to your account, as well as keep your account in working order.
             </li>
             <li>
-                To deliver and facilitate delivery of services to the user. We may process your information to provide you with the requested service.
+            To deliver and facilitate delivery of services to the user. We may process your information to provide you with the requested service.
             </li>
             <li>
-                To enable user-to-user communications. We may process your information if you choose to use any of our offerings that allow for communication with another user.
+            To enable user-to-user communications. We may process your information if you choose to use any of our offerings that allow for communication with another user.
             </li>
             <li>
-                To identify usage trends. We may process information about how you use our Services to better understand how they are being used so we can improve them.
+            To identify usage trends. We may process information about how you use our Services to better understand how they are being used so we can improve them.
             </li>
             <li>
-                To comply with our legal obligations. We may process your information to comply with our legal obligations, respond to legal requests, and exercise, establish, or defend our legal rights.
+            To comply with our legal obligations. We may process your information to comply with our legal obligations, respond to legal requests, and exercise, establish, or defend our legal rights.
             </li>
             </Typography>
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section3}>
             <b>3. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?  </b>
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ fontStyle: 'italic' }}>
             <b> In Short: </b>We may share information in specific situations described in this section and/or with the following third parties.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom>
             <b>Vendors, Consultants, and Other Third-Party Service Providers.  </b>We may share your data with third-party vendors, service providers, contractors, or agents ("third parties") who perform services for us or on our behalf and require access to such information to do that work. The third parties we may share personal information with are as follows:
             </Typography>
-
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li>
-                Location services
+            Location services
             </li>
             </Typography>
-
             <Typography variant="body2" gutterBottom>
             Google Maps API
             </Typography>
-
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li>
-                <b>Business Transfers. </b>We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.
+            <b>Business Transfers. </b>We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.
             </li>
             <li>
-                <b>When we use Google Maps Platform APIs. </b>We may share your information with certain Google Maps Platform APIs (e.g., Google Maps API, Places API). We obtain and store on your device ("cache") your location. You may revoke your consent anytime by contacting us at the contact details provided at the end of this document.
+            <b>When we use Google Maps Platform APIs. </b>We may share your information with certain Google Maps Platform APIs (e.g., Google Maps API, Places API). We obtain and store on your device ("cache") your location. You may revoke your consent anytime by contacting us at the contact details provided at the end of this document.
             </li>
             <li>
-                <b>Other Users. </b>When you share personal information (for example, by posting comments, contributions, or other content to the Services) or otherwise interact with public areas of the Services, such personal information may be viewed by all users and may be publicly made available outside the Services in perpetuity. Similarly, other users will be able to view descriptions of your activity, communicate with you within our Services, and view your profile.
+            <b>Other Users. </b>When you share personal information (for example, by posting comments, contributions, or other content to the Services) or otherwise interact with public areas of the Services, such personal information may be viewed by all users and may be publicly made available outside the Services in perpetuity. Similarly, other users will be able to view descriptions of your activity, communicate with you within our Services, and view your profile.
             </li>
             </Typography>
-
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section4}>
             <b>4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?  </b>
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ fontStyle: 'italic', marginBottom: '1rem' }}>
             <b> In Short: </b>We may use cookies and other tracking technologies to collect and store your information.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom>
             We may use cookies and similar tracking technologies to access or store information.
             </Typography>
-
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section5}>
             <b>5. HOW LONG DO WE KEEP YOUR INFORMATION?  </b>
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ fontStyle: 'italic', marginBottom: '1rem' }}>
             <b> In Short: </b>We keep your information for as long as necessary to fulfill the purposes outlined in this privacy notice unless otherwise required by law.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
-            We will only keep your personal information for as long as it is necessary for the purposes set out in this privacy notice, unless a longer retention period is required or permitted by law (such as tax, accounting, or other legal requirements). No purpose in this notice will require us keeping your personal information for longer than three (3) months past the termination of the user's account.
+            We will only keep your personal information for as long as it is necessary for the purposes set out in this privacy notice, unless a longer retention period is required or permitted by law (such as tax, accounting, or other legal requirements). No purpose in this notice will require us keeping your personal information for longer than three (3) months past the termination of the user&apos;s account.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom>
             When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize such information, or, if this is not possible (for example, because your personal information has been stored in backup archives), then we will securely store your personal information and isolate it from any further processing until deletion is possible.
             </Typography>
-
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section6}>
             <b>6. HOW DO WE KEEP YOUR INFORMATION SAFE?  </b>
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ fontStyle: 'italic', marginBottom: '1rem' }}>
             <b> In Short: </b>We aim to protect your personal information through a system of organizational and technical security measures.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
             We have implemented appropriate and reasonable technical and organizational security measures designed to protect the security of any personal information we process. However, despite our safeguards and efforts to secure your information, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Although we will do our best to protect your personal information, transmission of personal information to and from our Services is at your own risk. You should only access the Services within a secure environment.
             </Typography>
-
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section7}>
             <b>7. WHAT ARE YOUR PRIVACY RIGHTS?  </b>
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ fontStyle: 'italic', marginBottom: '1rem' }}>
             <b> In Short: </b>You may review, change, or terminate your account at any time.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
             If you believe that we are unlawfully processing your personal information, you have the right to file a complaint with the National Privacy Commission (NPC). You can file a complaint with the NPC by visiting their website (www.privacy.gov.ph) and following the instructions provided on their complaints page.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
             <b><u>Withdrawing your consent:</u></b> If we are relying on your consent to process your personal information, which may be express and/or implied consent depending on the applicable law, you have the right to withdraw your consent at any time. You can withdraw your consent at any time by contacting us by using the contact details provided in the section <u>"HOW CAN YOU CONTACT US ABOUT THIS NOTICE?"</u> below.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
             However, please note that this will not affect the lawfulness of the processing before its withdrawal nor, when applicable law allows, will it affect the processing of your personal information conducted in reliance on lawful processing grounds other than consent.
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem', fontWeight: 'bold' }}>
             Account Information
             </Typography>
-
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
             If you would at any time like to review or change the information in your account or terminate your account, you can:
             </Typography>
-
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li>
-                Log in to your account settings and update your user account.
+            Log in to your account settings and update your user account.
             </li>
             <li>
-                Contact us using the contact information provided.
+            Contact us using the contact information provided.
             </li>
             </Typography>
 
