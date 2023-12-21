@@ -33,7 +33,7 @@ const DataPrivacyModal = () => {
             Last updated April 30, 2023
             </Typography>
             <Typography variant="body2" paragraph style={{ color: '#4C4E52' }}>
-            This privacy notice for SakaNet ("Company," "we," "us," or "our"), describes how and why we might collect, store, use, and/or share ("process") your information when you use our services ("Services"), such as when you:
+                This privacy notice for SakaNet (&quot;Company,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;), describes how and why we might collect, store, use, and/or share (&quot;process&quot;) your information when you use our services (&quot;Services&quot;), such as when you:
             </Typography>
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem', color: '#4C4E52' }}>
             <li>
