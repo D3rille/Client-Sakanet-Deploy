@@ -248,7 +248,7 @@ const DataPrivacyModal = () => {
             </Typography>
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li style={{ marginBottom: '1rem' }}>
-            <i>Log and Usage Data. </i>Log and usage data is service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services and which we record in log files. Depending on how you interact with us, this log data may include your IP address, device information, browser type, and settings and information about your activity in the Services (such as the date/time stamps associated with your usage, pages and files viewed, searches, and other actions you take such as which features you use), device event information (such as system activity, error reports (sometimes called "crash dumps"), and hardware settings).
+            <i>Log and Usage Data. </i>Log and usage data is service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services and which we record in log files. Depending on how you interact with us, this log data may include your IP address, device information, browser type, and settings and information about your activity in the Services (such as the date/time stamps associated with your usage, pages and files viewed, searches, and other actions you take such as which features you use), device event information (such as system activity, error reports (sometimes called &quot;crash dumps&quot;), and hardware settings).
             </li>
             <li style={{ marginBottom: '1rem' }}>
             <i>Device Data. </i>We collect device data such as information about your computer, phone, tablet, or other device you use to access the Services. Depending on the device used, this device data may include information such as your IP address (or proxy server), device and application identification numbers, location, browser type, hardware model, Internet service provider and/or mobile carrier, operating system, and system configuration information.
@@ -290,7 +290,7 @@ const DataPrivacyModal = () => {
             <b> In Short: </b>We may share information in specific situations described in this section and/or with the following third parties.
             </Typography>
             <Typography variant="subtitle2" gutterBottom>
-            <b>Vendors, Consultants, and Other Third-Party Service Providers.  </b>We may share your data with third-party vendors, service providers, contractors, or agents ("third parties") who perform services for us or on our behalf and require access to such information to do that work. The third parties we may share personal information with are as follows:
+            <b>Vendors, Consultants, and Other Third-Party Service Providers.  </b>We may share your data with third-party vendors, service providers, contractors, or agents (&quot;third parties&quot;) who perform services for us or on our behalf and require access to such information to do that work. The third parties we may share personal information with are as follows:
             </Typography>
             <Typography variant="body2" paragraph style={{ marginLeft: '1.5rem', marginBottom: '1rem' }}>
             <li>
@@ -305,7 +305,7 @@ const DataPrivacyModal = () => {
             <b>Business Transfers. </b>We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.
             </li>
             <li>
-            <b>When we use Google Maps Platform APIs. </b>We may share your information with certain Google Maps Platform APIs (e.g., Google Maps API, Places API). We obtain and store on your device ("cache") your location. You may revoke your consent anytime by contacting us at the contact details provided at the end of this document.
+            <b>When we use Google Maps Platform APIs. </b>We may share your information with certain Google Maps Platform APIs (e.g., Google Maps API, Places API). We obtain and store on your device (&quot;cache&quot;) your location. You may revoke your consent anytime by contacting us at the contact details provided at the end of this document.
             </li>
             <li>
             <b>Other Users. </b>When you share personal information (for example, by posting comments, contributions, or other content to the Services) or otherwise interact with public areas of the Services, such personal information may be viewed by all users and may be publicly made available outside the Services in perpetuity. Similarly, other users will be able to view descriptions of your activity, communicate with you within our Services, and view your profile.
@@ -382,7 +382,7 @@ const DataPrivacyModal = () => {
             </Typography>
 
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
-            Most web browsers and some mobile operating systems and mobile applications include a Do-Not-Track ("DNT") feature or setting you can activate to signal your privacy preference not to have data about your online browsing activities monitored and collected. At this stage no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals or any other mechanism that automatically communicates your choice not to be tracked online. If a standard for online tracking is adopted that we must follow in the future, we will inform you about that practice in a revised version of this privacy notice.
+            Most web browsers and some mobile operating systems and mobile applications include a Do-Not-Track (&quot;DNT&quot;) feature or setting you can activate to signal your privacy preference not to have data about your online browsing activities monitored and collected. At this stage no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals or any other mechanism that automatically communicates your choice not to be tracked online. If a standard for online tracking is adopted that we must follow in the future, we will inform you about that practice in a revised version of this privacy notice.
             </Typography>
 
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section9}>
@@ -394,7 +394,7 @@ const DataPrivacyModal = () => {
             </Typography>
 
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
-            We may update this privacy notice from time to time. The updated version will be indicated by an updated "Revised" date and the updated version will be effective as soon as it is accessible. If we make material changes to this privacy notice, we may notify you either by prominently posting a notice of such changes or by directly sending you a notification. We encourage you to review this privacy notice frequently to be informed of how we are protecting your information.
+            We may update this privacy notice from time to time. The updated version will be indicated by an updated &quot;Revised&quot; date and the updated version will be effective as soon as it is accessible. If we make material changes to this privacy notice, we may notify you either by prominently posting a notice of such changes or by directly sending you a notification. We encourage you to review this privacy notice frequently to be informed of how we are protecting your information.
             </Typography>
 
             <Typography variant="body2" gutterBottom style={{ marginTop: '2rem', marginBottom: '1rem' }} ref={sectionRefs.section10}>
