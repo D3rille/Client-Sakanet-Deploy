@@ -351,7 +351,7 @@ const DataPrivacyModal = () => {
             If you believe that we are unlawfully processing your personal information, you have the right to file a complaint with the National Privacy Commission (NPC). You can file a complaint with the NPC by visiting their website (www.privacy.gov.ph) and following the instructions provided on their complaints page.
             </Typography>
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
-            <b><u>Withdrawing your consent:</u></b> If we are relying on your consent to process your personal information, which may be express and/or implied consent depending on the applicable law, you have the right to withdraw your consent at any time. You can withdraw your consent at any time by contacting us by using the contact details provided in the section <u>"HOW CAN YOU CONTACT US ABOUT THIS NOTICE?"</u> below.
+            <b><u>Withdrawing your consent:</u></b> If we are relying on your consent to process your personal information, which may be express and/or implied consent depending on the applicable law, you have the right to withdraw your consent at any time. You can withdraw your consent at any time by contacting us by using the contact details provided in the section <u>&quot;HOW CAN YOU CONTACT US ABOUT THIS NOTICE?&quot;</u> below.
             </Typography>
             <Typography variant="subtitle2" gutterBottom style={{ marginBottom: '1rem' }}>
             However, please note that this will not affect the lawfulness of the processing before its withdrawal nor, when applicable law allows, will it affect the processing of your personal information conducted in reliance on lawful processing grounds other than consent.

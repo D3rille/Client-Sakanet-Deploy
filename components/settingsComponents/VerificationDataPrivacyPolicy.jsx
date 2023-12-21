@@ -100,8 +100,8 @@ export default function VerificationPrivacyPolicy({open, setOpen}) {
                                 {item.content}
                             </Typography>
                             <ul style={{paddingLeft:"2em"}}>
-                                {item.list.map((item)=>(
-                                    <li>
+                                {item.list.map((item, index)=>(
+                                    <li key={index}>
                                         <Typography variant="caption">
                                             {item}
                                         </Typography>
@@ -119,8 +119,8 @@ export default function VerificationPrivacyPolicy({open, setOpen}) {
                                 {item.content}
                             </Typography>
                             <ul style={{paddingLeft:"2em"}}>
-                                {item.contacts.map((item)=>(
-                                    <li>
+                                {item.contacts.map((item, index)=>(
+                                    <li key={index}>
                                         <Typography variant="caption">
                                             {item}
                                         </Typography>
